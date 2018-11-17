@@ -50,6 +50,6 @@
 - 对于无查询参数的字符串，移除尾部文件名，将路径中的数字串统一替换为 d，将路径中的 UUID 统一替换为 u，作为 URL 特征串
 - 对于包含查询参数的 URL，保留完整路径，将查询参数键名按字符序排序，连接到路径中作为特征串
 
-# cendertron
+## Benchmark
 
-> cendertron = crawler + rendertron
+- http://demo.aisec.cn/demo/

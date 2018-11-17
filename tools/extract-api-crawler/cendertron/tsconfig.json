@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "declaration": true,
+    "sourceMap": true,
+    "lib": [
+      "es2017",
+      "esnext.asynciterable",
+      "dom"
+    ],
+    "rootDir": "./src",
+    "outDir": "./build"
+  },
+  "include": [
+    "./src/**/*.ts"
+  ]
+}
