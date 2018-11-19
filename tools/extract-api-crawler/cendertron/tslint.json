@@ -1,40 +1,20 @@
 {
   "rules": {
-    "arrow-parens": true,
     "class-name": true,
-    "indent": [
-      true,
-      "spaces"
-    ],
-    "no-any": true,
+    "indent": [true, "spaces"],
+    "no-any": false,
     "prefer-const": true,
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-internal-module": true,
-    "no-trailing-whitespace": true,
+    "no-trailing-whitespace": false,
     "no-var-keyword": true,
-    "one-line": [
-      true,
-      "check-open-brace",
-      "check-whitespace"
-    ],
-    "quotemark": [
-      true,
-      "single",
-      "avoid-escape"
-    ],
-    "semicolon": [
-      true,
-      "always"
-    ],
-    "trailing-comma": [
-      true,
-      "multiline"
-    ],
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
+    "arrow-parens": false,
+    "one-line": [true, "check-open-brace", "check-whitespace"],
+    "quotemark": [true, "single", "avoid-escape"],
+    "semicolon": [true, "always"],
+    "trailing-comma": [true, "multiline"],
+    "triple-equals": [true, "allow-null-check"],
     "typedef-whitespace": [
       true,
       {
@@ -45,10 +25,7 @@
         "variable-declaration": "nospace"
       }
     ],
-    "variable-name": [
-      true,
-      "ban-keywords"
-    ],
+    "variable-name": [true, "ban-keywords"],
     "whitespace": [
       true,
       "check-branch",

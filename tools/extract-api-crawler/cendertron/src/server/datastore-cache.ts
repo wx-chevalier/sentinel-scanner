@@ -100,7 +100,7 @@ export class DatastoreCache {
         if (content.expires.getTime() >= new Date().getTime()) {
           const headers = JSON.parse(content.headers);
           ctx.set(headers);
-          ctx.set('x-rendertron-cached', content.saved.toUTCString());
+          ctx.set('x-cendertron-cached', content.saved.toUTCString());
           try {
             let payload = JSON.parse(content.payload);
             if (

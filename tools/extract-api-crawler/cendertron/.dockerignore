@@ -20,4 +20,5 @@ yarn-error.log
 .git
 .hg
 .svn
+*.ts
 middleware

@@ -1,20 +1,21 @@
 {
-  "name": "rendertron",
+  "name": "cendertron",
   "version": "2.0.1",
   "description": "Renders webpages using headless Chrome for usage by bots",
   "license": "Apache-2.0",
-  "repository": "https://github.com/GoogleChrome/rendertron",
+  "repository": "https://github.com/GoogleChrome/cendertron",
   "engines": {
     "node": ">=7"
   },
-  "main": "build/rendertron.js",
-  "types": "build/rendertron.d.ts",
-  "bin": "bin/rendertron",
+  "main": "build/cendertron.js",
+  "types": "build/cendertron.d.ts",
+  "bin": "bin/cendertron",
   "scripts": {
     "build": "tsc",
     "prepack": "npm run build",
     "clean": "rm -rf ./src/**/*.js ./middleware/**/*.js",
-    "start": "node build/rendertron.js",
+    "dev": "ts-node ./src/cendertron.ts",
+    "start": "NODE_ENV=production node build/cendertron.js",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "lint": "tslint --project . --format stylish",
     "monitor": "nodemon src/main.js",

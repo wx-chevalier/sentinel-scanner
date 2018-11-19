@@ -1,6 +1,6 @@
 # Cendertron
 
-> Cendertron = Crawler + rendertron
+> Cendertron = Crawler + cendertron
 
 # Usage
 
@@ -8,11 +8,17 @@
 # build image
 $ docker build -t cendertron . --no-cache=true
 
-$ docker run -it -p 8080:8080 --name cendertron-instance cendertron
+# run as contaner
+$ docker run -it --rm -p 3000:3000 --name cendertron-instance cendertron
 
+# run as container, fix with Jessie Frazelle seccomp profile for Chrome.
 $ wget https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/seccomp/chrome.json -O ~/chrome.json
-$ docker run -it -p 8080:8080 --security-opt seccomp=$HOME/chrome.json --name cendertron-instance cendertron
+$ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name cendertron-instance cendertron
 ```
+
+## Test Urls
+
+- http://testphp.vulnweb.com/AJAX/#
 
 # Motivation & Credits
 

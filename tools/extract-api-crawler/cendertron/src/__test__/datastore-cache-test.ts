@@ -23,7 +23,7 @@ import * as koaCompress from 'koa-compress';
 import * as request from 'supertest';
 import * as route from 'koa-route';
 
-import { DatastoreCache } from '../datastore-cache';
+import { DatastoreCache } from '../server/datastore-cache';
 
 const app = new Koa();
 const server = request(app.listen());
@@ -64,8 +64,8 @@ test('caches content and serves same content on cache hit', async t => {
   res = await server.get('/?basictest');
   t.is(res.status, 200);
   t.is(res.text, 'Called ' + previousCount + ' times');
-  t.truthy(res.header['x-rendertron-cached']);
-  t.true(new Date(res.header['x-rendertron-cached']) <= new Date());
+  t.truthy(res.header['x-cendertron-cached']);
+  t.true(new Date(res.header['x-cendertron-cached']) <= new Date());
 
   res = await server.get('/?basictest');
   t.is(res.status, 200);
