@@ -2,7 +2,19 @@
 
 > Cendertron = Crawler + cendertron
 
+Cendertron can be used for extracting apis from your Web 2.0 page, view in [demo](http://47.99.50.115:5000/) page, or [result](http://47.99.50.115:5000/apis/http://testphp.vulnweb.com/AJAX/) page.
+
 # Usage
+
+- Run locally
+
+```sh
+$ git clone ...
+$ yarn install
+$ npm run dev
+```
+
+- Deploy in Docker
 
 ```sh
 # build image
