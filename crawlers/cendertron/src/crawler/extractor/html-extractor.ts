@@ -3,7 +3,7 @@ import * as puppeteer from 'puppeteer';
 import { hashUrl } from '../../shared/model';
 import { Request } from '../../shared/constants';
 import { transformUrlToRequest } from '../../shared/transformer';
-import { isValidHref } from '../../shared/validator';
+import { isValidLink } from '../../shared/validator';
 
 /** 从 HTML 中提取出有效信息 */
 export async function extractRequestsFromHTMLInSinglePage(
@@ -14,9 +14,18 @@ export async function extractRequestsFromHTMLInSinglePage(
 
   // 提取所有的 a 元素
   const aHrefs: string[] = await page.evaluate(() =>
-    Array.from(document.querySelectorAll('a')).map($ele =>
-      $ele.getAttribute('href')
-    )
+    Array.from(document.querySelectorAll('a')).map($ele => {
+      const href = $ele.getAttribute('href');
+
+      if (!href) {
+        return href;
+      }
+      if (href.indexOf('http') > -1 || href.indexOf('https') > -1) {
+        return href;
+      }
+
+      return `${window.location.href}${href}`;
+    })
   );
 
   // 提取所有的 form 表单
@@ -38,7 +47,7 @@ export async function extractRequestsFromHTMLInSinglePage(
   });
 
   (aHrefs || [])
-    .filter(aHref => isValidHref(aHref))
+    .filter(aHref => isValidLink(aHref))
     .forEach((href: string) => {
       const hrefHash = hashUrl({ url: href });
 

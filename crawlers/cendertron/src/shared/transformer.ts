@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import * as parse from 'url-parse';
 
-import { Request } from './constants';
+import { Request, ParsedUrl } from './constants';
 import { hashUrl } from './model';
 
 export function transformInterceptedRequestToRequest(
@@ -9,7 +9,7 @@ export function transformInterceptedRequestToRequest(
 ): Request {
   // 获取 url
   const url = interceptedRequest.url();
-  const { host, pathname, query } = parse(url, url, true);
+  const { host, pathname, query } = parseUrl(url);
   const parsedUrl = { host, pathname, query };
 
   return {
@@ -22,8 +22,9 @@ export function transformInterceptedRequestToRequest(
   };
 }
 
+/** 将 url 解析为请求 */
 export function transformUrlToRequest(url: string): Request {
-  const { host, pathname, query } = parse(url, url, true);
+  const { host, pathname, query } = parseUrl(url);
   const parsedUrl = { host, pathname, query };
 
   return {
@@ -31,4 +32,13 @@ export function transformUrlToRequest(url: string): Request {
     parsedUrl,
     hash: hashUrl({ parsedUrl })
   };
+}
+
+export function parseUrl(url: string): ParsedUrl {
+  try {
+    const { host, pathname, query } = parse(url, url, true);
+    return { host, pathname, query };
+  } catch (e) {
+    return { host: url, pathname: '', query: {} };
+  }
 }

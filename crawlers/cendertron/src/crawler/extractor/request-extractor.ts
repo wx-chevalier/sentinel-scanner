@@ -33,8 +33,8 @@ export function extractRequestsInSinglePage(
     if (
       pageUrlRequest.parsedUrl.host !== parsedUrl.host ||
       existedUrlsHash.has(hash) ||
-      url.endsWith('js') ||
-      url.endsWith('css')
+      url.indexOf('.js') > -1 ||
+      url.indexOf('.css') > -1
     ) {
       continue;
     }

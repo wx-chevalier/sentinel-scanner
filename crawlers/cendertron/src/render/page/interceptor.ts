@@ -1,9 +1,9 @@
 /** 执行页面中的请求截获操作 */
 import * as puppeteer from 'puppeteer';
 
-import { isMedia } from './../../shared/validator';
-import { transformInterceptedRequestToRequest } from '../../shared/transformer';
 import { Request } from '../../shared/constants';
+import { transformInterceptedRequestToRequest } from '../../shared/transformer';
+import { isMedia } from './../../shared/validator';
 
 export async function interceptUrlsInSinglePage(
   browser: puppeteer.Browser,

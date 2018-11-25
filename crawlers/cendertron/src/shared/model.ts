@@ -39,24 +39,11 @@ export function hashUrl({
     // 如果不存在查询参数，则去除 pathname 的最后一位，并且添加进来
     const pathFragments = pathname.split('/');
 
-    // 判断路径是否包含多个项目
+    // 判断路径是否包含多个项目，如果包含，则将所有疑似 UUID 的替换为 ID
     if (pathFragments.length > 1) {
-      // 默认排除最后一位
-      let excludedIndex = pathFragments.length - 1;
-
-      // 判断是否存在数字项，如果存在则认为该位为变量项，将其排除
-      pathFragments.forEach((f, i) => {
-        if (!isNaN(parseInt(f))) {
-          excludedIndex = i;
-        }
-      });
-
-      // 判断最后一位是否包含数字，如果不包含则不跳过
-      hash = maybeUUID(pathFragments[excludedIndex])
-        ? `${host}#${pathFragments
-            .filter((_, i) => i !== excludedIndex)
-            .join('')}`
-        : `${host}#${pathname}`;
+      hash = `${host}#${pathFragments
+        .map(frag => (maybeUUID(frag) ? 'id' : frag))
+        .join('')}`;
     } else {
       hash = `${host}#${pathname}`;
     }

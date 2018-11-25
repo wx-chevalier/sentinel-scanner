@@ -14,7 +14,7 @@ import { extractRequestsInSinglePage } from '../crawler//extractor/request-extra
 import { monkeyClick } from './monky/click-monkey';
 import { interceptUrlsInSinglePage } from './page/interceptor';
 import { RequestMap, Request } from '../shared/constants';
-import { transformUrlToRequest } from '../shared/transformer';
+import { transformUrlToRequest, parseUrl } from '../shared/transformer';
 import { extractRequestsFromHTMLInSinglePage } from '../crawler/extractor/html-extractor';
 
 /**
@@ -154,6 +154,7 @@ export class Renderer {
   /** 执行 API 提取 */
   async extractApis(requestUrl: string): Promise<RequestMap> {
     const page = await initPage(this.browser);
+    const parsedRequestUrl = parseUrl(requestUrl);
 
     let requests: Request[] = [];
     let openedUrls: string[] = [];
@@ -193,9 +194,14 @@ export class Renderer {
     existedUrlsHash.add(transformUrlToRequest(requestUrl).hash);
 
     // 解析页面中生成的元素
-    const requestsFromHTML = await extractRequestsFromHTMLInSinglePage(
+    const requestsFromHTML = (await extractRequestsFromHTMLInSinglePage(
       page,
       existedUrlsHash
+    )).filter(
+      r =>
+        r.parsedUrl.host === parsedRequestUrl.host &&
+        r.url.indexOf('.js') < 0 &&
+        r.url.indexOf('.css') < 0
     );
 
     // 等待 5 ~ 10s，返回

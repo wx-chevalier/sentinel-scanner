@@ -24,18 +24,18 @@ const mediaSuffix = [
 export const isMedia = (url: string) =>
   mediaSuffix.reduce((prev, suffix) => prev || url.endsWith(suffix), false);
 
-// 判断是否为有效的 Href，即包含地址，不包含 JavaScript 点击等
-export const isValidHref = (href: string | null) =>
+// 判断是否为有效的 Href Link，即包含地址，不包含 JavaScript 点击等
+export const isValidLink = (href: string | null) =>
   href && href !== '#' && href.indexOf('javascript:') < 0;
 
 // 判断某个字符串中是否包含数字，即是否可能为 UUID
-export const maybeUUID = (url: string | null) => {
-  if (!url) {
+export const maybeUUID = (pathFragment: string | null) => {
+  if (!pathFragment) {
     return false;
   }
 
   // 只要有一位为数字，就有可能是 UUID
-  return url
+  return pathFragment
     .split('')
     .reduce((prev, char) => prev || !isNaN(parseInt(char)), false);
 };
