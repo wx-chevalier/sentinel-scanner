@@ -2,7 +2,9 @@
 
 > Cendertron = Crawler + cendertron
 
-Cendertron can be used for extracting apis from your Web 2.0 page, view in [demo](http://47.99.50.115:5000/) page, or [result](http://47.99.50.115:5000/apis/http://testphp.vulnweb.com/AJAX/) page.
+Advanced hosted crawler(in Docker) for Web 2.0 pages, focusing on requests(page urls, apis, etc.), followed by pentest tools(Sqlmap, etc.).
+
+Cendertron can be used for extracting requests(page urls, apis, etc.) from your Web 2.0 page, view in [demo](http://47.99.50.115:5000/) page, or [result](http://47.99.50.115:5000/apis/http://testphp.vulnweb.com/AJAX/) page.
 
 # Usage
 
@@ -31,6 +33,8 @@ $ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name ce
 ## Test Urls
 
 - http://testphp.vulnweb.com/AJAX/#
+- http://demo.aisec.cn/demo/
+- https://jsonplaceholder.typicode.com/
 
 # Motivation & Credits
 

@@ -1,6 +1,6 @@
 # Chaos-Scanner/extract-api-crawler
 
-[Chaos-Scanner/extract-api-crawler](https://parg.co/0Me) 是自动递归抓取网页中潜在 GET/POST/PUT/DELETE 等 API 请求地址与参数，并将其传入下游的 SQL 注入等测试工具。为了更好地兼容不同的需求场景，extract-api-crawler 也是拆分为了多个不同语言/工具构成的碎片化模块，可自由组合。
+[Chaos-Scanner/crawlers](https://parg.co/0Me) 是自动递归抓取网页中潜在 GET/POST/PUT/DELETE 等 API 请求地址与参数，并将其传入下游的 SQL 注入等测试工具。为了更好地兼容不同的需求场景，Chaos-Scanner/crawlers 也是拆分为了多个不同语言/工具构成的碎片化模块，可自由组合。与数据爬虫相比，Chaos-Scanner/crawlers 会尽可能忽略相似页面，更关注于请求/页面，而忽略了响应体等数据信息。
 
 # 设计理念
 

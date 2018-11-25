@@ -25,7 +25,33 @@ export class ScreenshotError extends Error {
   }
 }
 
-export interface Api {
+export interface ParsedUrl {
+  host: string;
+  pathname: string;
+  query: object;
+}
+
+export interface Request {
+  // 请求路径
   url: string;
-  params?: { [key: string]: any } | string;
+  parsedUrl: ParsedUrl;
+
+  // 该请求的 hash
+  hash: string;
+
+  // 资源类型
+  resourceType?: string;
+
+  // 请求方法
+  method?: string;
+
+  // 请求体
+  postData?: string | undefined;
+}
+
+export interface RequestMap {
+  pages?: Request[];
+  apis?: Request[];
+  scripts?: Request[];
+  media?: Request[];
 }

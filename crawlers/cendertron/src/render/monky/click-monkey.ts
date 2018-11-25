@@ -3,6 +3,7 @@ import * as puppeteer from 'puppeteer';
  * a[href], input[type='submit'], input[type='image'], label[for], select, button, .pointer
  */
 function clickElements() {
+  // 获取所有的 a 元素
   const clickableEleAs = Array.prototype.filter.call(
     document.querySelectorAll('a'),
     (ele: HTMLElement) =>
@@ -13,6 +14,16 @@ function clickElements() {
   for (const eleA of clickableEleAs) {
     eleA.click();
   }
+
+  Array.from(document.querySelectorAll('button')).forEach($ele => {
+    $ele.click();
+  });
+
+  Array.from(document.querySelectorAll('input[type=button]')).forEach(
+    ($ele: Element) => {
+      ($ele as HTMLElement).click();
+    }
+  );
 }
 
 export async function monkeyClick(page: puppeteer.Page) {

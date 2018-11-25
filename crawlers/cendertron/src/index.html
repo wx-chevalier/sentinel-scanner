@@ -29,7 +29,7 @@
   rel="stylesheet">
 
 
-<a href="https://github.com/wxyyxc1992/Chaos-Scanner/blob/master/tools/api-crawler/cendertron"
+<a href="https://github.com/wxyyxc1992/Chaos-Scanner/blob/master/crawlers/cendertron"
   class="github-corner"
   aria-label="View source on Github"
   target="_blank">
@@ -139,7 +139,7 @@
     margin-top: 32px;
     display: flex;
     flex-wrap: wrap;
-    max-width: 800px;
+    max-width: 500px;
     justify-content: center;
   }
 
@@ -149,14 +149,14 @@
 
   #options button {
     display: block;
-    width: 300px;
-    height: 300px;
+    width: 150px;
+    height: 150px;
     border: 1px solid #99f3ff;
     color: white;
     background: none;
     display: flex;
     flex-direction: column;
-    font-size: 18px;
+    font-size: 16px;
     font-family: 'Orbitron', sans-serif;
     align-items: center;
     justify-content: center;
@@ -184,7 +184,7 @@
   }
 
   #options button i {
-    font-size: 96px;
+    font-size: 48px;
   }
 
   #options button span {
@@ -228,22 +228,22 @@
 
   <button onclick="extractApi(this, false)">
     <i class="material-icons">all_out</i>
-    <span>提取 APIs</span>
+    <span>Crawler | 爬虫</span>
   </button>
 
   <button onclick="render(this, false)">
     <i class="material-icons">cloud_upload</i>
-    <span>渲染结果</span>
+    <span>Render | 渲染</span>
   </button>
 
   <button onclick="takeScreenshot(this)">
     <i class="material-icons">photo_camera</i>
-    <span>截图</span>
+    <span>Screeshot</span>
   </button>
 
   <button onclick="render(this, true)">
     <i class="material-icons">mobile_friendly</i>
-    <span>移动适配</span>
+    <span>Mobile | 移动渲染</span>
   </button>
 </div>
 

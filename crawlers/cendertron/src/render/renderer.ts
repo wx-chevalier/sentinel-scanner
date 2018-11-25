@@ -1,5 +1,3 @@
-import { Api } from './../shared/constants';
-import { isImg } from './../shared/validator';
 import * as puppeteer from 'puppeteer';
 import * as url from 'url';
 
@@ -12,8 +10,12 @@ import {
 import { initPage } from './puppeteer';
 import { injectBaseHref, stripPage } from './page/scripts';
 import { evaluateGremlins } from './monky/gremlins';
-import { extractApisFromRequests } from '../extractor/request-extractor';
+import { extractRequestsInSinglePage } from '../crawler//extractor/request-extractor';
 import { monkeyClick } from './monky/click-monkey';
+import { interceptUrlsInSinglePage } from './page/interceptor';
+import { RequestMap, Request } from '../shared/constants';
+import { transformUrlToRequest } from '../shared/transformer';
+import { extractRequestsFromHTMLInSinglePage } from '../crawler/extractor/html-extractor';
 
 /**
  * Wraps Puppeteer's interface to Headless Chrome to expose high level rendering
@@ -41,10 +43,6 @@ export class Renderer {
 
     let response: puppeteer.Response | null = null;
 
-    // Capture main frame response. This is used in the case that rendering
-    // times out, which results in puppeteer throwing an error. This allows us
-    // to return a partial response for what was able to be rendered in that
-    // time frame.
     page.addListener('response', (r: puppeteer.Response) => {
       if (!response) {
         response = r;
@@ -67,28 +65,21 @@ export class Renderer {
       return { status: 400, content: '' };
     }
 
-    // Disable access to compute metadata. See
-    // https://cloud.google.com/compute/docs/storing-retrieving-metadata.
     if (response.headers()['metadata-flavor'] === 'Google') {
       return { status: 403, content: '' };
     }
 
-    // Set status to the initial server's response code. Check for a <meta
-    // name="render:status_code" content="4xx" /> tag which overrides the status
-    // code.
     let statusCode = response.status();
     const newStatusCode = await page
       .$eval('meta[name="render:status_code"]', element =>
         parseInt(element.getAttribute('content') || '')
       )
       .catch(() => undefined);
-    // On a repeat visit to the same origin, browser cache is enabled, so we may
-    // encounter a 304 Not Modified. Instead we'll treat this as a 200 OK.
+
     if (statusCode === 304) {
       statusCode = 200;
     }
-    // Original status codes which aren't 200 always return with that status
-    // code, regardless of meta tags.
+
     if (statusCode === 200 && newStatusCode) {
       statusCode = newStatusCode;
     }
@@ -108,41 +99,6 @@ export class Renderer {
 
     await page.close();
     return { status: statusCode, content: result };
-  }
-
-  /** 执行 API 提取 */
-  async extractApis(requestUrl: string): Promise<Api[]> {
-    const page = await initPage(this.browser);
-
-    const requests: puppeteer.Request[] = [];
-
-    await page.setRequestInterception(true);
-
-    page.on('request', interceptedRequest => {
-      if (isImg(interceptedRequest.url())) interceptedRequest.abort();
-      else {
-        requests.push(interceptedRequest);
-        interceptedRequest.continue();
-      }
-    });
-
-    await page.goto(requestUrl, {
-      timeout: 10000,
-      waitUntil: 'networkidle0'
-    });
-
-    // 设置请求监听
-    await page.setRequestInterception(true);
-
-    // 页面加载完毕后插入 Monkey 脚本
-    await Promise.all([monkeyClick(page), evaluateGremlins(page)]);
-
-    // 等待 5 ~ 10s，返回
-    await page.close();
-
-    const existedUrls = new Set<string>();
-
-    return extractApisFromRequests(requests, existedUrls);
   }
 
   /** 执行截屏 */
@@ -180,8 +136,6 @@ export class Renderer {
       throw new ScreenshotError('NoResponse');
     }
 
-    // Disable access to compute metadata. See
-    // https://cloud.google.com/compute/docs/storing-retrieving-metadata.
     if (response!.headers()['metadata-flavor'] === 'Google') {
       throw new ScreenshotError('Forbidden');
     }
@@ -195,5 +149,68 @@ export class Renderer {
     // Screenshot returns a buffer based on specified encoding above.
     const buffer = (await page.screenshot(screenshotOptions)) as Buffer;
     return buffer;
+  }
+
+  /** 执行 API 提取 */
+  async extractApis(requestUrl: string): Promise<RequestMap> {
+    const page = await initPage(this.browser);
+
+    let requests: Request[] = [];
+    let openedUrls: string[] = [];
+
+    // 设置关闭页面超时
+    setTimeout(() => {
+      if (!page.isClosed()) {
+        page.close();
+      }
+    }, 30 * 1000);
+
+    // 设置请求监听
+    await interceptUrlsInSinglePage(this.browser, page, (_r, _o) => {
+      requests = _r;
+      openedUrls = _o;
+    });
+
+    // 页面跳转
+    await page.goto(requestUrl, {
+      timeout: 20 * 1000,
+
+      // 等待到页面加载完毕
+      waitUntil: 'domcontentloaded'
+    });
+
+    // 禁止页面跳转
+    await page.evaluate(`
+      (Array.from(document.querySelectorAll("a"))).forEach(($ele)=>$ele.setAttribute("target","_blank"))
+    `);
+
+    // 页面加载完毕后插入 Monkey 脚本
+    await Promise.all([monkeyClick(page), evaluateGremlins(page)]);
+
+    await page.waitFor(5 * 1000);
+
+    const existedUrlsHash = new Set<string>();
+    existedUrlsHash.add(transformUrlToRequest(requestUrl).hash);
+
+    // 解析页面中生成的元素
+    const requestsFromHTML = await extractRequestsFromHTMLInSinglePage(
+      page,
+      existedUrlsHash
+    );
+
+    // 等待 5 ~ 10s，返回
+    if (!page.isClosed()) {
+      page.close();
+    }
+
+    // 从请求中获取到所有的 API
+    const map = extractRequestsInSinglePage(
+      requestUrl,
+      existedUrlsHash,
+      requests,
+      openedUrls
+    );
+
+    return { ...map, apis: [...(map.apis || []), ...requestsFromHTML] };
   }
 }

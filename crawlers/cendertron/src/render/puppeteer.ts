@@ -2,7 +2,7 @@
 import * as puppeteer from 'puppeteer';
 
 import { MOBILE_USERAGENT } from '../shared/constants';
-import { isImg } from '../shared/validator';
+import { isMedia } from '../shared/validator';
 
 export async function initPuppeteer() {
   let browser;
@@ -52,7 +52,7 @@ export async function initPage(
     await page.setRequestInterception(true);
 
     page.on('request', interceptedRequest => {
-      if (isImg(interceptedRequest.url())) interceptedRequest.abort();
+      if (isMedia(interceptedRequest.url())) interceptedRequest.abort();
       else interceptedRequest.continue();
     });
   }

@@ -48,8 +48,6 @@ export class DatastoreCache {
     );
     console.log(`Removing ${entities.length} items from the cache`);
     await this.datastore.delete(entityKeys);
-    // TODO(samli): check info (data[1]) and loop through pages of entities to
-    // delete.
   }
 
   async cacheContent(key: DatastoreKey, headers: {}, payload: Buffer) {

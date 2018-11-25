@@ -17,6 +17,10 @@ type Config = {
   datastoreCache: boolean;
 };
 
+export type CendertronConfig = {
+  parallelNum: 1;
+};
+
 /**
  * Cendertron rendering service. This runs the server which routes rendering
  * requests through to the renderer.
@@ -77,6 +81,17 @@ export class Cendertron {
       route.get('/apis/:url(.*)', this.handleExtractApis.bind(this))
     );
 
+    this.app.use(
+      route.get('/_ah/reset', async () => {
+        browser.removeAllListeners();
+        browser.close();
+
+        // 重启动浏览器
+        const _browser = await initPuppeteer();
+        this.renderer = new Renderer(_browser);
+      })
+    );
+
     return this.app.listen(this.port, () => {
       console.log(`Listening on port ${this.port}`);
     });
@@ -134,7 +149,8 @@ export class Cendertron {
       ctx.set('x-renderer', 'cendertron');
       ctx.body = apis;
     } catch (e) {
-      ctx.body = [];
+      console.error(e);
+      ctx.body = e;
     }
   }
 

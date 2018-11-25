@@ -23,13 +23,12 @@ function initGermlins() {
 
 /** 执行 Gremlins Monkey Test */
 export async function evaluateGremlins(page: puppeteer.Page) {
-  await page.addScriptTag({
-    url:
-      'https://cdnjs.cloudflare.com/ajax/libs/gremlins.js/0.1.0/gremlins.min.js'
-  });
+  try {
+    await page.addScriptTag({
+      url:
+        'https://cdnjs.cloudflare.com/ajax/libs/gremlins.js/0.1.0/gremlins.min.js'
+    });
 
-  await page.evaluate(initGermlins);
-
-  // 等待 10s，等待页面加载完毕
-  await page.waitFor(10 * 1000);
+    await page.evaluate(initGermlins);
+  } catch (e) {}
 }
