@@ -8,6 +8,8 @@ LABEL name="cendertron" \
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
 
+COPY ./resolv.conf /etc/
+
 # Copy source to specified user
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
