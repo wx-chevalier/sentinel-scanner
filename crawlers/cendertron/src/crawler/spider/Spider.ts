@@ -41,11 +41,11 @@ export default class Spider {
   }
 
   // 将单个请求添加到结果集中
-  private addRequest(request: Request, type = 'apis') {
-    // 判断是否需要过滤图片
-    // 判断是否需要过滤非同域请求
-  }
+  //   private addRequest(request: Request, type = 'apis') {
+  //     // 判断是否需要过滤图片
+  //     // 判断是否需要过滤非同域请求
+  //   }
 
   // 将某个结果集合并到结果集中
-  private addRequestMap(requestMap: RequestMap) {}
+  //   private addRequestMap(requestMap: RequestMap) {}
 }
