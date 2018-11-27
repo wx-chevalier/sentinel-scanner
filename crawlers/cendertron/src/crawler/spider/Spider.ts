@@ -1,20 +1,16 @@
-import * as puppeteer from 'puppeteer';
 import * as parse from 'url-parse';
 
-import defaultCrawlerOption from '../CrawlerOption';
+import Crawler from '../Crawler';
 import { RequestMap, ParsedUrl } from '../../shared/constants';
-import { initPage } from '../../render/puppeteer';
 
 /** 通用的蜘蛛接口 */
-
 export default class Spider {
-  browser: puppeteer.Browser;
+  // 蜘蛛所属的爬虫对象
+  crawler: Crawler;
   pageUrl: string;
-  crawlerOption = defaultCrawlerOption;
+  parsedUrl?: ParsedUrl;
 
-  _page?: puppeteer.Page;
-  _parsedUrl?: ParsedUrl;
-
+  // 某个爬虫的结果集合
   resultMap: RequestMap = {
     apis: [],
     pages: [],
@@ -22,22 +18,19 @@ export default class Spider {
     media: []
   };
 
-  constructor(
-    browser: puppeteer.Browser,
-    pageUrl: string,
-    crawlerOption = defaultCrawlerOption
-  ) {
-    this.browser = browser;
+  constructor(pageUrl: string, crawler: Crawler) {
     this.pageUrl = pageUrl;
-    this.crawlerOption = crawlerOption;
+    this.crawler = crawler;
 
-    // 执行初始化构造
-    this.init();
+    this.parsedUrl = parse(pageUrl, pageUrl, true);
   }
 
   async init() {
-    this._page = await initPage(this.browser);
-    this._parsedUrl = parse(this.pageUrl, this.pageUrl, true);
+    console.error('Should Implement Run');
+  }
+
+  async run() {
+    console.error('Should Implement Run');
   }
 
   // 将单个请求添加到结果集中

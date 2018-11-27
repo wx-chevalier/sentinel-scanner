@@ -29,7 +29,7 @@ export interface CrawlerOption {
   cookie: string;
 
   // 页面的 localStorage
-  localStorage: JSON;
+  localStorage: object;
 }
 
 export const defaultCrawlerOption = {
