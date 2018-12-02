@@ -58,7 +58,23 @@ export interface ResultMap {
 }
 
 /** 爬虫的响应结果 */
+/** 爬虫的响应结果 */
 export interface CrawlerResult {
+  // 是否结束
   isFinished: boolean;
+
+  // 性能度量
+  metrics?: {
+    // 执行时间
+    executionDuration: number;
+
+    // 爬虫总数目
+    spiderCount: number;
+
+    // 爬取的深度
+    depth: number;
+  };
+
+  // 结果映射
   resultMap?: ResultMap;
 }

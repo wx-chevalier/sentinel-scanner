@@ -1,5 +1,5 @@
-import { ResultMap, CrawlerResult } from '../../build/crawler/types';
 import { nodeCache } from '../server/datastore-cache';
+import { ResultMap, CrawlerResult } from './types';
 
 type SpiderCache = {
   saved: Date;
@@ -41,12 +41,10 @@ export class CrawlerCache {
   }
 
   /** 缓存某个爬虫的最终执行结果，复写之前的缓存结果 */
-  async cacheCrawler(url: string, resultMap: ResultMap, isFinished = false) {
-    // 将结果存入缓存
-    const payload = { isFinished, resultMap };
+  async cacheCrawler(url: string, crawlerResult: CrawlerResult) {
     const key = crawlerKey(url);
 
-    nodeCache.set(key, payload);
+    nodeCache.set(key, crawlerResult);
   }
 
   /**

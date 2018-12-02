@@ -26,7 +26,7 @@ export default class Crawler {
   private startTime = Date.now();
 
   // 爬虫的执行结果
-  private crawlerResult: { [key: string]: ResultMap } = {};
+  private spidersRequestMap: { [key: string]: ResultMap } = {};
 
   constructor(
     browser: puppeteer.Browser,
@@ -54,10 +54,14 @@ export default class Crawler {
     this.spiders = [];
     this.spiderQueue.push(spider);
 
+    this.startTime = Date.now();
+
     this.next();
 
     // 这里会立刻返回结果，Koa 会自动缓存，等待爬虫执行完毕之后，其会自动地去复写缓存
-    crawlerCache.cacheCrawler(this.entryUrl, {});
+    crawlerCache.cacheCrawler(this.entryUrl, {
+      isFinished: false
+    });
 
     return {
       isFinished: false
@@ -68,7 +72,15 @@ export default class Crawler {
   async next() {
     // 如果全部执行完毕，则将结果回写到缓存中
     if (this.spiderQueue.length === 0) {
-      crawlerCache.cacheCrawler(this.entryUrl, this.crawlerResult, true);
+      crawlerCache.cacheCrawler(this.entryUrl, {
+        isFinished: true,
+        metrics: {
+          executionDuration: Date.now() - this.startTime,
+          spiderCount: this.spiders.length,
+          depth: this.crawlerOption.depth
+        },
+        resultMap: this.spidersRequestMap
+      });
       return;
     }
 
@@ -91,7 +103,7 @@ export default class Crawler {
 
   // 聚合爬虫中的所有蜘蛛的结果
   async report() {
-    return this.crawlerResult;
+    return this.spidersRequestMap;
   }
 
   // 将单个请求添加到结果集中
@@ -120,15 +132,15 @@ export default class Crawler {
     }
 
     // 将该结果添加到蜘蛛的执行结果
-    if (!this.crawlerResult[spider.pageUrl]) {
-      this.crawlerResult[spider.pageUrl] = {};
+    if (!this.spidersRequestMap[spider.pageUrl]) {
+      this.spidersRequestMap[spider.pageUrl] = {};
     }
 
-    if (!this.crawlerResult[spider.pageUrl][type]) {
-      this.crawlerResult[spider.pageUrl][type] = [];
+    if (!this.spidersRequestMap[spider.pageUrl][type]) {
+      this.spidersRequestMap[spider.pageUrl][type] = [];
     }
 
-    this.crawlerResult[spider.pageUrl][type]!.push(request);
+    this.spidersRequestMap[spider.pageUrl][type]!.push(request);
 
     // 判断是否需要创建新的蜘蛛
     if (
