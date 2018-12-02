@@ -48,7 +48,7 @@ export class DatastoreCache {
   }
 
   /** 清空全部的响应缓存 */
-  async clearCache(type: 'Page' | 'Spider' = 'Page') {
+  async clearCache(type: 'Page' | 'Spider' | 'Crawler' = 'Crawler') {
     const mykeys = nodeCache.keys();
     nodeCache.del(mykeys.filter(key => key.indexOf(type) > -1));
   }

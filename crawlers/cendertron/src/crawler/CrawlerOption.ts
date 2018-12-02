@@ -33,7 +33,10 @@ export interface CrawlerOption {
 }
 
 export const defaultCrawlerOption: CrawlerOption = {
+  // 爬取深度
   depth: 2,
+
+  // 单爬虫最多爬取页面数
   maxPageCount: 50,
   // 默认超时为 5 分钟
   timeout: 5 * 60 * 1000,

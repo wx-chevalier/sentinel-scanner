@@ -51,7 +51,7 @@ export async function interceptRequestsInSinglePage(
       interceptedRequest.isNavigationRequest() &&
       interceptedRequest.redirectChain().length !== 0
     ) {
-      interceptedRequest.abort();
+      interceptedRequest.continue();
     } else {
       interceptedRequest.continue();
     }

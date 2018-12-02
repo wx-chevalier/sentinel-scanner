@@ -9,6 +9,8 @@ LABEL name="cendertron" \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV NODE_ENV=development
 
+USER root
+
 # Install Google Chrome
 RUN cd /tmp &&\
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
@@ -18,7 +20,6 @@ RUN cd /tmp &&\
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update &&  apt-get install yarn
-
 
 COPY ./resolv.conf /etc/
 

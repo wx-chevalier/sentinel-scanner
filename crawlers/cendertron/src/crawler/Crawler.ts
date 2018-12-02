@@ -63,7 +63,7 @@ export default class Crawler {
       isFinished: false
     });
 
-    console.log(`Start crawling ${entryUrl}`);
+    console.log(`${new Date()} -- Start crawling ${entryUrl}`);
 
     return {
       isFinished: false
@@ -77,6 +77,8 @@ export default class Crawler {
       this.spiderQueue.length === 0 ||
       Date.now() - this.startTime > this.crawlerOption.timeout
     ) {
+      console.log(`${new Date()} -- Stop crawling ${this.entryUrl}`);
+
       crawlerCache.cacheCrawler(this.entryUrl, {
         isFinished: true,
         metrics: {
@@ -97,6 +99,11 @@ export default class Crawler {
     }
 
     // 从全局缓存中获取到蜘蛛的缓存结果，直接解析该结果
+
+    // 将该结果添加到蜘蛛的执行结果
+    if (!this.spidersRequestMap[spider.pageUrl]) {
+      this.spidersRequestMap[spider.pageUrl] = {};
+    }
 
     // 初始化并且执行蜘蛛
     await spider.init();

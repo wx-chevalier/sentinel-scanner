@@ -81,7 +81,13 @@ export class Cendertron {
     );
 
     this.app.use(
-      route.get('/scrape/clear', () => this.datastoreCache.clearCache())
+      route.get('/scrape/clear', ctx => {
+        this.datastoreCache.clearCache();
+
+        ctx.body = {
+          success: true
+        };
+      })
     );
     this.app.use(route.get('/scrape/:url(.*)', this.handleScrape.bind(this)));
 
