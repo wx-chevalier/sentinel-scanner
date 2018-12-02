@@ -23,5 +23,4 @@ RUN rm -rf ./db
 
 EXPOSE 8080
 
-ENTRYPOINT [ "npm" ]
-CMD ["run", "start"]
+CMD ["npm","start"]
