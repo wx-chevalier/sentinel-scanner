@@ -6,7 +6,7 @@ LABEL name="cendertron" \
     version="0.0.1" \
     description="Extract(vulnerable) apis from your Web 2.0 page"
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV NODE_ENV=development
 
 # Install Google Chrome

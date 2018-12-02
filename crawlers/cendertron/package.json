@@ -34,12 +34,9 @@
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
     "node-cache": "^4.2.0",
-    "performance-now": "^2.1.0",
-    "progress-bar-element": "^2.0.1",
     "puppeteer": "^1.7.0",
     "semver": "^5.5.1",
-    "url-parse": "^1.4.4",
-    "uuid": "^3.2.1"
+    "url-parse": "^1.4.4"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
