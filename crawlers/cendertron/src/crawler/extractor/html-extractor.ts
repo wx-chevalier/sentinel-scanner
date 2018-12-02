@@ -1,14 +1,12 @@
 /** 页面中潜在 API 提取器 */
 import * as puppeteer from 'puppeteer';
-import { hashUrl } from '../../shared/model';
-import { Request } from '../../shared/constants';
+import { Request } from '../types';
 import { transformUrlToRequest } from '../../shared/transformer';
 import { isValidLink } from '../../shared/validator';
 
 /** 从 HTML 中提取出有效信息 */
 export async function extractRequestsFromHTMLInSinglePage(
-  page: puppeteer.Page,
-  existedUrlsHash: Set<string>
+  page: puppeteer.Page
 ): Promise<Request[]> {
   const requests: Request[] = [];
 
@@ -46,24 +44,16 @@ export async function extractRequestsFromHTMLInSinglePage(
     });
   });
 
+  // 处理所有的 Href
   (aHrefs || [])
     .filter(aHref => isValidLink(aHref))
     .forEach((href: string) => {
-      const hrefHash = hashUrl({ url: href });
-
-      if (!existedUrlsHash.has(hrefHash)) {
-        existedUrlsHash.add(hrefHash);
-        requests.push(transformUrlToRequest(href));
-      }
+      requests.push(transformUrlToRequest(href));
     });
 
+  // 处理所有的 Form 表单
   formUrls.forEach((url: string) => {
-    const hrefHash = hashUrl({ url });
-
-    if (!existedUrlsHash.has(hrefHash)) {
-      existedUrlsHash.add(hrefHash);
-      requests.push({ ...transformUrlToRequest(url), resourceType: 'form' });
-    }
+    requests.push({ ...transformUrlToRequest(url), resourceType: 'form' });
   });
 
   return requests;

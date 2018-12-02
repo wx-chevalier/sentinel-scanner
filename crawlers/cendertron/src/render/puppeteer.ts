@@ -1,9 +1,11 @@
 /** Puppeteer 操作类 */
 import * as puppeteer from 'puppeteer';
 
-import { MOBILE_USERAGENT } from '../shared/constants';
-import { isMedia } from '../shared/validator';
+import { MOBILE_USERAGENT } from '../crawler/types';
 
+import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
+
+/** 初始化 Puppeteer */
 export async function initPuppeteer() {
   let browser;
 
@@ -27,39 +29,32 @@ export async function initPuppeteer() {
   return browser;
 }
 
-export type PageOptions = {
-  disableImg?: boolean;
-  isMobile?: boolean;
-};
-
 /** 初始化页面 */
 export async function initPage(
   browser: puppeteer.Browser,
-  options: PageOptions = {}
+  options: Partial<CrawlerOption> = defaultCrawlerOption
 ) {
   const page = await browser.newPage();
 
+  // 屏蔽所有弹窗
   page.on('dialog', dialog => {
-    dialog.accept();
+    dialog.dismiss();
   });
 
-  // 是否过滤所有图片
-  if (options.disableImg) {
-    page.evaluateOnNewDocument('customElements.forcePolyfill = true');
-    page.evaluateOnNewDocument('ShadyDOM = {force: true}');
-    page.evaluateOnNewDocument('ShadyCSS = {shimcssproperties: true}');
-
-    await page.setRequestInterception(true);
-
-    page.on('request', interceptedRequest => {
-      if (isMedia(interceptedRequest.url())) interceptedRequest.abort();
-      else interceptedRequest.continue();
-    });
-  }
+  page.evaluateOnNewDocument('customElements.forcePolyfill = true');
+  page.evaluateOnNewDocument('ShadyDOM = {force: true}');
+  page.evaluateOnNewDocument('ShadyCSS = {shimcssproperties: true}');
 
   if (options.isMobile) {
     page.setUserAgent(MOBILE_USERAGENT);
   }
+
+  // 设置页面关闭的超时时间
+  setTimeout(() => {
+    if (!page.isClosed()) {
+      page.close();
+    }
+  }, options.pageTimeout);
 
   return page;
 }

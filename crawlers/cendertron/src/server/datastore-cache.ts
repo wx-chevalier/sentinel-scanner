@@ -20,11 +20,8 @@
 
 'use strict';
 
-import { DatastoreKey } from '@google-cloud/datastore/entity';
 import * as Koa from 'koa';
-
-import Datastore = require('@google-cloud/datastore');
-import { RequestMap } from '../shared/constants';
+import * as NodeCache from 'node-cache';
 
 type ResponseCache = {
   saved: Date;
@@ -33,97 +30,27 @@ type ResponseCache = {
   payload: string;
 };
 
-type SpiderCache = {
-  saved: Date;
-  expires: Date;
-  requestMap: RequestMap;
-};
-
-type DatastoreObject = {
-  [Datastore.KEY]: DatastoreKey;
-};
+export const nodeCache = new NodeCache();
 
 export class DatastoreCache {
-  datastore: Datastore = new Datastore();
-
-  /** 缓存爬虫的执行结果 */
-  async cacheSpider(urlHash: string, requestMap: RequestMap) {
+  /** 缓存响应结果 */
+  async cacheResponse(key: string, headers: {}, payload: Buffer | object) {
     // 默认缓存 24 小时
     const cacheDurationMinutes = 60 * 24;
-    const key = this.datastore.key(['Page', urlHash]);
-
     const now = new Date();
     const entity = {
-      key,
-      data: [
-        { name: 'saved', value: now },
-        {
-          name: 'expires',
-          value: new Date(now.getTime() + cacheDurationMinutes * 60 * 1000)
-        },
-        {
-          name: 'requestMap',
-          value: JSON.stringify(requestMap),
-          excludeFromIndexes: true
-        }
-      ]
+      saved: now,
+      expires: new Date(now.getTime() + cacheDurationMinutes * 60 * 1000),
+      headers: JSON.stringify(headers),
+      payload: JSON.stringify(payload)
     };
-    await this.datastore.save(entity);
-  }
-
-  /** 查询爬虫的执行结果 */
-  async querySpiderCache(urlHash: string): Promise<SpiderCache | null> {
-    const key = this.datastore.key(['Page', urlHash]);
-    const results = await this.datastore.get(key);
-
-    if (results.length && results[0] !== undefined) {
-      return results[0] as SpiderCache;
-    }
-
-    return null;
+    await nodeCache.set(key, entity);
   }
 
   /** 清空全部的响应缓存 */
   async clearCache(type: 'Page' | 'Spider' = 'Page') {
-    const query = this.datastore.createQuery(type);
-    const data = await query.run();
-    const entities = data[0];
-
-    const entityKeys = entities.map(
-      entity => (entity as DatastoreObject)[this.datastore.KEY]
-    );
-
-    console.log(`Removing ${entities.length} items from the cache`);
-
-    await this.datastore.delete(entityKeys);
-  }
-
-  /** 缓存响应结果 */
-  async cacheResponse(key: DatastoreKey, headers: {}, payload: Buffer) {
-    // 默认缓存 24 小时
-    const cacheDurationMinutes = 60 * 24;
-    const now = new Date();
-    const entity = {
-      key: key,
-      data: [
-        { name: 'saved', value: now },
-        {
-          name: 'expires',
-          value: new Date(now.getTime() + cacheDurationMinutes * 60 * 1000)
-        },
-        {
-          name: 'headers',
-          value: JSON.stringify(headers),
-          excludeFromIndexes: true
-        },
-        {
-          name: 'payload',
-          value: JSON.stringify(payload),
-          excludeFromIndexes: true
-        }
-      ]
-    };
-    await this.datastore.save(entity);
+    const mykeys = nodeCache.keys();
+    nodeCache.del(mykeys.filter(key => key.indexOf(type) > -1));
   }
 
   /**
@@ -137,15 +64,16 @@ export class DatastoreCache {
       ctx: Koa.Context,
       next: () => Promise<unknown>
     ) {
-      // 这里是以完整的参数作为
-      const key = this.datastore.key(['Page', ctx.url]);
-      const results = await this.datastore.get(key);
+      // 这里是以完整的请求路径作为参数
+      const key = ['Page', ctx.url].join('#');
+      const content = nodeCache.get(key) as ResponseCache;
 
-      if (results.length && results[0] !== undefined) {
-        const content = results[0] as ResponseCache;
-
+      if (content !== undefined) {
         // 如果请求存在并且尚未过期，则直接返回结果
-        if (content.expires.getTime() >= new Date().getTime()) {
+        if (
+          content.expires.getTime() >= new Date().getTime() &&
+          ctx.url.indexOf('/scrape') < 0
+        ) {
           const headers = JSON.parse(content.headers);
           ctx.set(headers);
           ctx.set('x-cendertron-cached', content.saved.toUTCString());
@@ -171,6 +99,7 @@ export class DatastoreCache {
       await next();
 
       if (ctx.status === 200) {
+        // 缓存内容
         cacheContent(key, ctx.response.headers, ctx.body);
       }
     }.bind(this);

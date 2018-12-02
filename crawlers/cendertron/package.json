@@ -27,6 +27,7 @@
   "dependencies": {
     "@google-cloud/datastore": "^1.4.2",
     "@types/fs-extra": "^5.0.4",
+    "@types/node-cache": "^4.1.1",
     "@webcomponents/webcomponentsjs": "^1.2.6",
     "chrome-launcher": "^0.10.2",
     "chrome-remote-interface": "^0.26.1",
@@ -37,6 +38,7 @@
     "koa-route": "^3.2.0",
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
+    "node-cache": "^4.2.0",
     "performance-now": "^2.1.0",
     "progress-bar-element": "^2.0.1",
     "puppeteer": "^1.7.0",

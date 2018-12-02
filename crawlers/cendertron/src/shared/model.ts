@@ -1,9 +1,13 @@
 /** 通用模型类型 */
 import * as parse from 'url-parse';
 
-import { ParsedUrl } from './constants';
+import { ParsedUrl } from '../crawler/types';
 import { maybeUUID } from './validator';
 
+/**
+ * 获取某个 URL 的 HASH 标识
+ * @param param0
+ */
 export function hashUrl({
   url,
   parsedUrl

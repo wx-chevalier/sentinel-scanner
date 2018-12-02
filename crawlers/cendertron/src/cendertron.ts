@@ -1,4 +1,4 @@
-import { ScreenshotError } from './shared/constants';
+import { ScreenshotError } from './crawler/types';
 import * as fse from 'fs-extra';
 import * as Koa from 'koa';
 import * as bodyParser from 'koa-bodyparser';
@@ -7,15 +7,16 @@ import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
 import * as path from 'path';
 import * as url from 'url';
+import * as puppeteer from 'puppeteer';
+import { DatastoreCache } from './server/datastore-cache';
 
 import { Renderer } from './render/renderer';
 import { initPuppeteer } from './render/puppeteer';
+import Crawler from './crawler/Crawler';
+import defaultCrawlerOption from './crawler/CrawlerOption';
+import { CrawlerOption } from './crawler/CrawlerOption';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
-
-type Config = {
-  datastoreCache: boolean;
-};
 
 export type CendertronConfig = {
   parallelNum: 1;
@@ -27,8 +28,10 @@ export type CendertronConfig = {
  */
 export class Cendertron {
   app: Koa = new Koa();
-  config: Config = { datastoreCache: false };
+  config: CrawlerOption = defaultCrawlerOption;
   private renderer: Renderer | undefined;
+  private browser: puppeteer.Browser | undefined;
+  private datastoreCache = new DatastoreCache();
   private port = process.env.PORT || '3000';
 
   async initialize() {
@@ -38,6 +41,7 @@ export class Cendertron {
     }
 
     const browser = await initPuppeteer();
+    this.browser = browser;
 
     this.renderer = new Renderer(browser);
 
@@ -57,9 +61,8 @@ export class Cendertron {
     );
 
     // Optionally enable cache for rendering requests.
-    if (this.config.datastoreCache) {
-      const { DatastoreCache } = await import('./server/datastore-cache');
-      this.app.use(new DatastoreCache().middleware());
+    if (this.config.useCache) {
+      this.app.use(this.datastoreCache.middleware());
     }
 
     this.app.use(
@@ -78,17 +81,22 @@ export class Cendertron {
     );
 
     this.app.use(
-      route.get('/apis/:url(.*)', this.handleExtractApis.bind(this))
+      route.get('/scrape/clear', () => this.datastoreCache.clearCache())
     );
+    this.app.use(route.get('/scrape/:url(.*)', this.handleScrape.bind(this)));
 
     this.app.use(
-      route.get('/_ah/reset', async () => {
+      route.get('/_ah/reset', async ctx => {
         browser.removeAllListeners();
         browser.close();
 
         // 重启动浏览器
         const _browser = await initPuppeteer();
         this.renderer = new Renderer(_browser);
+
+        ctx.body = {
+          success: true
+        };
       })
     );
 
@@ -132,7 +140,7 @@ export class Cendertron {
   }
 
   /** 处理抛出 Apis 的请求 */
-  async handleExtractApis(ctx: Koa.Context, url: string) {
+  async handleScrape(ctx: Koa.Context, url: string) {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
@@ -142,12 +150,14 @@ export class Cendertron {
       return;
     }
 
+    const crawler = new Crawler(this.browser!, this.config);
+
     try {
       // 提取出请求
-      const apis = await this.renderer.extractApis(url);
+      const result = await crawler.start(url);
 
       ctx.set('x-renderer', 'cendertron');
-      ctx.body = apis;
+      ctx.body = result;
     } catch (e) {
       console.error(e);
       ctx.body = e;

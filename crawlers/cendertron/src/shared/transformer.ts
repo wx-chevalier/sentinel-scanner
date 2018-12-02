@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import * as parse from 'url-parse';
 
-import { Request, ParsedUrl } from './constants';
+import { Request, ParsedUrl } from '../crawler/types';
 import { hashUrl } from './model';
 
 export function transformInterceptedRequestToRequest(

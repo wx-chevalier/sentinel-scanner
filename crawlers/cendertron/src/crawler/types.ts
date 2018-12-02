@@ -1,3 +1,5 @@
+/** 类型定义 */
+
 export type SerializedResponse = {
   status: number;
   content: string;
@@ -32,11 +34,9 @@ export interface ParsedUrl {
 }
 
 export interface Request {
-  // 请求路径
+  // 请求的路径与标识信息
   url: string;
   parsedUrl: ParsedUrl;
-
-  // 该请求的 hash
   hash: string;
 
   // 资源类型
@@ -49,9 +49,16 @@ export interface Request {
   postData?: string | undefined;
 }
 
-export interface RequestMap {
+/** 提取出来的数据 */
+export interface ResultMap {
   pages?: Request[];
   apis?: Request[];
   scripts?: Request[];
   media?: Request[];
+}
+
+/** 爬虫的响应结果 */
+export interface CrawlerResult {
+  isFinished: boolean;
+  resultMap?: ResultMap;
 }

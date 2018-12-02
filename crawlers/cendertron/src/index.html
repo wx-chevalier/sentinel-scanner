@@ -304,7 +304,7 @@
 
     element.classList.add("loading");
     document.querySelector("progress-bar").removeAttribute("hidden");
-    window.location.href += `apis/${encodeUrl(url.value)}`;
+    window.location.href += `scrape/${encodeUrl(url.value)}`;
   }
 
   function onEmptyUrl() {

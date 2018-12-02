@@ -2,7 +2,7 @@
 
 > Cendertron = Crawler + cendertron
 
-Advanced hosted crawler(in Docker) for Web 2.0 pages, focusing on requests(page urls, apis, etc.), followed by pentest tools(Sqlmap, etc.).
+Advanced hosted crawler(in Docker) for Web 2.0 pages, focusing on scraping requests(page urls, apis, etc.), followed by pentest tools(Sqlmap, etc.).
 
 Cendertron can be used for extracting requests(page urls, apis, etc.) from your Web 2.0 page, view in [demo](http://47.99.50.115:5000/) page, or [result](http://47.99.50.115:5000/apis/http://testphp.vulnweb.com/AJAX/) page.
 
@@ -36,6 +36,12 @@ $ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name ce
 - http://demo.aisec.cn/demo/
 - https://jsonplaceholder.typicode.com/
 
-# Motivation & Credits
+# About
+
+## Roadmap
+
+- 将自定义参数的爬虫全部划归到 POST 中，POST 请求会进行 Body 存储与匹配
+
+## Motivation & Credits
 
 - [gremlins.js](https://github.com/marmelab/gremlins.js/): Monkey testing library for web apps and Node.js

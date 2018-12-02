@@ -1,44 +1,43 @@
-import * as parse from 'url-parse';
-
+import { ISpider } from './ISpider';
 import Crawler from '../Crawler';
-import { RequestMap, ParsedUrl } from '../../shared/constants';
+import { ResultMap, Request } from '../types';
+import { transformUrlToRequest } from '../../shared/transformer';
 
 /** 通用的蜘蛛接口 */
-export default class Spider {
+export default class Spider implements ISpider {
   // 蜘蛛所属的爬虫对象
   crawler: Crawler;
   pageUrl: string;
-  parsedUrl?: ParsedUrl;
+  pageRequest?: Request;
+
+  // 蜘蛛所处的深度
+  depth: number = 0;
 
   // 某个爬虫的结果集合
-  resultMap: RequestMap = {
+  resultMap: ResultMap = {
     apis: [],
     pages: [],
     scripts: [],
     media: []
   };
 
-  constructor(pageUrl: string, crawler: Crawler) {
+  constructor(pageUrl: string, crawler: Crawler, depth: number) {
     this.pageUrl = pageUrl;
     this.crawler = crawler;
+    this.depth = depth;
 
-    this.parsedUrl = parse(pageUrl, pageUrl, true);
+    this.pageRequest = transformUrlToRequest(pageUrl);
   }
 
   async init() {
-    console.error('Should Implement Run');
+    console.error('Should Implement init');
   }
 
   async run() {
-    console.error('Should Implement Run');
+    console.error('Should Implement run');
   }
 
-  // 将单个请求添加到结果集中
-  //   private addRequest(request: Request, type = 'apis') {
-  //     // 判断是否需要过滤图片
-  //     // 判断是否需要过滤非同域请求
-  //   }
-
-  // 将某个结果集合并到结果集中
-  //   private addRequestMap(requestMap: RequestMap) {}
+  async exception() {
+    console.error('Should Implement exception');
+  }
 }

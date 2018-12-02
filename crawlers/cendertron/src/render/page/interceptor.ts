@@ -1,22 +1,25 @@
 /** 执行页面中的请求截获操作 */
 import * as puppeteer from 'puppeteer';
 
-import { Request } from '../../shared/constants';
+import { Request } from '../../crawler/types';
 import { transformInterceptedRequestToRequest } from '../../shared/transformer';
 import { isMedia } from './../../shared/validator';
 
-export async function interceptUrlsInSinglePage(
+export async function interceptRequestsInSinglePage(
   browser: puppeteer.Browser,
   page: puppeteer.Page,
-  cb: (requests: Request[], openedUrls: string[]) => void
+  cb: (
+    requests: Request[],
+    openedUrls: string[],
+    listeners: ((...args: any[]) => void)[]
+  ) => void
 ) {
   const requests: Request[] = [];
   const openedUrls: string[] = [];
 
   await page.setRequestInterception(true);
 
-  // 监听所有当前打开的页面
-  browser.on('targetcreated', target => {
+  const targetCreatedListener = (target: puppeteer.Target) => {
     const opener = target.opener();
 
     if (!opener) {
@@ -34,13 +37,21 @@ export async function interceptUrlsInSinglePage(
         });
       }
     });
-  });
+  };
+
+  // 监听所有当前打开的页面
+  browser.on('targetcreated', targetCreatedListener);
 
   page.on('request', interceptedRequest => {
     // 屏蔽所有的图片和重定向
     if (isMedia(interceptedRequest.url())) {
       interceptedRequest.abort();
       return;
+    } else if (
+      interceptedRequest.isNavigationRequest() &&
+      interceptedRequest.redirectChain().length !== 0
+    ) {
+      interceptedRequest.abort();
     } else {
       interceptedRequest.continue();
     }
@@ -48,6 +59,6 @@ export async function interceptUrlsInSinglePage(
     requests.push(transformInterceptedRequestToRequest(interceptedRequest));
 
     // 每次调用时候都会回调函数
-    cb(requests, openedUrls);
+    cb(requests, openedUrls, [targetCreatedListener]);
   });
 }

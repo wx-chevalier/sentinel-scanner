@@ -5,7 +5,7 @@ export interface CrawlerOption {
   depth: number;
 
   // 单页面爬取出的最多的子节点数
-  maxChildren: number;
+  maxPageCount: number;
 
   // 总站点的总延时
   timeout: number;
@@ -23,7 +23,7 @@ export interface CrawlerOption {
   isMobile: boolean;
 
   // 是否开启缓存
-  isDatastoreCache: boolean;
+  useCache: boolean;
 
   // 页面 Cookie
   cookie: string;
@@ -32,16 +32,16 @@ export interface CrawlerOption {
   localStorage: object;
 }
 
-export const defaultCrawlerOption = {
-  depth: 1,
-  maxChildren: 20,
+export const defaultCrawlerOption: CrawlerOption = {
+  depth: 2,
+  maxPageCount: 50,
   timeout: 5 * 60 * 1000,
   pageTimeout: 30 * 1000,
 
   isSameOrigin: true,
   isIgnoreAssets: true,
   isMobile: false,
-  isDatastoreCache: false,
+  useCache: true,
 
   cookie: '',
   localStorage: {}

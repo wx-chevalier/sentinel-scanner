@@ -1,5 +1,6 @@
 /** 常见的校验 */
 
+// 资源文件的前缀
 const mediaSuffix = [
   // 图片
   'ico',

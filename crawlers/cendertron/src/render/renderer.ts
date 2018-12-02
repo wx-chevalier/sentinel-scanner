@@ -6,16 +6,9 @@ import {
   SerializedResponse,
   ScreenshotError,
   MOBILE_USERAGENT
-} from '../shared/constants';
+} from '../crawler/types';
 import { initPage } from './puppeteer';
 import { injectBaseHref, stripPage } from './page/scripts';
-import { evaluateGremlins } from './monky/gremlins';
-import { extractRequestsInSinglePage } from '../crawler//extractor/request-extractor';
-import { monkeyClick } from './monky/click-monkey';
-import { interceptUrlsInSinglePage } from './page/interceptor';
-import { RequestMap, Request } from '../shared/constants';
-import { transformUrlToRequest, parseUrl } from '../shared/transformer';
-import { extractRequestsFromHTMLInSinglePage } from '../crawler/extractor/html-extractor';
 
 /**
  * Wraps Puppeteer's interface to Headless Chrome to expose high level rendering
@@ -35,7 +28,7 @@ export class Renderer {
   ): Promise<SerializedResponse> {
     // 构建页面
     const page = await initPage(this.browser, {
-      disableImg: true,
+      isIgnoreAssets: true,
       isMobile
     });
 
@@ -149,74 +142,5 @@ export class Renderer {
     // Screenshot returns a buffer based on specified encoding above.
     const buffer = (await page.screenshot(screenshotOptions)) as Buffer;
     return buffer;
-  }
-
-  /** 执行 API 提取 */
-  async extractApis(requestUrl: string): Promise<RequestMap> {
-    const page = await initPage(this.browser);
-    const parsedRequestUrl = parseUrl(requestUrl);
-
-    let requests: Request[] = [];
-    let openedUrls: string[] = [];
-
-    // 设置关闭页面超时
-    setTimeout(() => {
-      if (!page.isClosed()) {
-        page.close();
-      }
-    }, 30 * 1000);
-
-    // 设置请求监听
-    await interceptUrlsInSinglePage(this.browser, page, (_r, _o) => {
-      requests = _r;
-      openedUrls = _o;
-    });
-
-    // 页面跳转
-    await page.goto(requestUrl, {
-      timeout: 20 * 1000,
-
-      // 等待到页面加载完毕
-      waitUntil: 'domcontentloaded'
-    });
-
-    // 禁止页面跳转
-    await page.evaluate(`
-      (Array.from(document.querySelectorAll("a"))).forEach(($ele)=>$ele.setAttribute("target","_blank"))
-    `);
-
-    // 页面加载完毕后插入 Monkey 脚本
-    await Promise.all([monkeyClick(page), evaluateGremlins(page)]);
-
-    await page.waitFor(5 * 1000);
-
-    const existedUrlsHash = new Set<string>();
-    existedUrlsHash.add(transformUrlToRequest(requestUrl).hash);
-
-    // 解析页面中生成的元素
-    const requestsFromHTML = (await extractRequestsFromHTMLInSinglePage(
-      page,
-      existedUrlsHash
-    )).filter(
-      r =>
-        r.parsedUrl.host === parsedRequestUrl.host &&
-        r.url.indexOf('.js') < 0 &&
-        r.url.indexOf('.css') < 0
-    );
-
-    // 等待 5 ~ 10s，返回
-    if (!page.isClosed()) {
-      page.close();
-    }
-
-    // 从请求中获取到所有的 API
-    const map = extractRequestsInSinglePage(
-      requestUrl,
-      existedUrlsHash,
-      requests,
-      openedUrls
-    );
-
-    return { ...map, apis: [...(map.apis || []), ...requestsFromHTML] };
   }
 }

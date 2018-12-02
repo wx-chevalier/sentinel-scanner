@@ -15,6 +15,8 @@
     "semicolon": [true, "always"],
     "trailing-comma": [true, "multiline"],
     "triple-equals": [true, "allow-null-check"],
+    "no-unused-expression": false,
+    "no-unused-variable": false,
     "typedef-whitespace": [
       true,
       {
