@@ -80,13 +80,6 @@ export class PageSpider extends Spider implements ISpider {
       this.page.close();
     }
 
-    // 清除创建的监听器
-    if (this.listeners) {
-      this.listeners.forEach(listener => {
-        this.crawler.browser.off('targetcreated', listener);
-      });
-    }
-
     this.crawler.next();
   }
 

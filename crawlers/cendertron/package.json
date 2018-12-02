@@ -14,7 +14,7 @@
     "build": "tsc",
     "prepack": "npm run build",
     "clean": "rm -rf ./src/**/*.js ./middleware/**/*.js",
-    "dev": "ts-node ./src/cendertron.ts",
+    "dev": "NODE_ENV=development ts-node ./src/cendertron.ts",
     "start": "NODE_ENV=production node build/cendertron.js",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "lint": "tslint --project . --format stylish",

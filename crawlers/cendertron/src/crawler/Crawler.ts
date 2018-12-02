@@ -63,6 +63,8 @@ export default class Crawler {
       isFinished: false
     });
 
+    console.log(`Start crawling ${entryUrl}`);
+
     return {
       isFinished: false
     };
@@ -71,7 +73,10 @@ export default class Crawler {
   // 某个 Spider 执行完毕，触发 Crawler 执行下一个请求
   async next() {
     // 如果全部执行完毕，则将结果回写到缓存中
-    if (this.spiderQueue.length === 0) {
+    if (
+      this.spiderQueue.length === 0 ||
+      Date.now() - this.startTime > this.crawlerOption.timeout
+    ) {
       crawlerCache.cacheCrawler(this.entryUrl, {
         isFinished: true,
         metrics: {

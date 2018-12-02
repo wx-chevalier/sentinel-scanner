@@ -9,20 +9,22 @@ import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
 export async function initPuppeteer() {
   let browser;
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'development') {
     browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser',
-      args: [
-        '--no-sandbox',
-        '--headless',
-        '--disable-gpu',
-        '--remote-debugging-port=9222'
-      ]
+      headless: false,
+      args: ['--no-sandbox']
     });
   } else {
     browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox']
+      executablePath: '/usr/bin/google-chrome',
+      args: [
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--headless',
+        '--no-sandbox',
+        '--remote-debugging-port=9222'
+      ]
     });
   }
 

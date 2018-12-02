@@ -35,6 +35,7 @@ export interface CrawlerOption {
 export const defaultCrawlerOption: CrawlerOption = {
   depth: 2,
   maxPageCount: 50,
+  // 默认超时为 5 分钟
   timeout: 5 * 60 * 1000,
   pageTimeout: 30 * 1000,
 

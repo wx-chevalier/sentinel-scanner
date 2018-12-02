@@ -23,7 +23,10 @@ const mediaSuffix = [
 
 // 判断是否为图片链接
 export const isMedia = (url: string) =>
-  mediaSuffix.reduce((prev, suffix) => prev || url.endsWith(suffix), false);
+  mediaSuffix.reduce(
+    (prev, suffix) => prev || url.indexOf(`.${suffix}`) > -1,
+    false
+  );
 
 // 判断是否为有效的 Href Link，即包含地址，不包含 JavaScript 点击等
 export const isValidLink = (href: string | null) =>

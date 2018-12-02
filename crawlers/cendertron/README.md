@@ -20,7 +20,7 @@ $ npm run dev
 
 ```sh
 # build image
-$ docker build -t cendertron . --no-cache=true
+$ docker build -t cendertron .
 
 # run as contaner
 $ docker run -it --rm -p 3000:3000 --name cendertron-instance cendertron
@@ -28,6 +28,9 @@ $ docker run -it --rm -p 3000:3000 --name cendertron-instance cendertron
 # run as container, fix with Jessie Frazelle seccomp profile for Chrome.
 $ wget https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/seccomp/chrome.json -O ~/chrome.json
 $ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name cendertron-instance cendertron
+
+# or
+$ docker run -it -p 3000:3000 -cap-add=SYS_ADMIN --name cendertron-instance cendertron
 ```
 
 ## Test Urls
@@ -41,6 +44,7 @@ $ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name ce
 ## Roadmap
 
 - 将自定义参数的爬虫全部划归到 POST 中，POST 请求会进行 Body 存储与匹配
+- 引入自定义的 BrowserEventEmitter，全局仅注册单个 Browser 监听器
 
 ## Motivation & Credits
 
