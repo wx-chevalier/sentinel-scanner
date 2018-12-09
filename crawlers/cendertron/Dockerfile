@@ -25,9 +25,18 @@ RUN apt-get update &&  apt-get install yarn
 COPY ./resolv.conf /etc/
 
 # Set Timezone
-RUN \
-    apt-get -y install tzdata && \
-    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+## for apt to be noninteractive
+ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN true
+
+## preesed tzdata, update package index, upgrade packages and install needed software
+RUN echo "tzdata tzdata/Areas select Europe" > /tmp/preseed.txt; \
+    echo "tzdata tzdata/Zones/Europe select Berlin" >> /tmp/preseed.txt; \
+    debconf-set-selections /tmp/preseed.txt && \
+    rm /etc/timezone && \
+    rm /etc/localtime && \
+    apt-get update && \
+    apt-get install -y tzdata
 
 # Copy source to specified user
 RUN rm -rf /usr/src/app
