@@ -11,8 +11,6 @@ ENV NODE_ENV=development
 
 USER root
 
-
-
 # Install Google Chrome
 RUN cd /tmp &&\
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
@@ -27,11 +25,13 @@ RUN apt-get update &&  apt-get install yarn
 COPY ./resolv.conf /etc/
 
 # Set Timezone
-RUN echo "Asia/Shanghai" > /etc/timezone && \
-    apt-get install -y tzdata && \
+ENV TZ 'Asia/Shanghai'
+RUN echo $TZ > /etc/timezone && \
+    apt-get update && apt-get install -y tzdata && \
     rm /etc/localtime && \
-    ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean
 
 # Copy source to specified user
 RUN rm -rf /usr/src/app
