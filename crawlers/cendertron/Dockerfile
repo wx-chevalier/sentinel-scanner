@@ -30,11 +30,11 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
 ## preesed tzdata, update package index, upgrade packages and install needed software
-RUN echo "tzdata tzdata/Areas select Europe" > /tmp/preseed.txt; \
-    echo "tzdata tzdata/Zones/Europe select Berlin" >> /tmp/preseed.txt; \
+RUN echo "tzdata tzdata/Areas select Asia" > /tmp/preseed.txt; \
+    echo "tzdata tzdata/Zones/Asia select Shanghai" >> /tmp/preseed.txt; \
     debconf-set-selections /tmp/preseed.txt && \
-    rm /etc/timezone && \
-    rm /etc/localtime && \
+    rm -rf /etc/timezone && \
+    rm -rf /etc/localtime && \
     apt-get update && \
     apt-get install -y tzdata
 
