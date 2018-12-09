@@ -58,5 +58,10 @@ export async function initPage(
     }
   }, options.pageTimeout);
 
+  // 设置容错
+  page.once('error', e => {
+    console.error('page-error>>>', e);
+  });
+
   return page;
 }

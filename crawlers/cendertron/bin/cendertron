@@ -3,6 +3,9 @@
 'use strict';
 
 process.title = 'cendertron';
+process.on('unhandledRejection', reason => {
+  console.error(reason);
+});
 
 const semver = require('semver');
 
