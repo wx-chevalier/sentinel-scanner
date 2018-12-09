@@ -41,6 +41,7 @@ RUN echo "tzdata tzdata/Areas select Asia" > /tmp/preseed.txt; \
 # Copy source to specified user
 RUN rm -rf /usr/src/app
 RUN mkdir -p /usr/src/app
+RUN mkdir -p /root/logs/cendertron
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
