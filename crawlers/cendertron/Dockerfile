@@ -11,6 +11,8 @@ ENV NODE_ENV=development
 
 USER root
 
+
+
 # Install Google Chrome
 RUN cd /tmp &&\
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
@@ -21,7 +23,15 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update &&  apt-get install yarn
 
+# Set DNS
 COPY ./resolv.conf /etc/
+
+# Set Timezone
+RUN echo "Asia/Shanghai" > /etc/timezone && \
+    apt-get install -y tzdata && \
+    rm /etc/localtime && \
+    ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 # Copy source to specified user
 RUN rm -rf /usr/src/app
