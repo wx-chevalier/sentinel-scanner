@@ -8,14 +8,13 @@ import { isMedia } from '../shared/validator';
 import { parseUrl } from '../shared/transformer';
 import { hashUrl } from '../shared/model';
 import { crawlerCache } from './CrawlerCache';
-import { initPuppeteer } from '../render/puppeteer';
 
 /** 爬虫定义 */
 export default class Crawler {
   entryUrl: string = '';
   parsedEntryUrl: ParsedUrl | null = null;
 
-  browser: puppeteer.Browser | null = null;
+  browser: puppeteer.Browser;
   crawlerOption: CrawlerOption;
 
   // 内部所有的蜘蛛列表
@@ -29,7 +28,11 @@ export default class Crawler {
   // 爬虫的执行结果
   private spidersRequestMap: { [key: string]: ResultMap } = {};
 
-  constructor(crawlerOption: CrawlerOption = defaultCrawlerOption) {
+  constructor(
+    browser: puppeteer.Browser,
+    crawlerOption: CrawlerOption = defaultCrawlerOption
+  ) {
+    this.browser = browser;
     this.crawlerOption = crawlerOption;
   }
 
@@ -43,8 +46,6 @@ export default class Crawler {
     if (crawlerCache.queryCrawler(entryUrl)) {
       return crawlerCache.queryCrawler(entryUrl);
     }
-
-    this.browser = await initPuppeteer();
 
     // 初始化首个爬虫
     const spider = new PageSpider(entryUrl, this, 1);
@@ -88,7 +89,6 @@ export default class Crawler {
         resultMap: this.spidersRequestMap
       });
 
-      this.destroy();
       return;
     }
 
@@ -99,7 +99,7 @@ export default class Crawler {
       return;
     }
 
-    // 从全局缓存中获取到蜘蛛的缓存结果，直接解析该结果
+    // Todo 从全局缓存中获取到蜘蛛的缓存结果，直接解析该结果
 
     // 将该结果添加到蜘蛛的执行结果
     if (!this.spidersRequestMap[spider.pageUrl]) {
@@ -122,15 +122,6 @@ export default class Crawler {
   // 聚合爬虫中的所有蜘蛛的结果
   async report() {
     return this.spidersRequestMap;
-  }
-
-  async destroy() {
-    if (!this.browser) {
-      return;
-    }
-
-    this.browser.removeAllListeners();
-    this.browser.close();
   }
 
   // 将单个请求添加到结果集中

@@ -141,5 +141,12 @@ export class PageSpider extends Spider implements ISpider {
         this.existedUrlsHash.add(r.hash);
       }
     });
+
+    // 清除本次注册的监听器
+    if (this.listeners) {
+      this.listeners.forEach(l => {
+        this.crawler.browser.removeListener('targetcreated', l);
+      });
+    }
   }
 }

@@ -30,7 +30,7 @@ $ wget https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/se
 $ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name cendertron-instance cendertron
 
 # or
-$ docker run -it -p 3000:3000 -cap-add=SYS_ADMIN --name cendertron-instance cendertron
+$ docker run -it -p 3000:3000 --cap-add=SYS_ADMIN --name cendertron-instance cendertron
 
 # use network and mapping logs
 $ docker run -it -p 5000:3000 -cap-add=SYS_ADMIN --name cendertron-instance --network cncs-network cendertron

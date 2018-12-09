@@ -41,6 +41,7 @@ export class Cendertron {
     }
 
     const browser = await initPuppeteer();
+    browser.setMaxListeners(1024);
     this.browser = browser;
 
     this.renderer = new Renderer(this.browser);
@@ -156,7 +157,7 @@ export class Cendertron {
       return;
     }
 
-    const crawler = new Crawler(this.config);
+    const crawler = new Crawler(this.browser!, this.config);
 
     try {
       // 提取出请求
