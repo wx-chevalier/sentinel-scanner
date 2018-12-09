@@ -32,7 +32,7 @@ export class Cendertron {
   private renderer: Renderer | undefined;
   private browser: puppeteer.Browser | undefined;
   private datastoreCache = new DatastoreCache();
-  private port = process.env.PORT || '3033';
+  private port = process.env.PORT || '3000';
 
   async initialize() {
     // Load config.json if it exists.
@@ -43,7 +43,7 @@ export class Cendertron {
     const browser = await initPuppeteer();
     this.browser = browser;
 
-    this.renderer = new Renderer(browser);
+    this.renderer = new Renderer(this.browser);
 
     this.app.use(koaCompress());
 
@@ -156,7 +156,7 @@ export class Cendertron {
       return;
     }
 
-    const crawler = new Crawler(this.browser!, this.config);
+    const crawler = new Crawler(this.config);
 
     try {
       // 提取出请求

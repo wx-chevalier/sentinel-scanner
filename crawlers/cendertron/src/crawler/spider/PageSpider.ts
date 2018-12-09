@@ -28,6 +28,11 @@ export class PageSpider extends Spider implements ISpider {
   existedUrlsHash = new Set<string>();
 
   async init() {
+    if (!this.crawler.browser) {
+      console.error('Crawler context is not readdy!');
+      return;
+    }
+
     this.page = await initPage(this.crawler.browser);
 
     // 设置请求监听
