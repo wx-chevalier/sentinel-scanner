@@ -61,14 +61,14 @@ export class PageSpider extends Spider implements ISpider {
 
       // 禁止页面跳转
       await this.page.evaluate(`
-    (Array.from(document.querySelectorAll("a"))).forEach(($ele)=>$ele.setAttribute("target","_blank"))
-  `);
+        (Array.from(document.querySelectorAll("a"))).forEach(($ele)=>$ele.setAttribute("target","_blank"))
+      `);
 
       await this.page.evaluate(`
-    window.onbeforeunload = function() { 
-      return "XXX";
-    }
-`);
+          window.onbeforeunload = function() { 
+            return "XXX";
+          }
+      `);
 
       await this._monkeyDance();
 

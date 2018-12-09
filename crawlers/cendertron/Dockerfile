@@ -32,9 +32,10 @@ COPY . /usr/src/app
 # Compile and rm source code
 RUN yarn install --registry=https://registry.npm.taobao.org 
 RUN yarn run build
+RUN yarn run prune
 RUN rm -rf ./**/*.ts
 
-EXPOSE 3000
+EXPOSE 3033
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD [ "npm", "start" ]

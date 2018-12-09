@@ -23,14 +23,17 @@ $ npm run dev
 $ docker build -t cendertron .
 
 # run as contaner
-$ docker run -it --rm -p 3000:3000 --name cendertron-instance cendertron
+$ docker run -it --rm -p 3033:3033 --name cendertron-instance cendertron
 
 # run as container, fix with Jessie Frazelle seccomp profile for Chrome.
 $ wget https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/seccomp/chrome.json -O ~/chrome.json
-$ docker run -it -p 3000:3000 --security-opt seccomp=$HOME/chrome.json --name cendertron-instance cendertron
+$ docker run -it -p 3033:3033 --security-opt seccomp=$HOME/chrome.json --name cendertron-instance cendertron
 
 # or
-$ docker run -it -p 3000:3000 -cap-add=SYS_ADMIN --name cendertron-instance cendertron
+$ docker run -it -p 3033:3033 -cap-add=SYS_ADMIN --name cendertron-instance cendertron
+
+# use network and mapping logs
+
 ```
 
 ## Test Urls

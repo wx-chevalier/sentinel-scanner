@@ -32,7 +32,7 @@ export class Cendertron {
   private renderer: Renderer | undefined;
   private browser: puppeteer.Browser | undefined;
   private datastoreCache = new DatastoreCache();
-  private port = process.env.PORT || '3000';
+  private port = process.env.PORT || '3033';
 
   async initialize() {
     // Load config.json if it exists.

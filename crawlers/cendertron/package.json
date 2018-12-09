@@ -3,7 +3,7 @@
   "version": "2.0.1",
   "description": "Renders webpages using headless Chrome for usage by bots",
   "license": "Apache-2.0",
-  "repository": "https://github.com/GoogleChrome/cendertron",
+  "repository": "https://github.com/wxyyxc1992/Chaos-Scanner/blob/master/crawlers/cendertron/README.md",
   "engines": {
     "node": ">=7"
   },
@@ -14,6 +14,7 @@
     "build": "tsc",
     "prepack": "npm run build",
     "clean": "rm -rf ./src/**/*.js ./middleware/**/*.js",
+    "prune": "node-prune",
     "dev": "NODE_ENV=development ts-node ./src/cendertron.ts",
     "start": "NODE_ENV=production node build/cendertron.js",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
@@ -50,8 +51,7 @@
     "@types/puppeteer": "^1.6.0",
     "@types/supertest": "^2.0.4",
     "@types/url-parse": "^1.4.1",
-    "ava": "1.0.0-beta.6",
-    "supertest": "^3.0.0",
+    "node-prune": "^1.0.2",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1"
   }
