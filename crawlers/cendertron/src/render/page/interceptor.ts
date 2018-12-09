@@ -1,7 +1,7 @@
 /** 执行页面中的请求截获操作 */
 import * as puppeteer from 'puppeteer';
 
-import { Request } from '../../crawler/types';
+import { SpiderResult } from '../../crawler/types';
 import { transformInterceptedRequestToRequest } from '../../shared/transformer';
 import { isMedia } from './../../shared/validator';
 
@@ -9,12 +9,12 @@ export async function interceptRequestsInSinglePage(
   browser: puppeteer.Browser,
   page: puppeteer.Page,
   cb: (
-    requests: Request[],
+    requests: SpiderResult[],
     openedUrls: string[],
     listeners: ((...args: any[]) => void)[]
   ) => void
 ) {
-  const requests: Request[] = [];
+  const requests: SpiderResult[] = [];
   const openedUrls: string[] = [];
 
   await page.setRequestInterception(true);

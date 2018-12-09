@@ -1,14 +1,14 @@
 /** 页面中潜在 API 提取器 */
 import * as puppeteer from 'puppeteer';
-import { Request } from '../types';
+import { SpiderResult } from '../types';
 import { transformUrlToRequest } from '../../shared/transformer';
 import { isValidLink } from '../../shared/validator';
 
 /** 从 HTML 中提取出有效信息 */
 export async function extractRequestsFromHTMLInSinglePage(
   page: puppeteer.Page
-): Promise<Request[]> {
-  const requests: Request[] = [];
+): Promise<SpiderResult[]> {
+  const requests: SpiderResult[] = [];
 
   // 提取所有的 a 元素
   const aHrefs: string[] = await page.evaluate(() =>
@@ -48,7 +48,10 @@ export async function extractRequestsFromHTMLInSinglePage(
   (aHrefs || [])
     .filter(aHref => isValidLink(aHref))
     .forEach((href: string) => {
-      requests.push(transformUrlToRequest(href));
+      requests.push({
+        ...transformUrlToRequest(href),
+        resourceType: 'document'
+      });
     });
 
   // 处理所有的 Form 表单

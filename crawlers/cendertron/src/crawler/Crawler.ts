@@ -3,7 +3,7 @@ import * as puppeteer from 'puppeteer';
 import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
 import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
-import { ResultMap, CrawlerResult, Request, ParsedUrl } from './types';
+import { CrawlerResult, SpiderResult, ParsedUrl } from './types';
 import { isMedia } from '../shared/validator';
 import { parseUrl } from '../shared/transformer';
 import { hashUrl } from '../shared/model';
@@ -26,7 +26,7 @@ export default class Crawler {
   private startTime = Date.now();
 
   // 爬虫的执行结果
-  private spidersRequestMap: { [key: string]: ResultMap } = {};
+  private spidersRequestMap: { [key: string]: SpiderResult[] } = {};
 
   constructor(
     browser: puppeteer.Browser,
@@ -50,9 +50,8 @@ export default class Crawler {
     // 初始化首个爬虫
     const spider = new PageSpider(entryUrl, this, 1);
 
-    this.spiderQueue = [];
-    this.spiders = [];
-    this.spiderQueue.push(spider);
+    this.spiderQueue = [spider];
+    this.spiders = [spider];
 
     this.startTime = Date.now();
 
@@ -86,7 +85,7 @@ export default class Crawler {
           spiderCount: this.spiders.length,
           depth: this.crawlerOption.depth
         },
-        resultMap: this.spidersRequestMap
+        spiderMap: this.spidersRequestMap
       });
 
       return;
@@ -103,7 +102,7 @@ export default class Crawler {
 
     // 将该结果添加到蜘蛛的执行结果
     if (!this.spidersRequestMap[spider.pageUrl]) {
-      this.spidersRequestMap[spider.pageUrl] = {};
+      this.spidersRequestMap[spider.pageUrl] = [];
     }
 
     // 在蜘蛛执行层容错
@@ -125,11 +124,7 @@ export default class Crawler {
   }
 
   // 将单个请求添加到结果集中
-  public _SPIDER_addRequest(
-    spider: Spider,
-    request: Request,
-    type: keyof ResultMap = 'apis'
-  ) {
+  public _SPIDER_addRequest(spider: Spider, request: SpiderResult) {
     // 过滤 JS/CSS 等代码资源
     if (request.url.indexOf('.js') > -1 || request.url.indexOf('.css') > -1) {
       return;
@@ -151,14 +146,10 @@ export default class Crawler {
 
     // 将该结果添加到蜘蛛的执行结果
     if (!this.spidersRequestMap[spider.pageUrl]) {
-      this.spidersRequestMap[spider.pageUrl] = {};
+      this.spidersRequestMap[spider.pageUrl] = [];
     }
 
-    if (!this.spidersRequestMap[spider.pageUrl][type]) {
-      this.spidersRequestMap[spider.pageUrl][type] = [];
-    }
-
-    this.spidersRequestMap[spider.pageUrl][type]!.push(request);
+    this.spidersRequestMap[spider.pageUrl]!.push(request);
 
     // 判断是否需要创建新的蜘蛛
     if (

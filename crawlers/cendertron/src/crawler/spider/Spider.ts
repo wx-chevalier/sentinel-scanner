@@ -1,6 +1,7 @@
+import { SpiderResult } from './../types';
 import { ISpider } from './ISpider';
 import Crawler from '../Crawler';
-import { ResultMap, Request } from '../types';
+
 import { transformUrlToRequest } from '../../shared/transformer';
 
 /** 通用的蜘蛛接口 */
@@ -8,18 +9,13 @@ export default class Spider implements ISpider {
   // 蜘蛛所属的爬虫对象
   crawler: Crawler;
   pageUrl: string;
-  pageRequest?: Request;
+  pageRequest?: SpiderResult;
 
   // 蜘蛛所处的深度
   depth: number = 0;
 
   // 某个爬虫的结果集合
-  resultMap: ResultMap = {
-    apis: [],
-    pages: [],
-    scripts: [],
-    media: []
-  };
+  result = [];
 
   constructor(pageUrl: string, crawler: Crawler, depth: number) {
     this.pageUrl = pageUrl;

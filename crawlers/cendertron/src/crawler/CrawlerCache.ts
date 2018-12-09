@@ -1,5 +1,5 @@
 import { nodeCache } from '../server/datastore-cache';
-import { ResultMap, CrawlerResult } from './types';
+import { CrawlerResult, SpiderResult } from './types';
 
 type SpiderCache = {
   saved: Date;
@@ -12,7 +12,7 @@ const crawlerKey = (url: string) => ['Crawler', url].join('#');
 
 export class CrawlerCache {
   /** 缓存蜘蛛的执行结果 */
-  async cacheSpider(urlHash: string, requestMap: ResultMap) {
+  async cacheSpider(urlHash: string, requestMap: SpiderResult[]) {
     // 默认缓存 24 小时
     const cacheDurationMinutes = 60 * 24;
     const key = spiderKey(urlHash);
@@ -28,7 +28,7 @@ export class CrawlerCache {
   }
 
   /** 查询蜘蛛的执行结果 */
-  async querySpiderCache(urlHash: string): Promise<ResultMap | null> {
+  async querySpiderCache(urlHash: string): Promise<SpiderResult[] | null> {
     const key = spiderKey(urlHash);
     const result = nodeCache.get(key) as SpiderCache;
 

@@ -33,7 +33,7 @@ export interface ParsedUrl {
   query: object;
 }
 
-export interface Request {
+export interface SpiderResult {
   // 请求的路径与标识信息
   url: string;
   parsedUrl: ParsedUrl;
@@ -47,14 +47,6 @@ export interface Request {
 
   // 请求体
   postData?: string | undefined;
-}
-
-/** 提取出来的数据 */
-export interface ResultMap {
-  pages?: Request[];
-  apis?: Request[];
-  scripts?: Request[];
-  media?: Request[];
 }
 
 /** 爬虫的响应结果 */
@@ -76,5 +68,5 @@ export interface CrawlerResult {
   };
 
   // 结果映射
-  resultMap?: ResultMap;
+  spiderMap?: { [key: string]: SpiderResult[] };
 }

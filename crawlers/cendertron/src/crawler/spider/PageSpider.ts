@@ -3,7 +3,7 @@ import * as puppeteer from 'puppeteer';
 
 import { ISpider } from './ISpider';
 import Spider from './Spider';
-import { Request } from '../types';
+import { SpiderResult } from '../types';
 import { initPage } from '../../render/puppeteer';
 import { interceptRequestsInSinglePage } from '../../render/page/interceptor';
 import { monkeyClick } from '../../render/monky/click-monkey';
@@ -16,7 +16,7 @@ export class PageSpider extends Spider implements ISpider {
   page?: puppeteer.Page;
 
   // 捕获的请求
-  requests: Request[] = [];
+  requests: SpiderResult[] = [];
 
   // 打开的新界面
   openedUrls: string[] = [];
@@ -107,37 +107,29 @@ export class PageSpider extends Spider implements ISpider {
     // 将所有打开的页面加入
     this.openedUrls.forEach(url => {
       const r = transformUrlToRequest(url);
+      r.resourceType = 'document';
+
       if (!this.existedUrlsHash.has(r.hash)) {
-        this.crawler._SPIDER_addRequest(this, r, 'apis');
+        this.crawler._SPIDER_addRequest(this, r);
         this.existedUrlsHash.add(r.hash);
       }
     });
 
     // 将所有请求加入
     for (const r of this.requests) {
-      const { resourceType } = r;
-
       if (!this.existedUrlsHash.has(r.hash)) {
         this.existedUrlsHash.add(r.hash);
       } else {
         continue;
       }
 
-      if (resourceType === 'document') {
-        this.crawler._SPIDER_addRequest(this, r, 'pages');
-      } else {
-        this.crawler._SPIDER_addRequest(this, r, 'apis');
-      }
+      this.crawler._SPIDER_addRequest(this, r);
     }
 
     // 解析页面中生成的元素，最后解析
     (await extractRequestsFromHTMLInSinglePage(this.page)).forEach(r => {
       if (!this.existedUrlsHash.has(r.hash)) {
-        this.crawler._SPIDER_addRequest(
-          this,
-          r,
-          r.resourceType ? 'apis' : 'pages'
-        );
+        this.crawler._SPIDER_addRequest(this, r);
         this.existedUrlsHash.add(r.hash);
       }
     });
