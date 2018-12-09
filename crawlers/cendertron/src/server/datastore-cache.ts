@@ -22,6 +22,7 @@
 
 import * as Koa from 'koa';
 import * as NodeCache from 'node-cache';
+import { logger } from '../crawler/supervisor/logger';
 
 type ResponseCache = {
   saved: Date;
@@ -89,7 +90,7 @@ export class DatastoreCache {
             ctx.body = payload;
             return;
           } catch (error) {
-            console.log(
+            logger.error(
               'Erroring parsing cache contents, falling back to normal render'
             );
           }

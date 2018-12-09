@@ -37,7 +37,8 @@
     "node-cache": "^4.2.0",
     "puppeteer": "^1.7.0",
     "semver": "^5.5.1",
-    "url-parse": "^1.4.4"
+    "url-parse": "^1.4.4",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
@@ -51,6 +52,7 @@
     "@types/puppeteer": "^1.6.0",
     "@types/supertest": "^2.0.4",
     "@types/url-parse": "^1.4.1",
+    "@types/winston": "^2.4.4",
     "node-prune": "^1.0.2",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1"

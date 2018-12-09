@@ -3,6 +3,7 @@ import { ISpider } from './ISpider';
 import Crawler from '../Crawler';
 
 import { transformUrlToRequest } from '../../shared/transformer';
+import { logger } from '../supervisor/logger';
 
 /** 通用的蜘蛛接口 */
 export default class Spider implements ISpider {
@@ -26,14 +27,14 @@ export default class Spider implements ISpider {
   }
 
   async init() {
-    console.error('Should Implement init');
+    logger.error('Should Implement init');
   }
 
   async run() {
-    console.error('Should Implement run');
+    logger.error('Should Implement run');
   }
 
   async exception() {
-    console.error('Should Implement exception');
+    logger.error('Should Implement exception');
   }
 }

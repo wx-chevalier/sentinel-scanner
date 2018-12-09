@@ -1,3 +1,4 @@
+import { logger } from './supervisor/logger';
 import * as puppeteer from 'puppeteer';
 
 import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
@@ -62,7 +63,7 @@ export default class Crawler {
       isFinished: false
     });
 
-    console.log(`${new Date()} -- Start crawling ${entryUrl}`);
+    logger.info(`${new Date()} -- Start crawling ${entryUrl}`);
 
     return {
       isFinished: false
@@ -76,7 +77,7 @@ export default class Crawler {
       this.spiderQueue.length === 0 ||
       Date.now() - this.startTime > this.crawlerOption.timeout
     ) {
-      console.log(`${new Date()} -- Stop crawling ${this.entryUrl}`);
+      logger.info(`${new Date()} -- Stop crawling ${this.entryUrl}`);
 
       crawlerCache.cacheCrawler(this.entryUrl, {
         isFinished: true,
@@ -111,7 +112,7 @@ export default class Crawler {
       await spider.init();
       spider.run();
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
   }
 

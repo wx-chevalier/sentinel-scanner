@@ -9,6 +9,7 @@ import {
 } from '../crawler/types';
 import { initPage } from './puppeteer';
 import { injectBaseHref, stripPage } from './page/scripts';
+import { logger } from '../crawler/supervisor/logger';
 
 /**
  * Wraps Puppeteer's interface to Headless Chrome to expose high level rendering
@@ -49,11 +50,11 @@ export class Renderer {
         waitUntil: 'networkidle0'
       });
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
 
     if (!response) {
-      console.error('response does not exist');
+      logger.error('response does not exist');
       // This should only occur when the page is about:blank. See
       return { status: 400, content: '' };
     }
@@ -122,7 +123,7 @@ export class Renderer {
         waitUntil: 'networkidle0'
       });
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
 
     if (!response) {

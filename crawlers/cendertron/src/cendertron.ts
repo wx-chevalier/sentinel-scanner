@@ -15,6 +15,7 @@ import { initPuppeteer } from './render/puppeteer';
 import Crawler from './crawler/Crawler';
 import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
+import { logger } from './crawler/supervisor/logger';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -108,7 +109,7 @@ export class Cendertron {
     );
 
     return this.app.listen(this.port, () => {
-      console.log(`Listening on port ${this.port}`);
+      logger.info(`Listening on port ${this.port}`);
     });
   }
 
@@ -166,7 +167,7 @@ export class Cendertron {
       ctx.set('x-renderer', 'cendertron');
       ctx.body = result;
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       ctx.body = e;
     }
   }
@@ -211,8 +212,8 @@ export class Cendertron {
 }
 
 async function logUncaughtError(error: Error) {
-  console.error('Uncaught exception');
-  console.error(error);
+  logger.error('Uncaught exception');
+  logger.error(error);
   process.exit(1);
 }
 

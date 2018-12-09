@@ -11,6 +11,7 @@ import { evaluateGremlins } from '../../render/monky/gremlins';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
 
 import { transformUrlToRequest } from '../../shared/transformer';
+import { logger } from '../supervisor/logger';
 
 export class PageSpider extends Spider implements ISpider {
   page?: puppeteer.Page;
@@ -29,7 +30,7 @@ export class PageSpider extends Spider implements ISpider {
 
   async init() {
     if (!this.crawler.browser) {
-      console.error('Crawler context is not readdy!');
+      logger.error('Crawler context is not readdy!');
       return;
     }
 

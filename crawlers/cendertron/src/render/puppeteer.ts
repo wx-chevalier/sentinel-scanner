@@ -4,6 +4,7 @@ import * as puppeteer from 'puppeteer';
 import { MOBILE_USERAGENT } from '../crawler/types';
 
 import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
+import { logger } from '../crawler/supervisor/logger';
 
 /** 初始化 Puppeteer */
 export async function initPuppeteer() {
@@ -60,7 +61,7 @@ export async function initPage(
 
   // 设置容错
   page.once('error', e => {
-    console.error('page-error>>>', e);
+    logger.error('page-error>>>', e);
   });
 
   return page;
