@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as winston from 'winston';
 
-const rootDir = path.join('~', 'logs', 'cendertron');
+const rootDir = path.join('/root', 'logs', 'cendertron');
 
 export const logger = winston.createLogger({
   level: 'info',
