@@ -212,9 +212,7 @@ export class Cendertron {
 }
 
 async function logUncaughtError(error: Error) {
-  logger.error('Uncaught exception');
-  logger.error(error);
-  process.exit(1);
+  logger.error('Uncaught exception', error.message, error.stack);
 }
 
 // Start cendertron if not running inside tests.

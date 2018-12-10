@@ -112,7 +112,7 @@ export default class Crawler {
       await spider.init();
       spider.run();
     } catch (e) {
-      logger.error(e);
+      logger.error('crawler-error>>>spider execution>>>', e.message);
     }
   }
 

@@ -39,9 +39,10 @@ RUN echo "tzdata tzdata/Areas select Asia" > /tmp/preseed.txt; \
     apt-get install -y tzdata
 
 # Copy source to specified user
-RUN rm -rf /usr/src/app
-RUN mkdir -p /usr/src/app
-RUN mkdir -p /root/logs/cendertron
+RUN rm -rf /usr/src/app \
+    && mkdir -p /usr/src/app \
+    && mkdir -p /usr/src/app/logs
+
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 

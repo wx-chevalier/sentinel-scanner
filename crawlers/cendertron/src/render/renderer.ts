@@ -50,7 +50,7 @@ export class Renderer {
         waitUntil: 'networkidle0'
       });
     } catch (e) {
-      logger.error(e);
+      logger.error('render-error>>>', e.message);
     }
 
     if (!response) {
