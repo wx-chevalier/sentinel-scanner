@@ -3,6 +3,7 @@
 // 资源文件的前缀
 const mediaSuffix = [
   // 图片
+  'bmp',
   'ico',
   'jpeg',
   'jpg',

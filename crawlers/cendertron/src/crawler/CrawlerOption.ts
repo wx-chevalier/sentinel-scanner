@@ -34,7 +34,7 @@ export interface CrawlerOption {
 
 export const defaultCrawlerOption: CrawlerOption = {
   // 爬取深度
-  depth: 2,
+  depth: 4,
 
   // 单爬虫最多爬取页面数
   maxPageCount: 50,
