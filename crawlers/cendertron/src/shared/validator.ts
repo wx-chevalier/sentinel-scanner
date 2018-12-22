@@ -15,6 +15,7 @@ const mediaSuffix = [
   // 字体
   'font',
   'woff',
+  'ttf',
 
   // 音视频
   'mp3',

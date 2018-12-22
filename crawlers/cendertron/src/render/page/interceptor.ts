@@ -19,6 +19,7 @@ export async function interceptRequestsInSinglePage(
 
   await page.setRequestInterception(true);
 
+  // 设置目标监听
   const targetCreatedListener = (target: puppeteer.Target) => {
     const opener = target.opener();
 
@@ -43,7 +44,7 @@ export async function interceptRequestsInSinglePage(
   browser.on('targetcreated', targetCreatedListener);
 
   page.on('request', interceptedRequest => {
-    // 屏蔽所有的图片和重定向
+    // 屏蔽所有的图片
     if (isMedia(interceptedRequest.url())) {
       interceptedRequest.abort();
       return;

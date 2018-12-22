@@ -48,5 +48,3 @@ if (process.env.NODE_ENV !== 'production') {
     })
   );
 }
-
-logger.error('aa');

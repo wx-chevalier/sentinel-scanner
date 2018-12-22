@@ -14,7 +14,10 @@ import { transformUrlToRequest } from '../../shared/transformer';
 import { logger } from '../supervisor/logger';
 
 export class PageSpider extends Spider implements ISpider {
+  // 目标页面
   page?: puppeteer.Page;
+
+  // 参数设置
 
   // 捕获的请求
   requests: SpiderResult[] = [];
@@ -28,6 +31,7 @@ export class PageSpider extends Spider implements ISpider {
   // 蜘蛛内页面去重
   existedUrlsHash = new Set<string>();
 
+  /** 初始化蜘蛛 */
   async init() {
     if (!this.crawler.browser) {
       logger.error('Crawler context is not readdy!');
@@ -58,37 +62,52 @@ export class PageSpider extends Spider implements ISpider {
 
     try {
       // 页面跳转
-      await this.page!.goto(this.pageUrl, {
-        timeout: 20 * 1000,
+      const resp = await this.page!.goto(this.pageUrl, {
+        timeout: this.crawler.crawlerOption.pageTimeout,
 
         // 等待到页面加载完毕
         waitUntil: 'domcontentloaded'
       });
+
+      // 如果是 404 界面，则直接返回
+      if (resp && resp.status() === 404) {
+        this._finish();
+
+        return;
+      }
 
       // 禁止页面跳转
       await this.page.evaluate(`
         (Array.from(document.querySelectorAll("a"))).forEach(($ele)=>$ele.setAttribute("target","_blank"))
       `);
 
-      await this.page.evaluate(`
+      // 判断是否允许跳转
+      if (!this.spiderOption.allowRedirect) {
+        // 劫持所有的页内跳转事件
+        await this.page.evaluate(`
           window.onbeforeunload = function() { 
             return "XXX";
           }
       `);
+      }
 
       await this._monkeyDance();
-
-      await this._parse();
-    } catch (_) {}
-
-    // 确保页面关闭
-    if (!this.page.isClosed()) {
-      this.page.close();
+    } catch (e) {
+      if (e.message.indexOf('navigation') > -1) {
+        // 如果是因为重新导航导致的，则将导航后界面加入到下一次处理中
+        this.openedUrls.push(this.page.url());
+      } else {
+        logger.error(`spider-error>>>${e.message}`);
+      }
     }
 
-    this.crawler.next();
+    // 在外部执行解析
+    await this._parse();
+
+    this._finish();
   }
 
+  /** 执行 Monkey 操作 */
   public async _monkeyDance() {
     if (!this.page) {
       throw new Error('Please init this spider!');
@@ -100,9 +119,17 @@ export class PageSpider extends Spider implements ISpider {
     await this.page.waitFor(5 * 1000);
   }
 
+  /** 解析执行结果 */
   public async _parse() {
     if (!this.page) {
       throw new Error('Please init this spider!');
+    }
+
+    // 判断 URL 路径是否发生变化
+    const currentUrl = this.page.url();
+
+    if (currentUrl !== this.pageUrl) {
+      this.pageUrl = currentUrl;
     }
 
     // 将所有打开的页面加入
@@ -141,5 +168,19 @@ export class PageSpider extends Spider implements ISpider {
         this.crawler.browser.removeListener('targetcreated', l);
       });
     }
+  }
+
+  /** 执行结束时候操作 */
+  private _finish() {
+    if (!this.page) {
+      return;
+    }
+
+    // 确保页面关闭
+    if (!this.page.isClosed()) {
+      this.page.close();
+    }
+
+    this.crawler.next();
   }
 }

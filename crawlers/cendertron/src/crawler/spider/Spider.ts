@@ -1,5 +1,5 @@
 import { SpiderResult } from './../types';
-import { ISpider } from './ISpider';
+import { ISpider, SpiderOption, defaultSpiderOption } from './ISpider';
 import Crawler from '../Crawler';
 
 import { transformUrlToRequest } from '../../shared/transformer';
@@ -12,16 +12,20 @@ export default class Spider implements ISpider {
   pageUrl: string;
   pageRequest?: SpiderResult;
 
-  // 蜘蛛所处的深度
-  depth: number = 0;
+  // 蜘蛛配置
+  spiderOption: SpiderOption = defaultSpiderOption;
 
   // 某个爬虫的结果集合
   result = [];
 
-  constructor(pageUrl: string, crawler: Crawler, depth: number) {
+  constructor(
+    pageUrl: string,
+    crawler: Crawler,
+    spiderOption: Partial<SpiderOption>
+  ) {
     this.pageUrl = pageUrl;
     this.crawler = crawler;
-    this.depth = depth;
+    this.spiderOption = { ...defaultSpiderOption, ...spiderOption };
 
     this.pageRequest = transformUrlToRequest(pageUrl);
   }

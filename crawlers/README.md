@@ -26,6 +26,10 @@
 
 ## 页面抓取
 
+- 页面行为
+
+  - 如何兼容 window.location.href 跳转，无法 Hijack，针对入口界面执行双次渲染
+
 - 基础渲染：
 
   - 使用 HTTP Client 抓取 Web 1.0 页面，可以动态切换不同的 [User Agent](https://github.com/lorien/user_agent)

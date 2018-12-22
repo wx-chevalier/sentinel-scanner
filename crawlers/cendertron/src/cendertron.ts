@@ -12,10 +12,10 @@ import { DatastoreCache } from './server/datastore-cache';
 
 import { Renderer } from './render/renderer';
 import { initPuppeteer } from './render/puppeteer';
-import Crawler from './crawler/Crawler';
 import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
 import { logger } from './crawler/supervisor/logger';
+import CrawlerScheduler from './crawler/supervisor/CrawlerScheduler';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -32,6 +32,7 @@ export class Cendertron {
   config: CrawlerOption = defaultCrawlerOption;
   private renderer: Renderer | undefined;
   private browser: puppeteer.Browser | undefined;
+  private crawlerScheduler: CrawlerScheduler | undefined;
   private datastoreCache = new DatastoreCache();
   private port = process.env.PORT || '3000';
 
@@ -44,8 +45,8 @@ export class Cendertron {
     const browser = await initPuppeteer();
     browser.setMaxListeners(1024);
     this.browser = browser;
-
     this.renderer = new Renderer(this.browser);
+    this.crawlerScheduler = new CrawlerScheduler(browser);
 
     this.app.use(koaCompress());
 
@@ -147,7 +148,7 @@ export class Cendertron {
     ctx.body = serialized.content;
   }
 
-  /** 处理抛出 Apis 的请求 */
+  /** 处理爬虫的请求 */
   async handleScrape(ctx: Koa.Context, url: string) {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
@@ -158,17 +159,12 @@ export class Cendertron {
       return;
     }
 
-    const crawler = new Crawler(this.browser!, this.config);
-
     try {
-      // 提取出请求
-      const result = await crawler.start(url);
-
       ctx.set('x-renderer', 'cendertron');
-      ctx.body = result;
+      ctx.body = this.crawlerScheduler!.addUrl(url);
     } catch (e) {
-      logger.error(e);
-      ctx.body = e;
+      logger.error('>>>scrape>>>', e.message, e.stack);
+      ctx.body = e.message;
     }
   }
 
@@ -212,7 +208,7 @@ export class Cendertron {
 }
 
 async function logUncaughtError(error: Error) {
-  logger.error('Uncaught exception', error.message, error.stack);
+  logger.error(`Uncaught exception>>>${error.message}>>>${error.stack}`);
 }
 
 // Start cendertron if not running inside tests.

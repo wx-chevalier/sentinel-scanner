@@ -44,6 +44,12 @@ export async function initPage(
     dialog.dismiss();
   });
 
+  // 禁止下载
+  const client = await page.target().createCDPSession();
+  await client.send('Page.setDownloadBehavior', {
+    behavior: 'deny'
+  });
+
   page.evaluateOnNewDocument('customElements.forcePolyfill = true');
   page.evaluateOnNewDocument('ShadyDOM = {force: true}');
   page.evaluateOnNewDocument('ShadyCSS = {shimcssproperties: true}');
