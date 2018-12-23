@@ -3,6 +3,7 @@ import * as puppeteer from 'puppeteer';
 import Crawler from '../Crawler';
 import { initPuppeteer } from '../../render/puppeteer';
 import { crawlerCache } from '../CrawlerCache';
+import { logger } from './logger';
 
 export interface ScheduleOption {
   // 并发爬虫数
@@ -87,6 +88,12 @@ export default class CrawlerScheduler {
 
       // 判断当前正在运行的爬虫数目
       if (this.runningCrawlerCount < 1) {
+        logger.info(
+          `>>>scheduler>>>reset browser>>>(${this.runningCrawlerCount},${
+            this.finishedCrawlerCount
+          })`
+        );
+
         // 重启浏览器
         await this.browser.close();
         this.browser = await initPuppeteer();

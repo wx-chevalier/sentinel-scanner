@@ -12,7 +12,7 @@ const formats = [
   }),
   format.printf(
     info =>
-      `${info.label}[${info.level}]: ${info.timestamp} >>> ${info.message}`
+      `${info.label}[${info.level}]: ${info.timestamp} --- ${info.message}`
   )
 ];
 
@@ -29,7 +29,6 @@ export const logger = createLogger({
       maxsize: 5242880, // 5MB
       maxFiles: 5
     }),
-
     new transports.File({
       filename: path.resolve('logs/info.log'),
       handleExceptions: true,

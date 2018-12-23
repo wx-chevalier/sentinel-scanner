@@ -71,7 +71,7 @@ export class PageSpider extends Spider implements ISpider {
 
       // 如果是 404 界面，则直接返回
       if (resp && resp.status() === 404) {
-        this._finish();
+        this.finish();
 
         return;
       }
@@ -104,7 +104,7 @@ export class PageSpider extends Spider implements ISpider {
     // 在外部执行解析
     await this._parse();
 
-    this._finish();
+    this.finish();
   }
 
   /** 执行 Monkey 操作 */
@@ -161,24 +161,28 @@ export class PageSpider extends Spider implements ISpider {
         this.existedUrlsHash.add(r.hash);
       }
     });
-
-    // 清除本次注册的监听器
-    if (this.listeners) {
-      this.listeners.forEach(l => {
-        this.crawler.browser.removeListener('targetcreated', l);
-      });
-    }
   }
 
   /** 执行结束时候操作 */
-  private _finish() {
+  private finish() {
     if (!this.page) {
       return;
     }
 
-    // 确保页面关闭
-    if (!this.page.isClosed()) {
-      this.page.close();
+    try {
+      // 清除本次注册的监听器
+      if (this.listeners) {
+        this.listeners.forEach(l => {
+          this.crawler.browser.removeListener('targetcreated', l);
+        });
+      }
+
+      // 确保页面关闭
+      if (!this.page.isClosed()) {
+        this.page.close();
+      }
+    } catch (_) {
+      // 这里忽略异常
     }
 
     this.crawler.next();

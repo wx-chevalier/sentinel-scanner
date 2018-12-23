@@ -163,7 +163,7 @@ export class Cendertron {
       ctx.set('x-renderer', 'cendertron');
       ctx.body = this.crawlerScheduler!.addUrl(url);
     } catch (e) {
-      logger.error('>>>scrape>>>', e.message, e.stack);
+      logger.error(`>>>scrape>>>${e.message}`);
       ctx.body = e.message;
     }
   }

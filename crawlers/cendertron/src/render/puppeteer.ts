@@ -67,7 +67,7 @@ export async function initPage(
 
   // 设置容错
   page.once('error', e => {
-    logger.error('page-error>>>', e.message, e.stack);
+    logger.error('page-error>>>', e.message);
   });
 
   return page;

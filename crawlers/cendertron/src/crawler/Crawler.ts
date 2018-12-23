@@ -21,6 +21,7 @@ export default class Crawler {
   // 内部所有的蜘蛛列表
   private spiders: Spider[] = [];
   private spiderQueue: Spider[] = [];
+  // 当前正在运行的蜘蛛
   // 蜘蛛去重，仅爬取不重复的蜘蛛
   private existedSpidersHash = new Set<string>();
 
@@ -80,9 +81,12 @@ export default class Crawler {
 
   /** 初始化超时监听函数 */
   async initMonitor() {
-    setTimeout(() => {
+    const intl = setTimeout(() => {
       // 执行回调函数
-      this._finish();
+      this.finish();
+
+      // 完成对于自身的清理，避免出现内存泄露
+      clearTimeout(intl);
     }, this.crawlerOption.timeout);
   }
 
@@ -97,7 +101,7 @@ export default class Crawler {
       this.spiderQueue.length === 0 ||
       Date.now() - this.startTime > this.crawlerOption.timeout
     ) {
-      this._finish();
+      this.finish();
       return;
     }
 
@@ -188,10 +192,15 @@ export default class Crawler {
   }
 
   /** 执行关闭函数 */
-  private _finish() {
+  private finish() {
     logger.info(`${new Date()} -- Stop crawling ${this.entryUrl}`);
 
+    // 标记为已关闭，不再执行其他程序
     this.isClosed = true;
+
+    // 清理所有的蜘蛛队列，清理所有的蜘蛛
+    this.spiderQueue = [];
+    this.spiders = [];
 
     // 缓存爬虫结果
     crawlerCache.cacheCrawler(this.entryUrl, {

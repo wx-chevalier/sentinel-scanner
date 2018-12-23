@@ -64,7 +64,7 @@ export async function extractRequestsFromHTMLInSinglePage(
       requests.push({ ...transformUrlToRequest(url), resourceType: 'form' });
     });
   } catch (e) {
-    logger.error('>>>spider>>>html-extractor>>>', e.message);
+    logger.error(`>>>spider>>>html-extractor>>>${page.url()}>>>${e.message}`);
   }
 
   return requests;
