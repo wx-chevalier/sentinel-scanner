@@ -40,6 +40,21 @@ export class PageSpider extends Spider implements ISpider {
 
     this.page = await initPage(this.crawler.browser);
 
+    // 如果创建失败，则直接返回
+    if (!this.page) {
+      this.finish();
+      return;
+    }
+
+    // 设置页面关闭的超时时间
+    const intl = setTimeout(() => {
+      if (this.page && !this.page.isClosed()) {
+        this.page.close().catch(_ => {});
+      }
+      this.finish();
+      clearTimeout(intl);
+    }, this.crawler.crawlerOption.pageTimeout);
+
     // 设置请求监听
     await interceptRequestsInSinglePage(
       this.crawler.browser,
@@ -97,7 +112,7 @@ export class PageSpider extends Spider implements ISpider {
         // 如果是因为重新导航导致的，则将导航后界面加入到下一次处理中
         this.openedUrls.push(this.page.url());
       } else {
-        logger.error(`spider-error>>>${e.message}`);
+        logger.error(`spider-error>>>${e.message}>>>${this.pageUrl}`);
       }
     }
 
@@ -179,7 +194,7 @@ export class PageSpider extends Spider implements ISpider {
 
       // 确保页面关闭
       if (!this.page.isClosed()) {
-        this.page.close();
+        this.page.close().catch(_ => {});
       }
     } catch (_) {
       // 这里忽略异常

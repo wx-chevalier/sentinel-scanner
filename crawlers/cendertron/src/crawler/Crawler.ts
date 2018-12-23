@@ -198,10 +198,6 @@ export default class Crawler {
     // 标记为已关闭，不再执行其他程序
     this.isClosed = true;
 
-    // 清理所有的蜘蛛队列，清理所有的蜘蛛
-    this.spiderQueue = [];
-    this.spiders = [];
-
     // 缓存爬虫结果
     crawlerCache.cacheCrawler(this.entryUrl, {
       isFinished: true,
@@ -212,6 +208,10 @@ export default class Crawler {
       },
       spiderMap: this.spidersRequestMap
     });
+
+    // 清理所有的蜘蛛队列，清理所有的蜘蛛
+    this.spiderQueue = [];
+    this.spiders = [];
 
     // 调用回调函数
     if (this.crawlerOption.onFinish) {

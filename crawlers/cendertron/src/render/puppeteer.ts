@@ -58,13 +58,6 @@ export async function initPage(
     page.setUserAgent(MOBILE_USERAGENT);
   }
 
-  // 设置页面关闭的超时时间
-  setTimeout(() => {
-    if (!page.isClosed()) {
-      page.close();
-    }
-  }, options.pageTimeout);
-
   // 设置容错
   page.once('error', e => {
     logger.error('page-error>>>', e.message);
