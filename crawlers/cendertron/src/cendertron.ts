@@ -92,6 +92,18 @@ export class Cendertron {
         };
       })
     );
+
+    /** 清除某个特定链接的结果 */
+    this.app.use(
+      route.get('/scrape/clear/:url(.*)', (ctx: Koa.Context, url: string) => {
+        this.datastoreCache.clearCache('Crawler', url);
+
+        ctx.body = {
+          success: true
+        };
+      })
+    );
+
     this.app.use(route.get('/scrape/:url(.*)', this.handleScrape.bind(this)));
 
     this.app.use(

@@ -47,9 +47,10 @@ $ docker run -it -p 5000:3000 -cap-add=SYS_ADMIN --name cendertron-instance --ne
 ## Roadmap
 
 - 将自定义参数的爬虫全部划归到 POST 中，POST 请求会进行 Body 存储与匹配
-- 引入自定义的 BrowserEventEmitter，全局仅注册单个 Browser 监听器
+- [x] 引入自定义的 BrowserEventEmitter，全局仅注册单个 Browser 监听器
 - add https://github.com/winstonjs/winston as logger
 - https://123.125.98.210/essframe
+- [ ] 分别添加调度器级别与爬虫级别的监控
 
 ## Motivation & Credits
 

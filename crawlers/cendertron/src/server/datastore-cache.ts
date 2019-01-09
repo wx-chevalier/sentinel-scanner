@@ -36,8 +36,8 @@ export const nodeCache = new NodeCache();
 export class DatastoreCache {
   /** 缓存响应结果 */
   async cacheResponse(key: string, headers: {}, payload: Buffer | object) {
-    // 默认缓存 24 小时
-    const cacheDurationMinutes = 60 * 24;
+    // 默认缓存 1 小时
+    const cacheDurationMinutes = 1 * 60;
     const now = new Date();
     const entity = {
       saved: now,
@@ -45,13 +45,24 @@ export class DatastoreCache {
       headers: JSON.stringify(headers),
       payload: JSON.stringify(payload)
     };
-    await nodeCache.set(key, entity);
+
+    // 默认缓存 1 小时
+    await nodeCache.set(key, entity, cacheDurationMinutes * 60);
   }
 
   /** 清空全部的响应缓存 */
-  async clearCache(type: 'Page' | 'Spider' | 'Crawler' = 'Crawler') {
+  async clearCache(
+    type: 'Page' | 'Spider' | 'Crawler' = 'Crawler',
+    urlOrHash?: string
+  ) {
     const mykeys = nodeCache.keys();
-    nodeCache.del(mykeys.filter(key => key.indexOf(type) > -1));
+    nodeCache.del(
+      mykeys.filter(key =>
+        urlOrHash
+          ? key.indexOf(type) > -1 && key.indexOf(urlOrHash) > -1
+          : key.indexOf(type) > -1
+      )
+    );
   }
 
   /**
