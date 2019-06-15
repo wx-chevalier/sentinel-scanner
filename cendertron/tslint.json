@@ -1,0 +1,41 @@
+{
+  "extends": ["tslint-config-prettier"],
+  "rules": {
+    "class-name": true,
+    "indent": [true, "spaces"],
+    "no-any": false,
+    "prefer-const": true,
+    "no-duplicate-variable": true,
+    "no-eval": true,
+    "no-internal-module": true,
+    "no-trailing-whitespace": false,
+    "no-var-keyword": true,
+    "arrow-parens": false,
+    "one-line": [true, "check-open-brace", "check-whitespace"],
+    "quotemark": [true, "single", "avoid-escape"],
+    "semicolon": [false, "always"],
+    "trailing-comma": [true, "multiline"],
+    "triple-equals": [true, "allow-null-check"],
+    "no-unused-expression": false,
+    "no-unused-variable": false,
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
+    "variable-name": [true, "ban-keywords"],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type"
+    ]
+  }
+}

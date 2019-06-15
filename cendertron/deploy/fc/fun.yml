@@ -1,0 +1,5 @@
+runtime: nodejs8
+tasks:
+  - apt: libnss3
+    local: true
+  - shell: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install --production

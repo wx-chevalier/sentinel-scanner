@@ -1,0 +1,36 @@
+{
+  "name": "cendertron-fc",
+  "version": "1.0.0",
+  "description": "基于 Cendertron 的 Serverless FC",
+  "main": "index.js",
+  "scripts": {
+    "package": "npm run package-prepare && ./scripts/download-chrome.sh && cp headless_shell.tar.gz dist && cd dist && zip -rq ../package.zip .",
+    "package-nochrome": "npm run package-prepare && cd dist && zip -rq ../package.zip .",
+    "package-prepare": "rm -rf package.zip && rm -rf dist && mkdir -p dist/logs && cp -r index.js dist && cp -r lib dist && cp -r package.json dist && cp -r template.yml dist && cd dist && PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install --production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cendertron": "^0.0.4",
+    "puppeteer": "^1.4.0",
+    "tar": "^4.4.4"
+  },
+  "author": "wx-chevalier",
+  "license": "ISC",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wx-chevalier/xe-crawler"
+  },
+  "keywords": [
+    "puppeteer",
+    "fun",
+    "fc"
+  ],
+  "bugs": {
+    "url": "https://github.com/wx-chevalier/xe-crawler/issues"
+  },
+  "homepage": "https://github.com/wx-chevalier/xe-crawler"
+}

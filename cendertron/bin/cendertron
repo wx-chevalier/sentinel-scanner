@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+'use strict';
+
+process.title = 'cendertron';
+process.on('unhandledRejection', reason => {
+  console.error(reason);
+});
+
+const semver = require('semver');
+
+if (!semver.satisfies(process.version, '>=7')) {
+  console.log('Cendertron requires Node 7+');
+  process.exit(1);
+}
+
+const Cendertron = require('../build/cendertron.js').Cendertron;
+const cendertron = new Cendertron();
+cendertron.initialize();
