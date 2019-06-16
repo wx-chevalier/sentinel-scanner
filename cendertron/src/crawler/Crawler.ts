@@ -9,6 +9,7 @@ import { isMedia } from '../utils/validator';
 import { parseUrl } from '../utils/transformer';
 import { hashUrl } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
+import { WeakfileSpider } from './spider/WeakfileSpider';
 
 export interface CrawlerCallback {
   onStart: () => void;
@@ -64,18 +65,23 @@ export default class Crawler {
 
     this.initMonitor();
 
-    // 初始化首个爬虫
-    const spider = new PageSpider(entryPage, this, {
-      // 仅在首个爬虫处允许敏感文件扫描
-      useWeakfile: true
-    });
-    // 这里为了处理跳转的情况，因此初始化两次
-    const spiderWithRedirect = new PageSpider(entryPage, this, {
-      allowRedirect: true
-    });
+    // // 初始化首个爬虫
+    // const spider = new PageSpider(entryPage, this, {
+    //   // 仅在首个爬虫处允许敏感文件扫描
+    //   useWeakfile: true
+    // });
+    // // 这里为了处理跳转的情况，因此初始化两次
+    // const spiderWithRedirect = new PageSpider(entryPage, this, {
+    //   allowRedirect: true
+    // // });
 
-    this.spiderQueue = [spider, spiderWithRedirect];
-    this.spiders = [spider, spiderWithRedirect];
+    // this.spiderQueue = [spider, spiderWithRedirect];
+    // this.spiders = [spider, spiderWithRedirect];
+
+    // 仅使用敏感文件扫描
+    const spider = new WeakfileSpider(entryPage, this, {});
+    this.spiderQueue = [spider];
+    this.spiders = [spider];
 
     this.startTime = Date.now();
 

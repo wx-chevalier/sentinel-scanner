@@ -12,7 +12,6 @@ import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor
 
 import { logger } from '../supervisor/logger';
 import { transformUrlToResult } from '../../utils/transformer';
-import { evaluateWeakfileScan } from '../../render/monky/weak-file';
 
 export class PageSpider extends Spider implements ISpider {
   // 目标页面
@@ -196,11 +195,6 @@ export class PageSpider extends Spider implements ISpider {
         this.listeners.forEach(l => {
           this.crawler.browser.removeListener('targetcreated', l);
         });
-      }
-
-      if (this.spiderOption.useWeakfile) {
-        // 在这里执行敏感文件扫描
-        await evaluateWeakfileScan(this.page);
       }
 
       // 确保页面关闭
