@@ -3,6 +3,16 @@ import * as winston from 'winston';
 
 const { createLogger, format, transports } = winston;
 
+const errorStackFormat = format(info => {
+  if (info instanceof Error) {
+    return Object.assign({}, info, {
+      stack: info.stack,
+      message: info.message
+    });
+  }
+  return info;
+});
+
 const formats = [
   format.label({
     label: path.basename(`${module.parent}/${module.filename}`)
@@ -43,7 +53,7 @@ if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({
       handleExceptions: true,
-      format: format.combine(...formats, format.colorize())
+      format: format.combine(errorStackFormat(), ...formats, format.colorize())
     })
   );
 }

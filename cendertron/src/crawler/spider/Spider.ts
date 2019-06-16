@@ -2,7 +2,7 @@ import { ISpider, SpiderOption, defaultSpiderOption } from './ISpider';
 import Crawler from '../Crawler';
 
 import { SpiderResult } from './../types';
-import { transformUrlToResult } from '../../utils/transformer';
+import { transfromUrlToResult } from '../../utils/transformer';
 import { logger } from '../supervisor/logger';
 import { SpiderPage } from '../types';
 
@@ -30,7 +30,7 @@ export default class Spider implements ISpider {
     this.crawler = crawler;
     this.spiderOption = { ...defaultSpiderOption, ...spiderOption };
 
-    this.pageResult = transformUrlToResult(spiderPage.url);
+    this.pageResult = transfromUrlToResult(spiderPage.url);
   }
 
   async init() {

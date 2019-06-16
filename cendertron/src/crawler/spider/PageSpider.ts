@@ -11,7 +11,7 @@ import { evaluateGremlins } from '../../render/monky/gremlins';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
 
 import { logger } from '../supervisor/logger';
-import { transformUrlToResult } from '../../utils/transformer';
+import { transfromUrlToResult } from '../../utils/transformer';
 
 export class PageSpider extends Spider implements ISpider {
   // 目标页面
@@ -154,7 +154,7 @@ export class PageSpider extends Spider implements ISpider {
 
     // 将所有打开的页面加入
     this.openedUrls.forEach(url => {
-      const r = transformUrlToResult(url);
+      const r = transfromUrlToResult(url);
       r.resourceType = 'document';
 
       if (!this.existedUrlsHash.has(r.hash)) {

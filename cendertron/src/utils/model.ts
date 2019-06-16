@@ -82,3 +82,12 @@ export function parseCookieStr(cookieStr: string = '', url: string) {
       []
     );
 }
+
+/** 判断是否可能为目录 */
+export function isDir(pathname: string) {
+  const frags = (pathname || '').split('/');
+
+  const lastFrag = frags[frags.length - 1];
+
+  return lastFrag === '' || lastFrag.indexOf('.') === -1;
+}

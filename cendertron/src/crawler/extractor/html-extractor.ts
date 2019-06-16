@@ -3,7 +3,7 @@ import * as puppeteer from 'puppeteer';
 import { SpiderResult } from '../types';
 import { isValidLink } from '../../utils/validator';
 import { logger } from '../supervisor/logger';
-import { transformUrlToResult } from '../../utils/transformer';
+import { transfromUrlToResult } from '../../utils/transformer';
 
 /** 从 HTML 中提取出有效信息 */
 export async function extractRequestsFromHTMLInSinglePage(
@@ -27,7 +27,7 @@ export async function extractRequestsFromHTMLInSinglePage(
           return href;
         }
 
-        return `${window.location.href}${href}`;
+        return `${window.location.href}/${href}`;
       })
     );
 
@@ -54,14 +54,14 @@ export async function extractRequestsFromHTMLInSinglePage(
       .filter(aHref => isValidLink(aHref))
       .forEach((href: string) => {
         requests.push({
-          ...transformUrlToResult(href),
+          ...transfromUrlToResult(href),
           resourceType: 'document'
         });
       });
 
     // 处理所有的 Form 表单
     formUrls.forEach((url: string) => {
-      requests.push({ ...transformUrlToResult(url), resourceType: 'form' });
+      requests.push({ ...transfromUrlToResult(url), resourceType: 'form' });
     });
   } catch (e) {
     logger.error(`>>>spider>>>html-extractor>>>${page.url()}>>>${e.message}`);

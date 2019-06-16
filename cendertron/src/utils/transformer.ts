@@ -23,7 +23,7 @@ export function transformInterceptedRequestToRequest(
 }
 
 /** 将 url 解析为请求 */
-export function transformUrlToResult(url: string): SpiderResult {
+export function transfromUrlToResult(url: string): SpiderResult {
   const strippedUrl = stripBackspaceInUrl(url);
   const { host, pathname, query } = parseUrl(strippedUrl);
   const parsedUrl = { host, pathname, query };
@@ -52,7 +52,7 @@ export function stripBackspaceInUrl(url: string): string {
   const strippedFrags: string[] = [];
 
   frags.forEach(f => {
-    if (f === '.') {
+    if (f === '.' || f === '') {
       return;
     }
 

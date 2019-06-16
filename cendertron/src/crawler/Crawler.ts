@@ -7,7 +7,7 @@ import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
 import { isMedia } from '../utils/validator';
 import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
-import { hashUrl } from '../utils/model';
+import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
 
@@ -209,13 +209,17 @@ export default class Crawler {
       const nextSpider = new PageSpider(nextPage, this, {
         depth: spider.spiderOption.depth + 1
       });
-      const weakfileSpider = new WeakfileSpider(nextPage, this, {});
+
+      if (isDir(result.parsedUrl.pathname)) {
+        // 判断是否需要添加敏感信息漏洞，仅对于可能为目录的 path 添加
+        const weakfileSpider = new WeakfileSpider(nextPage, this, {});
+
+        this.spiderQueue!.push(weakfileSpider);
+        this.spiders.push(weakfileSpider);
+      }
 
       this.spiderQueue.push(nextSpider);
       this.spiders.push(nextSpider);
-
-      this.spiderQueue!.push(weakfileSpider);
-      this.spiders.push(weakfileSpider);
 
       // 将该请求添加到历史记录中
       this.existedSpidersHash.add(result.hash);

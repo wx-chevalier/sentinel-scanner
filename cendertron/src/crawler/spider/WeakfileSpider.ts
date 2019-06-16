@@ -5,7 +5,7 @@ import { ISpider } from './ISpider';
 import Spider from './Spider';
 import { logger } from '../supervisor/logger';
 import { initPage } from '../../render/puppeteer';
-import { transformUrlToResult } from '../../utils/transformer';
+import { transfromUrlToResult } from '../../utils/transformer';
 import { evaluateWeakfileScan } from '../../render/monky/weak-file';
 
 export class WeakfileSpider extends Spider implements ISpider {
@@ -64,7 +64,7 @@ export class WeakfileSpider extends Spider implements ISpider {
       // 执行敏感文件扫描
       // 将所有打开的页面加入
       availableUrls.forEach(url => {
-        const r = transformUrlToResult(url);
+        const r = transfromUrlToResult(url);
         r.resourceType = 'document';
 
         this.crawler._SPIDER_addRequest(this, r);
