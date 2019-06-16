@@ -10,8 +10,8 @@ import { monkeyClick } from '../../render/monky/click-monkey';
 import { evaluateGremlins } from '../../render/monky/gremlins';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
 
-import { transformUrlToRequest } from '../../shared/transformer';
 import { logger } from '../supervisor/logger';
+import { transformUrlToResult } from '../../shared/transformer';
 
 export class PageSpider extends Spider implements ISpider {
   // 目标页面
@@ -66,7 +66,7 @@ export class PageSpider extends Spider implements ISpider {
       }
     );
 
-    this.existedUrlsHash.add(this.pageRequest!.hash);
+    this.existedUrlsHash.add(this.pageResult!.hash);
   }
 
   /** 复写父类方法 */
@@ -149,7 +149,7 @@ export class PageSpider extends Spider implements ISpider {
 
     // 将所有打开的页面加入
     this.openedUrls.forEach(url => {
-      const r = transformUrlToRequest(url);
+      const r = transformUrlToResult(url);
       r.resourceType = 'document';
 
       if (!this.existedUrlsHash.has(r.hash)) {

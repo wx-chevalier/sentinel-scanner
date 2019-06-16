@@ -4,7 +4,7 @@ import * as puppeteer from 'puppeteer';
 import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
 import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
-import { CrawlerResult, SpiderResult, ParsedUrl } from './types';
+import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
 import { isMedia } from '../shared/validator';
 import { parseUrl } from '../shared/transformer';
 import { hashUrl } from '../shared/model';
@@ -17,7 +17,7 @@ export interface CrawlerCallback {
 
 /** 爬虫定义 */
 export default class Crawler {
-  entryUrl: string = '';
+  entryPage: SpiderPage | null = null;
   parsedEntryUrl: ParsedUrl | null = null;
 
   browser: puppeteer.Browser;
@@ -35,7 +35,7 @@ export default class Crawler {
   private isClosed: boolean = false;
 
   // 爬虫的执行结果
-  private spidersRequestMap: { [key: string]: SpiderResult[] } = {};
+  private spidersResultMap: { [key: string]: SpiderResult[] } = {};
 
   constructor(
     browser: puppeteer.Browser,
@@ -46,8 +46,10 @@ export default class Crawler {
   }
 
   // 启动爬虫
-  async start(entryUrl: string): Promise<CrawlerResult> {
-    this.entryUrl = entryUrl;
+  async start(entryPage: SpiderPage): Promise<CrawlerResult> {
+    const entryUrl = entryPage.url;
+
+    this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
     this.existedSpidersHash.add(hashUrl({ url: entryUrl }));
 
@@ -63,8 +65,9 @@ export default class Crawler {
     this.initMonitor();
 
     // 初始化首个爬虫
-    const spider = new PageSpider(entryUrl, this, {});
-    const spiderWithRedirect = new PageSpider(entryUrl, this, {
+    const spider = new PageSpider(entryPage, this, {});
+    // 这里为了处理跳转的情况，因此初始化两次
+    const spiderWithRedirect = new PageSpider(entryPage, this, {
       allowRedirect: true
     });
 
@@ -77,7 +80,7 @@ export default class Crawler {
 
     if (this.crawlerCache) {
       // 这里会立刻返回结果，Koa 会自动缓存，等待爬虫执行完毕之后，其会自动地去复写缓存
-      this.crawlerCache.cacheCrawler(this.entryUrl, {
+      this.crawlerCache.cacheCrawler(entryUrl, {
         isFinished: false
       });
     }
@@ -127,8 +130,8 @@ export default class Crawler {
     // Todo 从全局缓存中获取到蜘蛛的缓存结果，直接解析该结果
 
     // 将该结果添加到蜘蛛的执行结果
-    if (!this.spidersRequestMap[spider.pageUrl]) {
-      this.spidersRequestMap[spider.pageUrl] = [];
+    if (!this.spidersResultMap[spider.pageUrl]) {
+      this.spidersResultMap[spider.pageUrl] = [];
     }
 
     // 在蜘蛛执行层容错
@@ -146,35 +149,35 @@ export default class Crawler {
 
   // 聚合爬虫中的所有蜘蛛的结果
   async report() {
-    return this.spidersRequestMap;
+    return this.spidersResultMap;
   }
 
   // 将单个请求添加到结果集中
-  public _SPIDER_addRequest(spider: Spider, request: SpiderResult) {
+  public _SPIDER_addRequest(spider: Spider, result: SpiderResult) {
     if (this.isClosed) {
       return;
     }
 
     // 判断是否需要过滤非同域请求
     if (this.crawlerOption.isSameOrigin) {
-      if (request.parsedUrl.host !== this.parsedEntryUrl!.host) {
+      if (result.parsedUrl.host !== this.parsedEntryUrl!.host) {
         return;
       }
     }
 
     // 将该结果添加到蜘蛛的执行结果
-    if (!this.spidersRequestMap[spider.pageUrl]) {
-      this.spidersRequestMap[spider.pageUrl] = [];
+    if (!this.spidersResultMap[spider.pageUrl]) {
+      this.spidersResultMap[spider.pageUrl] = [];
     }
 
-    this.spidersRequestMap[spider.pageUrl]!.push(request);
+    this.spidersResultMap[spider.pageUrl]!.push(result);
 
     // 判断是否需要过滤图片，JS/CSS 等代码资源
     if (this.crawlerOption.isIgnoreAssets) {
       if (
-        isMedia(request.url) ||
-        request.url.indexOf('.js') > -1 ||
-        request.url.indexOf('.css') > -1
+        isMedia(result.url) ||
+        result.url.indexOf('.js') > -1 ||
+        result.url.indexOf('.css') > -1
       ) {
         return;
       }
@@ -184,41 +187,53 @@ export default class Crawler {
     if (
       this.spiders.length < this.crawlerOption.maxPageCount &&
       spider.spiderOption.depth < this.crawlerOption.depth &&
-      !this.existedSpidersHash.has(request.hash) &&
+      !this.existedSpidersHash.has(result.hash) &&
       // 非 Ajax 类型的页面才进行二次抓取
-      request.resourceType !== 'xhr' &&
-      request.resourceType !== 'form' &&
-      request.resourceType !== 'script'
+      result.resourceType !== 'xhr' &&
+      result.resourceType !== 'form' &&
+      result.resourceType !== 'script'
     ) {
-      const nextSpider = new PageSpider(request.url, this, {
-        depth: spider.spiderOption.depth + 1
-      });
+      const nextSpider = new PageSpider(
+        {
+          url: result.url,
+          cookies: this.entryPage!.cookies,
+          localStorage: this.entryPage!.localStorage
+        },
+        this,
+        {
+          depth: spider.spiderOption.depth + 1
+        }
+      );
 
       this.spiderQueue!.push(nextSpider);
       this.spiders.push(nextSpider);
 
       // 将该请求添加到历史记录中
-      this.existedSpidersHash.add(request.hash);
+      this.existedSpidersHash.add(result.hash);
     }
   }
 
   /** 执行关闭函数 */
   private finish() {
-    logger.info(`${new Date()} -- Stop crawling ${this.entryUrl}`);
+    if (!this.entryPage) {
+      return;
+    }
+
+    logger.info(`${new Date()} -- Stop crawling ${this.entryPage.url}`);
 
     // 标记为已关闭，不再执行其他程序
     this.isClosed = true;
 
     if (this.crawlerCache) {
       // 缓存爬虫结果
-      this.crawlerCache.cacheCrawler(this.entryUrl, {
+      this.crawlerCache.cacheCrawler(this.entryPage.url, {
         isFinished: true,
         metrics: {
           executionDuration: Date.now() - this.startTime,
           spiderCount: this.spiders.length,
           depth: this.crawlerOption.depth
         },
-        spiderMap: this.spidersRequestMap
+        spiderMap: this.spidersResultMap
       });
     }
 

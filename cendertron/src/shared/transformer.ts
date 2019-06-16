@@ -23,7 +23,7 @@ export function transformInterceptedRequestToRequest(
 }
 
 /** 将 url 解析为请求 */
-export function transformUrlToRequest(url: string): SpiderResult {
+export function transformUrlToResult(url: string): SpiderResult {
   const { host, pathname, query } = parseUrl(url);
   const parsedUrl = { host, pathname, query };
 

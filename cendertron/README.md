@@ -78,6 +78,55 @@ If you want to use it in Alibaba Function Computing Service, [cendertron-fc](./d
 
 # Strategy | 策略
 
+## Cookie
+
+以 DVWA 为例，可以用 Docker 快速开启测试环境：`docker run --rm -it -p 8082:80 vulnerables/web-dvwa`
+
+```json
+{
+  "url": "http://localhost:8082/vulnerabilities/csrf/",
+  "cookies": "tid=2000012889; lnk_lang=zh-CN; PHPSESSID=ibefg4jr684pclisdca57bmiq7; security=low"
+}
+```
+
+```js
+const puppeteer = require('puppeteer');
+
+let rockIt = async () => {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  var cookie = [
+    // cookie exported by google chrome plugin editthiscookie
+    {
+      domain: 'httpbin.org',
+      expirationDate: 1597288045,
+      hostOnly: false,
+      httpOnly: false,
+      name: 'key',
+      path: '/',
+      sameSite: 'no_restriction',
+      secure: false,
+      session: false,
+      storeId: '0',
+      value: 'value!',
+      id: 1
+    }
+  ];
+  await page.setCookie(...cookie);
+  await page.goto('https://httpbin.org/headers');
+  console.log(await page.content());
+  await page.close();
+  await browser.close();
+};
+rockIt();
+```
+
+```js
+await page.evaluate(() => {
+  localStorage.setItem('token', 'example-token');
+});
+```
+
 # About
 
 ## Roadmap

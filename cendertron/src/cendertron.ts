@@ -16,6 +16,7 @@ import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
 import { logger } from './crawler/supervisor/logger';
 import CrawlerScheduler from './crawler/supervisor/CrawlerScheduler';
+import { parseCookieStr } from './shared/model';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -104,6 +105,8 @@ export class Cendertron {
       })
     );
 
+    this.app.use(route.post('/scrape', this.handleScrapePost.bind(this)));
+
     this.app.use(route.get('/scrape/:url(.*)', this.handleScrape.bind(this)));
 
     this.app.use(
@@ -174,7 +177,36 @@ export class Cendertron {
 
     try {
       ctx.set('x-renderer', 'cendertron');
-      ctx.body = this.crawlerScheduler!.addUrl(finalUrl);
+      ctx.body = this.crawlerScheduler!.addTarget({ url: finalUrl });
+    } catch (e) {
+      logger.error(`>>>scrape>>>${e.message}`);
+      ctx.body = e.message;
+    }
+  }
+
+  /** 处理爬虫的请求，POST 形式，会携带 Cookie、localStorage 等信息 */
+  async handleScrapePost(ctx: Koa.Context) {
+    if (!this.renderer) {
+      throw new Error('No renderer initalized yet.');
+    }
+    const { url, cookies, localStorage } = ctx.request.body || ({} as any);
+
+    let finalUrl = url;
+
+    // 如果是受限的地址，譬如 IP，则添加 HTTP 协议头
+    if (this.restricted(url)) {
+      finalUrl = `http://${url}`;
+    }
+
+    try {
+      ctx.set('x-renderer', 'cendertron');
+      ctx.body = this.crawlerScheduler!.addTarget({
+        request: {
+          url: finalUrl,
+          cookies: parseCookieStr(cookies),
+          localStorage
+        }
+      });
     } catch (e) {
       logger.error(`>>>scrape>>>${e.message}`);
       ctx.body = e.message;

@@ -27,6 +27,13 @@ export class ScreenshotError extends Error {
   }
 }
 
+/** 包含策略配置的请求信息 */
+export interface SpiderPage {
+  url: string;
+  cookies?: { name: string; value: string }[];
+  localStorage?: Record<string, string>;
+}
+
 export interface ParsedUrl {
   host: string;
   pathname: string;

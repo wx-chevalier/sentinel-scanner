@@ -55,3 +55,25 @@ export function hashUrl({
 
   return hash;
 }
+
+/** 解析 Cookie 字符串 */
+export function parseCookieStr(cookieStr: string = '') {
+  return cookieStr
+    .split(';')
+    .reduce((cookieArray: { name: string; value: string }[], cookieString) => {
+      const splitCookie = cookieString
+        .split('=')
+        .map(cookiePart => cookiePart.trim());
+
+      const name = splitCookie[0];
+      let value;
+
+      try {
+        value = JSON.parse(splitCookie[1]);
+      } catch (error) {
+        value = splitCookie[1];
+      }
+      cookieArray.push({ name, value });
+      return cookieArray;
+    }, []);
+}

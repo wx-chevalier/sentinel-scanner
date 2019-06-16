@@ -1,16 +1,18 @@
-import { SpiderResult } from './../types';
 import { ISpider, SpiderOption, defaultSpiderOption } from './ISpider';
 import Crawler from '../Crawler';
 
-import { transformUrlToRequest } from '../../shared/transformer';
+import { SpiderResult } from './../types';
+import { transformUrlToResult } from '../../shared/transformer';
 import { logger } from '../supervisor/logger';
+import { SpiderPage } from '../types';
 
 /** 通用的蜘蛛接口 */
 export default class Spider implements ISpider {
   // 蜘蛛所属的爬虫对象
   crawler: Crawler;
+  spiderPage: SpiderPage;
   pageUrl: string;
-  pageRequest?: SpiderResult;
+  pageResult?: SpiderResult;
 
   // 蜘蛛配置
   spiderOption: SpiderOption = defaultSpiderOption;
@@ -19,15 +21,16 @@ export default class Spider implements ISpider {
   result = [];
 
   constructor(
-    pageUrl: string,
+    spiderPage: SpiderPage,
     crawler: Crawler,
     spiderOption: Partial<SpiderOption>
   ) {
-    this.pageUrl = pageUrl;
+    this.spiderPage = spiderPage;
+    this.pageUrl = spiderPage.url;
     this.crawler = crawler;
     this.spiderOption = { ...defaultSpiderOption, ...spiderOption };
 
-    this.pageRequest = transformUrlToRequest(pageUrl);
+    this.pageResult = transformUrlToResult(spiderPage.url);
   }
 
   async init() {
