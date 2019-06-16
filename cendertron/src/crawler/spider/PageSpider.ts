@@ -176,10 +176,6 @@ export class PageSpider extends Spider implements ISpider {
 
     // 解析页面中生成的元素，最后解析
     (await extractRequestsFromHTMLInSinglePage(this.page)).forEach(r => {
-      if (r.hash === '#idvulnerabilitiessqli') {
-        console.log(r.url, this.existedUrlsHash.has(r.hash));
-      }
-
       if (!this.existedUrlsHash.has(r.hash)) {
         this.crawler._SPIDER_addRequest(this, r);
         this.existedUrlsHash.add(r.hash);

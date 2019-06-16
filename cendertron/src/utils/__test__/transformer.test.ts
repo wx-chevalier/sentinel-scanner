@@ -1,4 +1,4 @@
-import { stripBackspaceInUrl, transfromUrlToResult } from '../transformer';
+import { stripBackspaceInUrl } from '../transformer';
 
 console.log(
   stripBackspaceInUrl(
@@ -19,11 +19,7 @@ console.log(
 );
 
 console.log(
-  transfromUrlToResult('http://localhost:8082/vulnerabilities/sqli/#?id=a')
-);
-
-console.log(
   stripBackspaceInUrl(
-    'http://localhost:8082/vulnerabilities/brute/vulnerabilities/sqli/#/a/b/../a/'
+    'http://localhost:8082/vulnerabilities///brute/vulnerabilities/sqli/#/a/b/../a/'
   )
 );
