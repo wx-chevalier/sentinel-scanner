@@ -1,4 +1,3 @@
-import Crawler from './Crawler';
 import { CrawlerCache } from './CrawlerCache';
 
 /** 爬虫参数 */

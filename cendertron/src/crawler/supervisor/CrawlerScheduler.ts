@@ -78,9 +78,13 @@ export default class CrawlerScheduler {
     const request = this.pageQueue.shift();
 
     if (request && request.url) {
-      const crawler = new Crawler(this.browser, {
-        onFinish: this.onFinish
-      });
+      const crawler = new Crawler(
+        this.browser,
+        {},
+        {
+          onFinish: this.onFinish
+        }
+      );
 
       crawler.start(request);
 
