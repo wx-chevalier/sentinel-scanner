@@ -12,8 +12,8 @@ import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
 
 export interface CrawlerCallback {
-  onStart: () => void;
-  onFinish: () => void;
+  onStart?: (crawler: Crawler) => void;
+  onFinish?: (crawler: Crawler) => void;
 }
 
 /** 爬虫定义 */
@@ -24,6 +24,7 @@ export default class Crawler {
   browser: puppeteer.Browser;
   crawlerCache?: CrawlerCache = crawlerCache;
   crawlerOption: CrawlerOption;
+  crawlerCallback: CrawlerCallback;
 
   // 内部所有的蜘蛛列表
   private spiders: Spider[] = [];
@@ -40,10 +41,12 @@ export default class Crawler {
 
   constructor(
     browser: puppeteer.Browser,
-    crawlerOption: Partial<CrawlerOption>
+    crawlerOption: Partial<CrawlerOption> = defaultCrawlerOption,
+    cb: CrawlerCallback = {}
   ) {
     this.browser = browser;
     this.crawlerOption = { ...defaultCrawlerOption, ...crawlerOption };
+    this.crawlerCallback = cb;
   }
 
   // 启动爬虫
@@ -248,8 +251,8 @@ export default class Crawler {
     this.spiders = [];
 
     // 调用回调函数
-    if (this.crawlerOption.onFinish) {
-      this.crawlerOption.onFinish(this);
+    if (this.crawlerCallback.onFinish) {
+      this.crawlerCallback.onFinish(this);
     }
   }
 }

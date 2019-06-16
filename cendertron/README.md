@@ -79,6 +79,35 @@ If you want to use it in Alibaba Function Computing Service, [cendertron-fc](./d
 
 # Strategy | 策略
 
+```json
+{
+  "isFinished": true,
+  "metrics": {
+    "executionDuration": 116177,
+    "spiderCount": 51,
+    "depth": 4
+  },
+  "spiderMap": {
+    "http://localhost:8082/vulnerabilities/csrf/": [
+      {
+        "url": "http://localhost:8082/vulnerabilities/view_source.php?id=csrf&security=low",
+        "parsedUrl": {
+          "host": "localhost:8082",
+          "pathname": "/vulnerabilities/view_source.php",
+          "query": {
+            "id": "csrf",
+            "security": "low"
+          }
+        },
+        "hash": "localhost:8082#/vulnerabilities/view_source.php#idsecurity",
+        "resourceType": "document"
+      }
+      // ...
+    ]
+  }
+}
+```
+
 ## Cookie
 
 以 DVWA 为例，可以用 Docker 快速开启测试环境：`docker run --rm -it -p 8082:80 vulnerables/web-dvwa`

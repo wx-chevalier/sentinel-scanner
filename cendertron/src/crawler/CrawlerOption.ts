@@ -9,8 +9,6 @@ export interface CrawlerOption {
   uuid?: string;
   // 爬虫缓存
   crawlerCache?: CrawlerCache;
-  // 爬虫执行完成之后的回调
-  onFinish?: (crawler: Crawler) => void;
 
   // 单页面爬取出的最多的子节点数
   maxPageCount: number;
@@ -39,7 +37,6 @@ export interface CrawlerOption {
 export const defaultCrawlerOption: CrawlerOption = {
   // 爬取深度
   depth: 4,
-  onFinish: undefined,
 
   // 单爬虫最多爬取页面数
   maxPageCount: 50,
