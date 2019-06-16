@@ -24,11 +24,12 @@ export function transformInterceptedRequestToRequest(
 
 /** 将 url 解析为请求 */
 export function transformUrlToResult(url: string): SpiderResult {
-  const { host, pathname, query } = parseUrl(url);
+  const strippedUrl = stripBackspaceInUrl(url);
+  const { host, pathname, query } = parseUrl(strippedUrl);
   const parsedUrl = { host, pathname, query };
 
   return {
-    url,
+    url: strippedUrl,
     parsedUrl,
     hash: hashUrl({ parsedUrl }),
     resourceType: 'document'
@@ -42,4 +43,26 @@ export function parseUrl(url: string): ParsedUrl {
   } catch (e) {
     return { host: url, pathname: '', query: {} };
   }
+}
+
+/** 将传入的 url 中的 .. 移除 */
+export function stripBackspaceInUrl(url: string): string {
+  const frags = url.split('/');
+
+  const strippedFrags: string[] = [];
+
+  frags.forEach(f => {
+    if (f === '.') {
+      return;
+    }
+
+    if (f === '..') {
+      strippedFrags.pop();
+      return;
+    }
+
+    strippedFrags.push(f);
+  });
+
+  return strippedFrags.join('/');
 }

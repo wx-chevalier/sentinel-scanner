@@ -6,7 +6,7 @@ import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
 import { isMedia } from '../utils/validator';
-import { parseUrl } from '../utils/transformer';
+import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
@@ -48,7 +48,7 @@ export default class Crawler {
 
   // 启动爬虫
   async start(entryPage: SpiderPage): Promise<CrawlerResult> {
-    const entryUrl = entryPage.url;
+    const entryUrl = stripBackspaceInUrl(entryPage.url);
 
     this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
@@ -65,23 +65,19 @@ export default class Crawler {
 
     this.initMonitor();
 
-    // // 初始化首个爬虫
-    // const spider = new PageSpider(entryPage, this, {
-    //   // 仅在首个爬虫处允许敏感文件扫描
-    //   useWeakfile: true
-    // });
-    // // 这里为了处理跳转的情况，因此初始化两次
-    // const spiderWithRedirect = new PageSpider(entryPage, this, {
-    //   allowRedirect: true
-    // // });
+    // 初始化首个爬虫
+    const spider = new PageSpider(entryPage, this, {
+      // 仅在首个爬虫处允许敏感文件扫描
+      useWeakfile: true
+    });
+    // 这里为了处理跳转的情况，因此初始化两次
+    const spiderWithRedirect = new PageSpider(entryPage, this, {
+      allowRedirect: true
+    });
+    const weakfileSpider = new WeakfileSpider(entryPage, this, {});
 
-    // this.spiderQueue = [spider, spiderWithRedirect];
-    // this.spiders = [spider, spiderWithRedirect];
-
-    // 仅使用敏感文件扫描
-    const spider = new WeakfileSpider(entryPage, this, {});
-    this.spiderQueue = [spider];
-    this.spiders = [spider];
+    this.spiderQueue = [spider, spiderWithRedirect, weakfileSpider];
+    this.spiders = [spider, spiderWithRedirect, weakfileSpider];
 
     this.startTime = Date.now();
 
@@ -202,20 +198,21 @@ export default class Crawler {
       result.resourceType !== 'form' &&
       result.resourceType !== 'script'
     ) {
-      const nextSpider = new PageSpider(
-        {
-          url: result.url,
-          cookies: this.entryPage!.cookies,
-          localStorage: this.entryPage!.localStorage
-        },
-        this,
-        {
-          depth: spider.spiderOption.depth + 1
-        }
-      );
+      const nextPage = {
+        url: result.url,
+        cookies: this.entryPage!.cookies,
+        localStorage: this.entryPage!.localStorage
+      };
+      const nextSpider = new PageSpider(nextPage, this, {
+        depth: spider.spiderOption.depth + 1
+      });
+      const weakfileSpider = new WeakfileSpider(nextPage, this, {});
 
-      this.spiderQueue!.push(nextSpider);
+      this.spiderQueue.push(nextSpider);
       this.spiders.push(nextSpider);
+
+      this.spiderQueue!.push(weakfileSpider);
+      this.spiders.push(weakfileSpider);
 
       // 将该请求添加到历史记录中
       this.existedSpidersHash.add(result.hash);
