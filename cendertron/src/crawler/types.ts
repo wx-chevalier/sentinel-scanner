@@ -38,6 +38,7 @@ export interface ParsedUrl {
   host: string;
   pathname: string;
   query: object;
+  hash: string;
 }
 
 export interface SpiderResult {

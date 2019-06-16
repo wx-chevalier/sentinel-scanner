@@ -55,7 +55,7 @@ export default class Crawler {
 
     this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
-    this.existedSpidersHash.add(hashUrl({ url: entryUrl }));
+    this.existedSpidersHash.add(hashUrl(entryUrl));
 
     // 判断是否存在缓存
     if (

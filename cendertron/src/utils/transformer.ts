@@ -8,9 +8,9 @@ export function transformInterceptedRequestToRequest(
   interceptedRequest: puppeteer.Request
 ): SpiderResult {
   // 获取 url
-  const url = interceptedRequest.url();
-  const { host, pathname, query } = parseUrl(url);
-  const parsedUrl = { host, pathname, query };
+  const url = stripBackspaceInUrl(interceptedRequest.url());
+  const { host, pathname, query, hash } = parseUrl(url);
+  const parsedUrl = { host, pathname, query, hash };
 
   return {
     url,
@@ -18,30 +18,30 @@ export function transformInterceptedRequestToRequest(
     postData: interceptedRequest.postData(),
     resourceType: interceptedRequest.resourceType() || 'xhr',
 
-    hash: hashUrl({ parsedUrl })
+    hash: hashUrl(url)
   };
 }
 
 /** 将 url 解析为请求 */
 export function transfromUrlToResult(url: string): SpiderResult {
   const strippedUrl = stripBackspaceInUrl(url);
-  const { host, pathname, query } = parseUrl(strippedUrl);
-  const parsedUrl = { host, pathname, query };
+  const { host, pathname, query, hash } = parseUrl(strippedUrl);
+  const parsedUrl = { host, pathname, query, hash };
 
   return {
     url: strippedUrl,
     parsedUrl,
-    hash: hashUrl({ parsedUrl }),
+    hash: hashUrl(strippedUrl),
     resourceType: 'document'
   };
 }
 
 export function parseUrl(url: string): ParsedUrl {
   try {
-    const { host, pathname, query } = parse(url, url, true);
-    return { host, pathname, query };
+    const { host, pathname, query, hash } = parse(url, url, true);
+    return { host, pathname, query, hash };
   } catch (e) {
-    return { host: url, pathname: '', query: {} };
+    return { host: url, pathname: '', query: {}, hash: '' };
   }
 }
 
