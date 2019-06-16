@@ -11,14 +11,13 @@ import { evaluateGremlins } from '../../render/monky/gremlins';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
 
 import { logger } from '../supervisor/logger';
-import { transformUrlToResult } from '../../shared/transformer';
+import { transformUrlToResult } from '../../utils/transformer';
 
 export class PageSpider extends Spider implements ISpider {
   // 目标页面
   page?: puppeteer.Page;
 
   // 参数设置
-
   // 捕获的请求
   requests: SpiderResult[] = [];
 
@@ -44,6 +43,15 @@ export class PageSpider extends Spider implements ISpider {
     if (!this.page) {
       this.finish();
       return;
+    }
+
+    try {
+      // 判断是否存在 cookie
+      if (this.spiderPage.cookies) {
+        await this.page.setCookie(...(this.spiderPage.cookies || []));
+      }
+    } catch (e) {
+      console.error(e);
     }
 
     // 设置页面关闭的超时时间

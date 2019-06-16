@@ -16,7 +16,7 @@ import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
 import { logger } from './crawler/supervisor/logger';
 import CrawlerScheduler from './crawler/supervisor/CrawlerScheduler';
-import { parseCookieStr } from './shared/model';
+import { parseCookieStr } from './utils/model';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -189,7 +189,7 @@ export class Cendertron {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
-    const { url, cookies, localStorage } = ctx.request.body || ({} as any);
+    const { url, cookie, localStorage } = ctx.request.body || ({} as any);
 
     let finalUrl = url;
 
@@ -203,7 +203,7 @@ export class Cendertron {
       ctx.body = this.crawlerScheduler!.addTarget({
         request: {
           url: finalUrl,
-          cookies: parseCookieStr(cookies),
+          cookies: parseCookieStr(cookie, finalUrl),
           localStorage
         }
       });

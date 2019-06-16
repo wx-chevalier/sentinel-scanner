@@ -2,8 +2,8 @@
 import * as puppeteer from 'puppeteer';
 
 import { SpiderResult } from '../../crawler/types';
-import { transformInterceptedRequestToRequest } from '../../shared/transformer';
-import { isMedia } from './../../shared/validator';
+import { transformInterceptedRequestToRequest } from '../../utils/transformer';
+import { isMedia } from '../../utils/validator';
 
 export async function interceptRequestsInSinglePage(
   browser: puppeteer.Browser,

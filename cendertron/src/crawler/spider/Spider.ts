@@ -2,7 +2,7 @@ import { ISpider, SpiderOption, defaultSpiderOption } from './ISpider';
 import Crawler from '../Crawler';
 
 import { SpiderResult } from './../types';
-import { transformUrlToResult } from '../../shared/transformer';
+import { transformUrlToResult } from '../../utils/transformer';
 import { logger } from '../supervisor/logger';
 import { SpiderPage } from '../types';
 

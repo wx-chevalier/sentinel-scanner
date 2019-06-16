@@ -5,9 +5,9 @@ import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
 import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
-import { isMedia } from '../shared/validator';
-import { parseUrl } from '../shared/transformer';
-import { hashUrl } from '../shared/model';
+import { isMedia } from '../utils/validator';
+import { parseUrl } from '../utils/transformer';
+import { hashUrl } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 
 export interface CrawlerCallback {

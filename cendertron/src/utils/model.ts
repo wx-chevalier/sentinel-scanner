@@ -3,6 +3,7 @@ import * as parse from 'url-parse';
 
 import { ParsedUrl } from '../crawler/types';
 import { maybeUUID } from './validator';
+import { parseUrl } from './transformer';
 
 /**
  * 获取某个 URL 的 HASH 标识
@@ -57,23 +58,27 @@ export function hashUrl({
 }
 
 /** 解析 Cookie 字符串 */
-export function parseCookieStr(cookieStr: string = '') {
+export function parseCookieStr(cookieStr: string = '', url: string) {
+  const parsedUrl = parseUrl(url);
+
   return cookieStr
     .split(';')
-    .reduce((cookieArray: { name: string; value: string }[], cookieString) => {
-      const splitCookie = cookieString
-        .split('=')
-        .map(cookiePart => cookiePart.trim());
+    .reduce(
+      (
+        cookieArray: { name: string; value: string; domain: string }[],
+        cookieString
+      ) => {
+        const splitCookie = cookieString
+          .split('=')
+          .map(cookiePart => cookiePart.trim());
 
-      const name = splitCookie[0];
-      let value;
+        const name = splitCookie[0];
+        let value;
 
-      try {
-        value = JSON.parse(splitCookie[1]);
-      } catch (error) {
         value = splitCookie[1];
-      }
-      cookieArray.push({ name, value });
-      return cookieArray;
-    }, []);
+        cookieArray.push({ name, value, domain: parsedUrl.host });
+        return cookieArray;
+      },
+      []
+    );
 }
