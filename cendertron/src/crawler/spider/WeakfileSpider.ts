@@ -59,9 +59,7 @@ export class WeakfileSpider extends Spider implements ISpider {
         return;
       }
 
-      const availableUrls = await evaluateWeakfileScan(this.page);
-
-      console.log(availableUrls);
+      const availableUrls = await evaluateWeakfileScan(this.page, this.pageUrl);
 
       // 执行敏感文件扫描
       // 将所有打开的页面加入

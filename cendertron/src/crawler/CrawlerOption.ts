@@ -27,6 +27,8 @@ export interface CrawlerOption {
   isMobile: boolean;
   // 是否开启缓存
   useCache: boolean;
+  // 是否使用弱口令扫描
+  useWeakfile: boolean;
 
   // 页面 Cookie
   cookie: string;
@@ -49,6 +51,7 @@ export const defaultCrawlerOption: CrawlerOption = {
   isIgnoreAssets: false,
   isMobile: false,
   useCache: true,
+  useWeakfile: true,
 
   cookie: '',
   localStorage: {}

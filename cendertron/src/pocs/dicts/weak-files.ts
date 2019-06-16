@@ -1,4 +1,4 @@
-export const dirDicts = `
+export const possibleWeakfiles = `
 !.gitignore
 !.htaccess
 !.htpasswd
