@@ -25,7 +25,7 @@ export class Renderer {
   /** 执行内容的序列化提取 */
   async serialize(
     requestUrl: string,
-    isMobile: boolean
+    isMobile: boolean = false
   ): Promise<SerializedResponse> {
     // 构建页面
     const page = await initPage(this.browser, {

@@ -65,7 +65,10 @@ export default class Crawler {
     this.initMonitor();
 
     // 初始化首个爬虫
-    const spider = new PageSpider(entryPage, this, {});
+    const spider = new PageSpider(entryPage, this, {
+      // 仅在首个爬虫处允许敏感文件扫描
+      useWeakfile: true
+    });
     // 这里为了处理跳转的情况，因此初始化两次
     const spiderWithRedirect = new PageSpider(entryPage, this, {
       allowRedirect: true
