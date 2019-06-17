@@ -166,19 +166,21 @@ export default class Crawler {
       return;
     }
 
-    // 判断是否需要过滤非同域请求
-    if (this.crawlerOption.isSameOrigin) {
-      if (result.parsedUrl.host !== this.parsedEntryUrl!.host) {
-        return;
-      }
-    }
-
     // 将该结果添加到蜘蛛的执行结果
     if (!this.spidersResultMap[spider.pageUrl]) {
       this.spidersResultMap[spider.pageUrl] = [];
     }
 
     this.spidersResultMap[spider.pageUrl]!.push(result);
+
+    // 判断是否需要创建新的蜘蛛
+
+    // 判断是否需要过滤非同域请求
+    if (this.crawlerOption.isSameOrigin) {
+      if (result.parsedUrl.host !== this.parsedEntryUrl!.host) {
+        return;
+      }
+    }
 
     // 判断是否需要过滤图片，JS/CSS 等代码资源
     if (this.crawlerOption.isIgnoreAssets) {
@@ -191,7 +193,6 @@ export default class Crawler {
       }
     }
 
-    // 判断是否需要创建新的蜘蛛
     if (
       this.spiders.length < this.crawlerOption.maxPageCount &&
       spider.spiderOption.depth < this.crawlerOption.depth &&
