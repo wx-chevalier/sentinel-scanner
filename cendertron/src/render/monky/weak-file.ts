@@ -5,18 +5,20 @@ import { possibleWeakfiles } from '../../pocs/dicts/weak-files';
 import { stripBackspaceInUrl } from '../../utils/transformer';
 
 /** 扫描弱口令文件 */
-function scanWeakfile(filesPath: string[], baseUrl: string) {
+async function scanWeakfile(filesPath: string[], baseUrl: string) {
   const existedFilesPath: string[] = [];
 
-  filesPath.forEach(filePath => {
+  for (const filePath of filesPath) {
     const url = filePath[0] === '/' ? filePath : `/${filePath}`;
-
-    fetch(url).then(resp => {
+    try {
+      const resp = await fetch(url);
       if (resp.status === 200) {
         existedFilesPath.push(`${baseUrl}/${filePath}`);
       }
-    });
-  });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   return existedFilesPath;
 }

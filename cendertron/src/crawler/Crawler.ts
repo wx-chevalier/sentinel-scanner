@@ -166,8 +166,16 @@ export default class Crawler {
       return;
     }
 
-    // 将该结果添加到蜘蛛的执行结果
+    // 判断是否为内置脚本
+    if (
+      result.hash ===
+      'cdnjs.cloudflare.com#ajaxlibsgremlins.jsidgremlins.min.js'
+    ) {
+      return;
+    }
+
     if (!this.spidersResultMap[spider.pageUrl]) {
+      // 将该结果添加到蜘蛛的执行结果
       this.spidersResultMap[spider.pageUrl] = [];
     }
 
