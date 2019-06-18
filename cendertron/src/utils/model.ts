@@ -43,7 +43,13 @@ export function hashUrl(url: string): string {
   }
 
   if (hash) {
-    urlHash += hash;
+    const hashQueryString = hash.replace('#', '');
+    const queryObj = parseQuery(hashQueryString);
+    Object.keys(queryObj).forEach(n => {
+      if (n) {
+        urlHash += n;
+      }
+    });
   }
 
   return urlHash;
@@ -82,4 +88,17 @@ export function isDir(pathname: string) {
   const lastFrag = frags[frags.length - 1];
 
   return lastFrag === '' || lastFrag.indexOf('.') === -1;
+}
+
+export function parseQuery(queryString: string) {
+  const query: any = {};
+  const pairs: any = (queryString[0] === '?'
+    ? queryString.substr(1)
+    : queryString
+  ).split('&');
+  for (let i = 0; i < pairs.length; i += 1) {
+    const pair = pairs[i].split('=');
+    query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+  }
+  return query;
 }

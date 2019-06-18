@@ -8,8 +8,6 @@ Cendertron can be used for extracting requests(page urls, apis, etc.) from your 
 
 Cendertron 是基于 Puppeteer 的 Web 2.0 动态爬虫与敏感信息泄露检测工具。其依托于 [xe-crawler](https://github.com/wx-chevalier/xe-crawler) 的通用爬虫、调度与缓存模型，新增了 Monkey Test 以及 Request Intercept 等特性，以期尽可能多地挖掘页面与请求。同时针对渗透测试的场景，Cendertron 内置了目录扫描、敏感文件扫描的能力，能够模拟用户实际在浏览器登录状态下的自定义字典爆破。Cendertron 在大量实践的基础上设置了自身的去重策略，能够尽可能地避免重复爬取，加快扫描速度。Cendertron 同时也是正在闭源开发的 [Chaos-Scanner](https://github.com/wx-chevalier/Chaos-Scanner) 模块化安全扫描解决方案的一部分，为基础扫描与智能扫描提供前置输入。
 
-![](https://i.postimg.cc/8PcCmt6t/image.png)
-
 # Usage
 
 ## Locally Development
@@ -111,6 +109,8 @@ If you want to use it in Alibaba Function Computing Service, [cendertron-fc](./d
 }
 ```
 
+![](https://i.postimg.cc/8PcCmt6t/image.png)
+
 ## 模拟操作
 
 ## 请求提取与过滤
@@ -122,7 +122,7 @@ If you want to use it in Alibaba Function Computing Service, [cendertron-fc](./d
 ```json
 {
   "url": "http://localhost:8082/vulnerabilities/csrf/",
-  "cookies": "tid=2000012889; lnk_lang=zh-CN; PHPSESSID=ibefg4jr684pclisdca57bmiq7; security=low"
+  "cookies": "tid=xx; PHPSESSID=xx; security=low"
 }
 ```
 

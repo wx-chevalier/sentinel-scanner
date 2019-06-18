@@ -38,18 +38,20 @@ export async function extractRequestsFromHTMLInSinglePage(
         return `${window.location.href}/${href}`;
       });
 
-      const availableUrls = [];
+      const availableUrls = maybeUrls;
 
-      for (const url of maybeUrls) {
-        try {
-          const resp = await fetch(url);
-          if (resp.status === 200) {
-            availableUrls.push(url);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
+      // for (const url of maybeUrls) {
+      //   try {
+      //     const resp = await fetch(url);
+      //     if (resp.status === 200) {
+      //       availableUrls.push(url);
+      //     }
+      //   } catch (e) {
+      //     console.error(e);
+      //   }
+      // }
+
+      return availableUrls;
     });
 
     // 提取所有的 form 表单

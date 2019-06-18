@@ -146,7 +146,7 @@ export default class Crawler {
     try {
       // 初始化并且执行蜘蛛
       await spider.init();
-      spider.run();
+      await spider.run();
     } catch (e) {
       logger.error('crawler-error>>>spider execution>>>', e.message);
     }
@@ -219,16 +219,16 @@ export default class Crawler {
         depth: spider.spiderOption.depth + 1
       });
 
+      this.spiderQueue.push(nextSpider);
+      this.spiders.push(nextSpider);
+
       if (isDir(result.parsedUrl.pathname)) {
         // 判断是否需要添加敏感信息漏洞，仅对于可能为目录的 path 添加
         const weakfileSpider = new WeakfileSpider(nextPage, this, {});
 
-        this.spiderQueue!.push(weakfileSpider);
+        this.spiderQueue.push(weakfileSpider);
         this.spiders.push(weakfileSpider);
       }
-
-      this.spiderQueue.push(nextSpider);
-      this.spiders.push(nextSpider);
 
       // 将该请求添加到历史记录中
       this.existedSpidersHash.add(result.hash);
