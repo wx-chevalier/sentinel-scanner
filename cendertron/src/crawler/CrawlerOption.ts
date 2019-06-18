@@ -41,7 +41,7 @@ export const defaultCrawlerOption: CrawlerOption = {
   maxPageCount: 100,
   // 默认超时为 10 分钟
   timeout: 10 * 60 * 1000,
-  pageTimeout: 60 * 1000,
+  pageTimeout: 30 * 1000,
 
   isSameOrigin: true,
   isIgnoreAssets: false,

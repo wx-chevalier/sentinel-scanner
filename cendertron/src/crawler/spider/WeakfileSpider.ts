@@ -71,9 +71,9 @@ export class WeakfileSpider extends Spider implements ISpider {
       });
     } catch (e) {
       logger.error(`spider-error>>>${e.message}>>>${this.pageUrl}`);
+    } finally {
+      this.finish();
     }
-
-    this.finish();
   }
 
   /** 执行结束时候操作 */

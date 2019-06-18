@@ -100,8 +100,6 @@ export default class Crawler {
     };
   }
 
-  async initEntrySpider() {}
-
   /** 初始化超时监听函数 */
   async initMonitor() {
     const intl = setTimeout(() => {

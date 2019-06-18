@@ -54,12 +54,6 @@ export class PageSpider extends Spider implements ISpider {
       console.error(e);
     }
 
-    // 设置页面关闭的超时时间
-    const intl = setTimeout(() => {
-      this.finish();
-      clearTimeout(intl);
-    }, this.crawler.crawlerOption.pageTimeout);
-
     // 设置请求监听
     await interceptRequestsInSinglePage(
       this.crawler.browser,
@@ -81,6 +75,12 @@ export class PageSpider extends Spider implements ISpider {
     }
 
     try {
+      // 设置页面关闭的超时时间
+      const intl = setTimeout(() => {
+        this.finish();
+        clearTimeout(intl);
+      }, this.crawler.crawlerOption.pageTimeout);
+
       // 页面跳转
       const resp = await this.page!.goto(this.pageUrl, {
         timeout: this.crawler.crawlerOption.pageTimeout,
@@ -119,12 +119,12 @@ export class PageSpider extends Spider implements ISpider {
       } else {
         logger.error(`spider-error>>>${e.message}>>>${this.pageUrl}`);
       }
+    } finally {
+      // 在外部执行解析
+      await this._parse();
+
+      this.finish();
     }
-
-    // 在外部执行解析
-    await this._parse();
-
-    this.finish();
   }
 
   /** 执行 Monkey 操作 */
@@ -203,8 +203,8 @@ export class PageSpider extends Spider implements ISpider {
       }
     } catch (_) {
       // 这里忽略异常
+    } finally {
+      this.crawler.next();
     }
-
-    this.crawler.next();
   }
 }
