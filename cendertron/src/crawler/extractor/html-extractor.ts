@@ -29,6 +29,12 @@ export async function extractRequestsFromHTMLInSinglePage(
           return href;
         }
 
+        // 如果是绝对路径，则直接以根路径起始处理
+        if (href[0] === '/') {
+          return `${window.location.protocol}//${window.location.host}${href}`;
+        }
+
+        // 否则追加到相对路径
         return `${window.location.href}/${href}`;
       });
 
