@@ -29,6 +29,11 @@ export async function evaluateWeakfileScan(
   baseUrl: string
 ): Promise<string[]> {
   try {
+    // 过滤掉页面已经关闭的情况
+    if (page.isClosed()) {
+      return [];
+    }
+
     const urls: string[] = await page.evaluate(
       scanWeakfile,
       possibleWeakfiles,
