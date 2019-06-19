@@ -172,6 +172,13 @@ export default class Crawler {
       return;
     }
 
+    // 判断是否需要过滤非同域请求
+    if (this.crawlerOption.isSameOrigin) {
+      if (result.parsedUrl.host !== this.parsedEntryUrl!.host) {
+        return;
+      }
+    }
+
     if (!this.spidersResultMap[spider.pageUrl]) {
       // 将该结果添加到蜘蛛的执行结果
       this.spidersResultMap[spider.pageUrl] = [];
@@ -180,13 +187,6 @@ export default class Crawler {
     this.spidersResultMap[spider.pageUrl]!.push(result);
 
     // 判断是否需要创建新的蜘蛛
-
-    // 判断是否需要过滤非同域请求
-    if (this.crawlerOption.isSameOrigin) {
-      if (result.parsedUrl.host !== this.parsedEntryUrl!.host) {
-        return;
-      }
-    }
 
     // 判断是否需要过滤图片，JS/CSS 等代码资源
     if (this.crawlerOption.isIgnoreAssets) {
