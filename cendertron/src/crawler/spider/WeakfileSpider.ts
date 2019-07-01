@@ -29,8 +29,10 @@ export class WeakfileSpider extends Spider implements ISpider {
 
     try {
       // 判断是否存在 cookie
-      if (this.spiderPage.cookies) {
-        await this.page.setCookie(...(this.spiderPage.cookies || []));
+      if (this.crawler.crawlerOption.cookies) {
+        await this.page.setCookie(
+          ...(this.crawler.crawlerOption.cookies || [])
+        );
       }
     } catch (e) {
       console.error(e);
