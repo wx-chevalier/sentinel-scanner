@@ -181,6 +181,7 @@ export default class Crawler {
 
     // 判断是否是要忽略的 url
     if (this.crawlerOption.ignoredRegex) {
+      console.log(this.crawlerOption.ignoredRegex, 'AAAAAAAA');
       if (new RegExp(this.crawlerOption.ignoredRegex).test(result.url)) {
         return;
       }

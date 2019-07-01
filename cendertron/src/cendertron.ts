@@ -189,7 +189,7 @@ export class Cendertron {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
-    const { url, cookie, ignoredRegex, localStorage } =
+    const { url, cookie, ignoredRegex = '.*logout.*', localStorage } =
       ctx.request.body || ({} as any);
 
     let finalUrl = url;
