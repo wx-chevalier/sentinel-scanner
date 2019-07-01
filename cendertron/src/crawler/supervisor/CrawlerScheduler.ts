@@ -1,3 +1,4 @@
+import { CrawlerOption } from './../CrawlerOption';
 import * as puppeteer from 'puppeteer';
 
 import Crawler from '../Crawler';
@@ -5,6 +6,7 @@ import { initPuppeteer } from '../../render/puppeteer';
 import { crawlerCache } from '../CrawlerCache';
 import { logger } from './logger';
 import { SpiderPage } from '../types';
+import defaultCrawlerOption from '../CrawlerOption';
 
 export interface ScheduleOption {
   // 并发爬虫数
@@ -22,6 +24,7 @@ export const defaultScheduleOption: ScheduleOption = {
 /** 默认的爬虫调度器 */
 export default class CrawlerScheduler {
   browser: puppeteer.Browser;
+  crawlerOption?: Partial<CrawlerOption>;
 
   /** 待执行的爬虫队列 */
   pageQueue: SpiderPage[] = [];
@@ -39,7 +42,15 @@ export default class CrawlerScheduler {
   }
 
   /** 添加某个目标 */
-  addTarget({ url, request }: { url?: string; request?: SpiderPage }) {
+  addTarget({
+    url,
+    request,
+    crawlerOption
+  }: {
+    url?: string;
+    request?: SpiderPage;
+    crawlerOption?: Partial<CrawlerOption>;
+  }) {
     if (!url && !request) {
       throw new Error('Invalid request');
     }
@@ -56,6 +67,8 @@ export default class CrawlerScheduler {
     } else {
       this.pageQueue.push(request!);
     }
+
+    this.crawlerOption = crawlerOption || defaultCrawlerOption;
 
     this.runNext();
 
@@ -78,13 +91,9 @@ export default class CrawlerScheduler {
     const request = this.pageQueue.shift();
 
     if (request && request.url) {
-      const crawler = new Crawler(
-        this.browser,
-        {},
-        {
-          onFinish: this.onFinish
-        }
-      );
+      const crawler = new Crawler(this.browser, this.crawlerOption, {
+        onFinish: this.onFinish
+      });
 
       crawler.start(request);
 

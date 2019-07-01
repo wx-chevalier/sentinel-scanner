@@ -155,7 +155,7 @@ export interface CrawlerOption {
   useWeakfile: boolean;
 
   // 页面 Cookie
-  cookie: string;
+  cookies: string;
   // 页面的 localStorage
   localStorage: object;
 }
@@ -172,7 +172,6 @@ function initGermlins() {
   gremlins
     .createHorde()
     .gremlin(gremlins.species.formFiller())
-    .gremlin(gremlins.species.clicker().clickTypes(['click']))
     .gremlin(gremlins.species.toucher())
     .gremlin(gremlins.species.scroller())
     .gremlin(function() {
@@ -295,7 +294,8 @@ export function hashUrl(url: string): string {
 ```json
 {
   "url": "http://localhost:8082/vulnerabilities/csrf/",
-  "cookies": "tid=xx; PHPSESSID=xx; security=low"
+  "cookies": "tid=xx; PHPSESSID=xx; security=low",
+  "ignoredRegex": ".*logout.*"
 }
 ```
 

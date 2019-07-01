@@ -30,8 +30,6 @@ export class ScreenshotError extends Error {
 /** 包含策略配置的请求信息 */
 export interface SpiderPage {
   url: string;
-  cookies?: { name: string; value: string }[];
-  localStorage?: Record<string, string>;
 }
 
 export interface ParsedUrl {
@@ -47,7 +45,7 @@ export interface SpiderResult {
   parsedUrl: ParsedUrl;
   hash: string;
 
-  // 资源类型
+  // 资源类型 script | form | xhr
   resourceType?: string;
 
   // 请求方法
@@ -55,6 +53,9 @@ export interface SpiderResult {
 
   // 请求体
   postData?: string | undefined;
+
+  // 表单请求参数
+  params?: { name: string; type: string; value: string }[];
 }
 
 /** 爬虫的响应结果 */

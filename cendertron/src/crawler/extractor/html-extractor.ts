@@ -40,35 +40,31 @@ export async function extractRequestsFromHTMLInSinglePage(
 
       const availableUrls = maybeUrls;
 
-      // for (const url of maybeUrls) {
-      //   try {
-      //     const resp = await fetch(url);
-      //     if (resp.status === 200) {
-      //       availableUrls.push(url);
-      //     }
-      //   } catch (e) {
-      //     console.error(e);
-      //   }
-      // }
-
       return availableUrls;
     });
 
     // 提取所有的 form 表单
-    const formUrls = await page.evaluate(() => {
+    const formRequests = await page.evaluate(() => {
       // 提取所有的表单
       const $forms = Array.from(document.querySelectorAll('form'));
 
       return Array.from($forms).map($form => {
-        const params = new URLSearchParams();
+        const params: any[] = [];
 
-        Array.from($form.querySelectorAll('input'))
-          .filter($input => $input.name && $input.type !== 'submit')
+        [
+          ...Array.from($form.querySelectorAll('input')),
+          ...Array.from($form.querySelectorAll('textarea'))
+        ]
+          .filter($input => $input.name)
           .forEach($input => {
-            params.set($input.name, 'a');
+            params.push({
+              name: $input.name,
+              type: $input.type,
+              value: $input.value
+            });
           });
 
-        return `${$form.action}?${params.toString()}`;
+        return { url: `${$form.action}`, method: $form.method, params };
       });
     });
 
@@ -83,8 +79,13 @@ export async function extractRequestsFromHTMLInSinglePage(
       });
 
     // 处理所有的 Form 表单
-    formUrls.forEach((url: string) => {
-      requests.push({ ...transfromUrlToResult(url), resourceType: 'form' });
+    formRequests.forEach((r: any) => {
+      requests.push({
+        ...transfromUrlToResult(r.url),
+        resourceType: 'form',
+        method: r.method,
+        params: r.params
+      });
     });
   } catch (e) {
     logger.error(`>>>spider>>>html-extractor>>>${page.url()}>>>${e.message}`);

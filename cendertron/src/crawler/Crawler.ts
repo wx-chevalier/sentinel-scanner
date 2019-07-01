@@ -179,6 +179,13 @@ export default class Crawler {
       }
     }
 
+    // 判断是否是要忽略的 url
+    if (this.crawlerOption.ignoredRegex) {
+      if (new RegExp(this.crawlerOption.ignoredRegex).test(result.url)) {
+        return;
+      }
+    }
+
     if (!this.spidersResultMap[spider.pageUrl]) {
       // 将该结果添加到蜘蛛的执行结果
       this.spidersResultMap[spider.pageUrl] = [];
@@ -210,8 +217,8 @@ export default class Crawler {
     ) {
       const nextPage = {
         url: result.url,
-        cookies: this.entryPage!.cookies,
-        localStorage: this.entryPage!.localStorage
+        cookies: this.crawlerOption.cookies,
+        localStorage: this.crawlerOption.localStorage
       };
       const nextSpider = new PageSpider(nextPage, this, {
         depth: spider.spiderOption.depth + 1

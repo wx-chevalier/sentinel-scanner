@@ -189,7 +189,8 @@ export class Cendertron {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
-    const { url, cookie, localStorage } = ctx.request.body || ({} as any);
+    const { url, cookie, ignoredRegex, localStorage } =
+      ctx.request.body || ({} as any);
 
     let finalUrl = url;
 
@@ -202,9 +203,12 @@ export class Cendertron {
       ctx.set('x-renderer', 'cendertron');
       ctx.body = this.crawlerScheduler!.addTarget({
         request: {
-          url: finalUrl,
+          url: finalUrl
+        },
+        crawlerOption: {
           cookies: parseCookieStr(cookie, finalUrl),
-          localStorage
+          localStorage,
+          ignoredRegex
         }
       });
     } catch (e) {

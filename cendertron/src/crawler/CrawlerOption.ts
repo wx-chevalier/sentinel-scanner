@@ -28,9 +28,12 @@ export interface CrawlerOption {
   useWeakfile: boolean;
 
   // 页面 Cookie
-  cookie: string;
+  cookies?: { name: string; value: string }[];
   // 页面的 localStorage
-  localStorage: object;
+  localStorage?: Record<string, string>;
+
+  // 忽略的页面
+  ignoredRegex?: string;
 }
 
 export const defaultCrawlerOption: CrawlerOption = {
@@ -48,9 +51,7 @@ export const defaultCrawlerOption: CrawlerOption = {
   isMobile: false,
   useCache: true,
   useWeakfile: true,
-
-  cookie: '',
-  localStorage: {}
+  ignoredRegex: '.*logout.*'
 };
 
 export default defaultCrawlerOption;

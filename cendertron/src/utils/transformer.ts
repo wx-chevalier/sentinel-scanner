@@ -17,7 +17,7 @@ export function transformInterceptedRequestToRequest(
     parsedUrl,
     postData: interceptedRequest.postData(),
     resourceType: interceptedRequest.resourceType() || 'xhr',
-
+    method: interceptedRequest.method(),
     hash: hashUrl(url)
   };
 }
