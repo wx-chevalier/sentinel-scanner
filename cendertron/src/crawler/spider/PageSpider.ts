@@ -156,7 +156,7 @@ export class PageSpider extends Spider implements ISpider {
 
     // 将所有打开的页面加入
     this.openedUrls.forEach(url => {
-      const r = transfromUrlToResult(url);
+      const r = transfromUrlToResult(url, 'GET');
       r.resourceType = 'document';
 
       if (!this.existedUrlsHash.has(r.hash)) {

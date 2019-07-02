@@ -55,14 +55,16 @@ export default class Crawler {
 
     this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
-    this.existedSpidersHash.add(hashUrl(entryUrl));
+    this.existedSpidersHash.add(hashUrl(entryUrl, 'GET'));
 
     // 判断是否存在缓存
     if (
       this.crawlerCache &&
-      this.crawlerCache.queryCrawler(entryUrl) &&
-      this.crawlerOption.useCache
+      this.crawlerOption.useCache &&
+      this.crawlerCache.queryCrawler(entryUrl)
     ) {
+      logger.info(`${new Date()} -- Use cache ${entryUrl}`);
+
       return this.crawlerCache.queryCrawler(entryUrl);
     }
 
@@ -73,6 +75,7 @@ export default class Crawler {
       // 仅在首个爬虫处允许敏感文件扫描
       useWeakfile: true
     });
+
     // 这里为了处理跳转的情况，因此初始化两次
     const spiderWithRedirect = new PageSpider(entryPage, this, {
       allowRedirect: true
@@ -181,7 +184,6 @@ export default class Crawler {
 
     // 判断是否是要忽略的 url
     if (this.crawlerOption.ignoredRegex) {
-      console.log(this.crawlerOption.ignoredRegex, 'AAAAAAAA');
       if (new RegExp(this.crawlerOption.ignoredRegex).test(result.url)) {
         return;
       }

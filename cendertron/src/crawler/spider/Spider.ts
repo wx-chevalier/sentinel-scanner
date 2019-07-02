@@ -30,7 +30,7 @@ export default class Spider implements ISpider {
     this.crawler = crawler;
     this.spiderOption = { ...defaultSpiderOption, ...spiderOption };
 
-    this.pageResult = transfromUrlToResult(spiderPage.url);
+    this.pageResult = transfromUrlToResult(spiderPage.url, 'GET');
   }
 
   async init() {

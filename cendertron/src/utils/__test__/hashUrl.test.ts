@@ -1,6 +1,8 @@
 import { hashUrl } from '../model';
 
-console.log(hashUrl('http://localhost:8082/vulnerabilities/sqli/#?id=a'));
+console.log(
+  hashUrl('http://localhost:8082/vulnerabilities/sqli/#?id=a', 'GET')
+);
 
 // console.log(
 //   hashUrl({

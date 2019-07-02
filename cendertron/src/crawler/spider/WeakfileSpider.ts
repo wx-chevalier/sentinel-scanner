@@ -66,7 +66,7 @@ export class WeakfileSpider extends Spider implements ISpider {
       // 执行敏感文件扫描
       // 将所有打开的页面加入
       availableUrls.forEach(url => {
-        const r = transfromUrlToResult(url);
+        const r = transfromUrlToResult(url, 'GET');
         r.resourceType = 'document';
 
         this.crawler._SPIDER_addRequest(this, r);

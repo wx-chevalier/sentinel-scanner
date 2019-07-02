@@ -8,7 +8,7 @@ import { parseUrl } from './transformer';
  * 获取某个 URL 的 HASH 标识
  * @param param0
  */
-export function hashUrl(url: string): string {
+export function hashUrl(url: string, method: string): string {
   // 将 URL 进行格式化提取
   const _parsedUrl = parse(url, url, true);
 
@@ -52,7 +52,7 @@ export function hashUrl(url: string): string {
     });
   }
 
-  return urlHash;
+  return `${urlHash}-${method.toUpperCase()}`;
 }
 
 /** 解析 Cookie 字符串 */

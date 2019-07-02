@@ -29,13 +29,17 @@ export async function extractRequestsFromHTMLInSinglePage(
           return href;
         }
 
-        // 如果是绝对路径，则直接以根路径起始处理
+        // 如果是绝对路径，则直接以根路径起始处理，绝对路径即以开头非 . 开始的
+        if (href[0] === '.') {
+          // 否则追加到相对路径
+          return `${window.location.href}/${href}`;
+        }
+
         if (href[0] === '/') {
           return `${window.location.protocol}//${window.location.host}${href}`;
         }
 
-        // 否则追加到相对路径
-        return `${window.location.href}/${href}`;
+        return `${window.location.protocol}//${window.location.host}/${href}`;
       });
 
       const availableUrls = maybeUrls;
@@ -73,7 +77,7 @@ export async function extractRequestsFromHTMLInSinglePage(
       .filter(aHref => isValidLink(aHref))
       .forEach((href: string) => {
         requests.push({
-          ...transfromUrlToResult(href),
+          ...transfromUrlToResult(href, 'GET'),
           resourceType: 'document'
         });
       });
@@ -81,7 +85,7 @@ export async function extractRequestsFromHTMLInSinglePage(
     // 处理所有的 Form 表单
     formRequests.forEach((r: any) => {
       requests.push({
-        ...transfromUrlToResult(r.url),
+        ...transfromUrlToResult(r.url, 'FORM'),
         resourceType: 'form',
         method: r.method,
         params: r.params

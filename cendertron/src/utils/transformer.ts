@@ -18,12 +18,15 @@ export function transformInterceptedRequestToRequest(
     postData: interceptedRequest.postData(),
     resourceType: interceptedRequest.resourceType() || 'xhr',
     method: interceptedRequest.method(),
-    hash: hashUrl(url)
+    hash: hashUrl(url, interceptedRequest.method())
   };
 }
 
 /** 将 url 解析为请求 */
-export function transfromUrlToResult(url: string): SpiderResult {
+export function transfromUrlToResult(
+  url: string,
+  method: string
+): SpiderResult {
   const strippedUrl = stripBackspaceInUrl(url);
   const { host, pathname, query, hash } = parseUrl(strippedUrl);
   const parsedUrl = { host, pathname, query, hash };
@@ -31,7 +34,7 @@ export function transfromUrlToResult(url: string): SpiderResult {
   return {
     url: strippedUrl,
     parsedUrl,
-    hash: hashUrl(strippedUrl),
+    hash: hashUrl(strippedUrl, method),
     resourceType: 'document'
   };
 }
