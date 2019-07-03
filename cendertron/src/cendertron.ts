@@ -47,7 +47,7 @@ export class Cendertron {
     browser.setMaxListeners(1024);
     this.browser = browser;
     this.renderer = new Renderer(this.browser);
-    this.crawlerScheduler = new CrawlerScheduler(browser);
+    this.crawlerScheduler = new CrawlerScheduler();
 
     this.app.use(koaCompress());
 

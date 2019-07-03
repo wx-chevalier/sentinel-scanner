@@ -197,7 +197,9 @@ export class PageSpider extends Spider implements ISpider {
       // 清除本次注册的监听器
       if (this.listeners) {
         this.listeners.forEach(l => {
-          this.crawler.browser.removeListener('targetcreated', l);
+          if (this.crawler.browser) {
+            this.crawler.browser.removeListener('targetcreated', l);
+          }
         });
       }
 
