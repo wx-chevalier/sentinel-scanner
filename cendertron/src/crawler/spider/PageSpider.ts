@@ -14,6 +14,8 @@ import { logger } from '../supervisor/logger';
 import { transfromUrlToResult } from '../../utils/transformer';
 
 export class PageSpider extends Spider implements ISpider {
+  type: string = 'page';
+
   // 目标页面
   page?: puppeteer.Page;
 

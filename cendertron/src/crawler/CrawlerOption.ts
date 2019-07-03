@@ -51,7 +51,7 @@ export const defaultCrawlerOption: CrawlerOption = {
   isIgnoreAssets: false,
   isMobile: false,
   useCache: true,
-  useWeakfile: true,
+  useWeakfile: false,
   ignoredRegex: '.*logout.*'
 };
 

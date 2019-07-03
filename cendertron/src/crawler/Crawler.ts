@@ -39,6 +39,23 @@ export default class Crawler {
   // 爬虫的执行结果
   private spidersResultMap: { [key: string]: SpiderResult[] } = {};
 
+  public get status() {
+    if (this.spiders.length === 0) {
+      return {
+        progress: 0
+      };
+    }
+
+    return {
+      progress: (this.spiderQueue.length / this.spiders.length).toFixed(2),
+      spiders: this.spiders.map(s => ({
+        url: s.pageUrl,
+        type: s.type,
+        option: s.spiderOption
+      }))
+    };
+  }
+
   constructor(
     browser: puppeteer.Browser,
     crawlerOption: Partial<CrawlerOption> = defaultCrawlerOption,
@@ -230,7 +247,7 @@ export default class Crawler {
       this.spiderQueue.push(nextSpider);
       this.spiders.push(nextSpider);
 
-      if (isDir(result.parsedUrl.pathname)) {
+      if (isDir(result.parsedUrl.pathname) && this.crawlerOption.useWeakfile) {
         // 判断是否需要添加敏感信息漏洞，仅对于可能为目录的 path 添加
         const weakfileSpider = new WeakfileSpider(nextPage, this, {});
 

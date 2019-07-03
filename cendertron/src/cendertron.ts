@@ -60,8 +60,23 @@ export class Cendertron {
         });
       })
     );
+
     this.app.use(
-      route.get('/_ah/health', (ctx: Koa.Context) => (ctx.body = 'OK'))
+      route.get('/_ah/health', async (ctx: Koa.Context) => {
+        const targets = await browser.targets();
+
+        ctx.body = {
+          success: true,
+          browser: {
+            targetsCnt: targets.length,
+            targets: targets.map(t => ({
+              url: t.url(),
+              opener: t.opener()
+            }))
+          },
+          scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {}
+        };
+      })
     );
 
     // Optionally enable cache for rendering requests.

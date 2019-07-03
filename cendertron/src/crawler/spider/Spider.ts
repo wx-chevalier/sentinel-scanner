@@ -8,6 +8,8 @@ import { SpiderPage } from '../types';
 
 /** 通用的蜘蛛接口 */
 export default class Spider implements ISpider {
+  type: string = 'base';
+
   // 蜘蛛所属的爬虫对象
   crawler: Crawler;
   spiderPage: SpiderPage;

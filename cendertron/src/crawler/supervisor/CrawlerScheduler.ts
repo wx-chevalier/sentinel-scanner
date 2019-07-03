@@ -28,6 +28,8 @@ export default class CrawlerScheduler {
 
   /** 待执行的爬虫队列 */
   pageQueue: SpiderPage[] = [];
+  /** 正在执行的爬虫 */
+  runningCrawler: Record<string, Crawler | null> = {};
 
   /** 当前是否正在等待重启 */
   waitingForReset = false;
@@ -35,6 +37,15 @@ export default class CrawlerScheduler {
   runningCrawlerCount = 0;
   /** 已经执行完毕的爬虫数目 */
   finishedCrawlerCount = 0;
+
+  get status() {
+    return {
+      pageQueue: this.pageQueue,
+      waitingForReset: this.waitingForReset,
+      runningCrawlerCount: this.runningCrawlerCount,
+      finishedCrawlerCount: this.finishedCrawlerCount
+    };
+  }
 
   /** 构造函数 */
   constructor(browser: puppeteer.Browser) {
@@ -55,10 +66,21 @@ export default class CrawlerScheduler {
       throw new Error('Invalid request');
     }
     const finalUrl = url || request!.url;
+    const cacheResult = crawlerCache.queryCrawler(finalUrl);
 
     // 判断是否存在于缓存中，如果存在则直接返回
-    if (crawlerCache.queryCrawler(finalUrl)) {
-      return crawlerCache.queryCrawler(finalUrl);
+    if (cacheResult && cacheResult.isFinished) {
+      return cacheResult;
+    }
+
+    const c = this.runningCrawler[finalUrl];
+
+    // 判断是否正在爬取，如果正在爬取，则返回进度
+    if (c) {
+      return {
+        isFinished: false,
+        status: c.status
+      };
     }
 
     if (url) {
@@ -97,14 +119,19 @@ export default class CrawlerScheduler {
 
       crawler.start(request);
 
+      this.runningCrawler[request.url] = crawler;
+
       this.runningCrawlerCount++;
     }
   }
 
   /** 爬虫执行完毕的回调 */
-  onFinish = async () => {
+  onFinish = async (crawler: Crawler) => {
     this.runningCrawlerCount--;
     this.finishedCrawlerCount++;
+
+    // 清除正在的缓存
+    this.runningCrawler[crawler.entryPage!.url] = null;
 
     // 如果已经超过阈值，则准备重启浏览器
     if (this.finishedCrawlerCount > defaultScheduleOption.resetThreshold) {

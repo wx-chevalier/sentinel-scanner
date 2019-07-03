@@ -9,6 +9,8 @@ import { transfromUrlToResult } from '../../utils/transformer';
 import { evaluateWeakfileScan } from '../../render/monky/weak-file';
 
 export class WeakfileSpider extends Spider implements ISpider {
+  type: string = 'weak';
+
   // 目标页面
   page?: puppeteer.Page;
 
