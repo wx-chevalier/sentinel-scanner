@@ -8,7 +8,7 @@ import * as koaSend from 'koa-send';
 import * as path from 'path';
 import * as url from 'url';
 import * as puppeteer from 'puppeteer';
-import { DatastoreCache } from './server/datastore-cache';
+import { DatastoreCache, nodeCache } from './server/datastore-cache';
 
 import { Renderer } from './render/renderer';
 import { initPuppeteer } from './render/puppeteer';
@@ -74,7 +74,8 @@ export class Cendertron {
               opener: t.opener()
             }))
           },
-          scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {}
+          scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
+          cache: nodeCache.keys()
         };
       })
     );

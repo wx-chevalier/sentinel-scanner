@@ -10,6 +10,7 @@ import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
+import { initPuppeteer } from '../render/puppeteer';
 
 export interface CrawlerCallback {
   onStart?: (crawler: Crawler) => void;
@@ -21,7 +22,7 @@ export default class Crawler {
   entryPage: SpiderPage | null = null;
   parsedEntryUrl: ParsedUrl | null = null;
 
-  browser: puppeteer.Browser;
+  browser?: puppeteer.Browser;
   crawlerCache?: CrawlerCache = crawlerCache;
   crawlerOption: CrawlerOption;
   crawlerCallback: CrawlerCallback;
@@ -57,11 +58,9 @@ export default class Crawler {
   }
 
   constructor(
-    browser: puppeteer.Browser,
     crawlerOption: Partial<CrawlerOption> = defaultCrawlerOption,
     cb: CrawlerCallback = {}
   ) {
-    this.browser = browser;
     this.crawlerOption = { ...defaultCrawlerOption, ...crawlerOption };
     this.crawlerCallback = cb;
   }
@@ -73,6 +72,12 @@ export default class Crawler {
     this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
     this.existedSpidersHash.add(hashUrl(entryUrl, 'GET'));
+
+    try {
+      this.browser = await initPuppeteer();
+    } catch (e) {
+      logger.error('crawler-error>>>init browser error>>>', e.message);
+    }
 
     // 判断是否存在缓存
     if (
@@ -163,6 +168,8 @@ export default class Crawler {
       await spider.init();
       await spider.run();
     } catch (e) {
+      // 这里大概率是全局的 browser 挂了，重新启用新的 browser
+      this.browser = await initPuppeteer();
       logger.error('crawler-error>>>spider execution>>>', e.message);
     }
   }
@@ -284,6 +291,10 @@ export default class Crawler {
     // 清理所有的蜘蛛队列，清理所有的蜘蛛
     this.spiderQueue = [];
     this.spiders = [];
+
+    if (this.browser) {
+      this.browser.close();
+    }
 
     // 调用回调函数
     if (this.crawlerCallback.onFinish) {

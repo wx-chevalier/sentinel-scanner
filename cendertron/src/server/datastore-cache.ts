@@ -34,6 +34,7 @@ export class DatastoreCache {
     urlOrHash?: string
   ) {
     const mykeys = nodeCache.keys();
+
     nodeCache.del(
       mykeys.filter(key =>
         urlOrHash
@@ -88,7 +89,7 @@ export class DatastoreCache {
 
       await next();
 
-      if (ctx.status === 200) {
+      if (ctx.status === 200 && ctx.url.indexOf('/scrape') < 0) {
         // 缓存内容
         cacheContent(key, ctx.response.headers, ctx.body);
       }
