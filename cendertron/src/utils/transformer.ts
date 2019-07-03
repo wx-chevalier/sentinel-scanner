@@ -55,15 +55,11 @@ export function stripBackspaceInUrl(url: string): string {
   const strippedFrags: string[] = [];
 
   frags.forEach((f, i) => {
-    if (f === '.') {
-      return;
-    }
-
     if (f === '' && i !== 1) {
       return;
     }
 
-    if (f === '..') {
+    if (f === '..' || f === '.') {
       const lastFrag = strippedFrags.pop();
       if (lastFrag && lastFrag.indexOf('.') > -1) {
         strippedFrags.pop();
