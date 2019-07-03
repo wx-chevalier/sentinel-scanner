@@ -20,11 +20,12 @@ export async function extractRequestsFromHTMLInSinglePage(
       const maybeUrls: string[] = Array.from(
         document.querySelectorAll('a')
       ).map($ele => {
-        const href = $ele.getAttribute('href');
+        const href = $ele.href;
 
         if (!href) {
           return '';
         }
+
         if (href.indexOf('http') > -1 || href.indexOf('https') > -1) {
           return href;
         }
