@@ -15,7 +15,7 @@ export interface ScheduleOption {
 }
 
 export const defaultScheduleOption: ScheduleOption = {
-  maxConcurrentCrawler: 5,
+  maxConcurrentCrawler: 2,
   resetThreshold: 50
 };
 

@@ -73,12 +73,6 @@ export default class Crawler {
     this.parsedEntryUrl = parseUrl(entryUrl);
     this.existedSpidersHash.add(hashUrl(entryUrl, 'GET'));
 
-    try {
-      this.browser = await initPuppeteer();
-    } catch (e) {
-      logger.error('crawler-error>>>init browser error>>>', e.message);
-    }
-
     // 判断是否存在缓存
     if (
       this.crawlerCache &&
@@ -88,6 +82,17 @@ export default class Crawler {
       logger.info(`${new Date()} -- Use cache ${entryUrl}`);
 
       return this.crawlerCache.queryCrawler(entryUrl);
+    }
+
+    try {
+      this.browser = await initPuppeteer();
+    } catch (e) {
+      logger.error('Crawler>>start>>>init browser error>>>', e.message);
+
+      return {
+        isFinished: true,
+        isSuccess: false
+      };
     }
 
     this.initMonitor();

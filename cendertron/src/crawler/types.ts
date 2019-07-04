@@ -64,6 +64,9 @@ export interface CrawlerResult {
   // 是否结束
   isFinished: boolean;
 
+  // 是否成功
+  isSuccess?: boolean;
+
   // 性能度量
   metrics?: {
     // 执行时间

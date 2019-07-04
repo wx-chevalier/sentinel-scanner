@@ -35,7 +35,8 @@ export class PageSpider extends Spider implements ISpider {
   /** 初始化蜘蛛 */
   async init() {
     if (!this.crawler.browser) {
-      logger.error('Crawler context is not readdy!');
+      logger.error('>>>PageSpider>>init>>Crawler context is not readdy!');
+      this.finish();
       return;
     }
 
