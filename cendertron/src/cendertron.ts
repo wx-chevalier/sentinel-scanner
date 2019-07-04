@@ -11,7 +11,7 @@ import * as puppeteer from 'puppeteer';
 import { DatastoreCache, nodeCache } from './server/datastore-cache';
 
 import { Renderer } from './render/renderer';
-import { initPuppeteer } from './render/puppeteer';
+import { defaultBrowserHolder, initDefaultBrowser } from './render/puppeteer';
 import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
 import { logger } from './crawler/supervisor/logger';
@@ -43,10 +43,10 @@ export class Cendertron {
       this.config = Object.assign(this.config, await fse.readJson(CONFIG_PATH));
     }
 
-    const browser = await initPuppeteer();
-    browser.setMaxListeners(1024);
-    this.browser = browser;
-    this.renderer = new Renderer(this.browser);
+    // 初始化默认的浏览器
+    await initDefaultBrowser();
+    this.browser = defaultBrowserHolder.browser;
+    this.renderer = new Renderer(this.browser!);
     this.crawlerScheduler = new CrawlerScheduler();
 
     this.app.use(koaCompress());
@@ -63,7 +63,7 @@ export class Cendertron {
 
     this.app.use(
       route.get('/_ah/health', async (ctx: Koa.Context) => {
-        const targets = await browser.targets();
+        const targets = await this.browser!.targets();
 
         ctx.body = {
           success: true,
@@ -127,12 +127,8 @@ export class Cendertron {
 
     this.app.use(
       route.get('/_ah/reset', async ctx => {
-        browser.removeAllListeners();
-        browser.close();
-
-        // 重启动浏览器
-        const _browser = await initPuppeteer();
-        this.renderer = new Renderer(_browser);
+        // 重置浏览器
+        await initDefaultBrowser();
 
         ctx.body = {
           success: true

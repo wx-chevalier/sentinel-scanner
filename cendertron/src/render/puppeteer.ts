@@ -2,13 +2,42 @@
 import * as puppeteer from 'puppeteer';
 
 import { MOBILE_USERAGENT } from '../crawler/types';
-
 import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
 import { logger } from '../crawler/supervisor/logger';
+
+// 全局唯一的 Browser 对象
+export let defaultBrowserHolder: {
+  browser?: puppeteer.Browser;
+  isReseting: boolean;
+} = {
+  isReseting: false
+};
+
+export async function initDefaultBrowser() {
+  if (defaultBrowserHolder.isReseting) {
+    return;
+  }
+
+  try {
+    defaultBrowserHolder.isReseting = true;
+    if (defaultBrowserHolder.browser) {
+      await defaultBrowserHolder.browser.removeAllListeners();
+      await defaultBrowserHolder.browser.close();
+    }
+
+    defaultBrowserHolder.browser = await initPuppeteer();
+    defaultBrowserHolder.browser.setMaxListeners(1024);
+    defaultBrowserHolder.isReseting = false;
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 /** 初始化 Puppeteer */
 export async function initPuppeteer() {
   let browser;
+
+  logger.info('>>>puppeteer>>initPuppeteer');
 
   if (process.env.NODE_ENV === 'development') {
     browser = await puppeteer.launch({
