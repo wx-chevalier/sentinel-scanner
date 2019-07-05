@@ -63,7 +63,7 @@ export default class CrawlerScheduler {
     const cacheResult = crawlerCache.queryCrawler(finalUrl);
 
     // 判断是否存在于缓存中，如果存在则直接返回
-    if (cacheResult && cacheResult.isFinished) {
+    if (cacheResult) {
       return cacheResult;
     }
 
