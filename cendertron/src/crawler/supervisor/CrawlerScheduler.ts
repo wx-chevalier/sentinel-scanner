@@ -39,6 +39,9 @@ export default class CrawlerScheduler {
   get status() {
     return {
       pageQueue: this.pageQueue,
+      runingCrawlers: Object.keys(this.runningCrawler).map(u =>
+        this.runningCrawler[u] ? this.runningCrawler[u]!.status : null
+      ),
       waitingForReset: this.waitingForReset,
       runningCrawlerCount: this.runningCrawlerCount,
       finishedCrawlerCount: this.finishedCrawlerCount
@@ -67,6 +70,7 @@ export default class CrawlerScheduler {
       return cacheResult;
     }
 
+    // 判断是否正在爬取
     const c = this.runningCrawler[finalUrl];
 
     // 判断是否正在爬取，如果正在爬取，则返回进度
@@ -76,6 +80,13 @@ export default class CrawlerScheduler {
         status: c.status
       };
     }
+
+    // 这里立刻加入到缓存中，避免异步加入缓存带来的冲突
+    const resp = {
+      isFinished: false
+    };
+
+    crawlerCache.cacheCrawler(finalUrl, resp);
 
     if (url) {
       // 不存在则直接创建，压入队列
@@ -89,9 +100,7 @@ export default class CrawlerScheduler {
     this.runNext();
 
     // 返回正在执行
-    return {
-      isFinished: false
-    };
+    return resp;
   }
 
   /** 选取下一个爬虫并且执行 */

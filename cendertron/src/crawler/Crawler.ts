@@ -41,13 +41,14 @@ export default class Crawler {
   private spidersResultMap: { [key: string]: SpiderResult[] } = {};
 
   public get status() {
-    if (this.spiders.length === 0) {
+    if (this.spiders.length === 0 || !this.entryPage) {
       return {
         progress: 0
       };
     }
 
     return {
+      entryPage: this.entryPage.url,
       progress: (this.spiderQueue.length / this.spiders.length).toFixed(2),
       spiders: this.spiders.map(s => ({
         url: s.pageUrl,
