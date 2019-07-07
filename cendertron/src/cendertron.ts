@@ -100,7 +100,7 @@ export class Cendertron {
     this.app.use(route.get(
       '/scrape/clear/:url(.*)',
       (ctx: any, url: string) => {
-        this.datastoreCache.clearCache('Crawler', url);
+        this.datastoreCache.clearCache('Crawler', stripBackspaceInUrl(url));
 
         ctx.body = {
           success: true
