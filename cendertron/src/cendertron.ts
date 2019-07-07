@@ -96,6 +96,25 @@ export class Cendertron {
       };
     }) as any);
 
+    this.app.use(route.post('/scrape/clear', ctx => {
+      const { url } = ctx.request.body || ({} as any);
+
+      let finalUrl = url;
+
+      // 如果是受限的地址，譬如 IP，则添加 HTTP 协议头
+      if (this.restricted(url)) {
+        finalUrl = `http://${url}`;
+      }
+
+      finalUrl = stripBackspaceInUrl(finalUrl);
+
+      this.datastoreCache.clearCache('Crawler', finalUrl);
+
+      ctx.body = {
+        success: true
+      };
+    }) as any);
+
     /** 清除某个特定链接的结果 */
     this.app.use(route.get(
       '/scrape/clear/:url(.*)',
@@ -165,9 +184,6 @@ export class Cendertron {
 
   /** 处理爬虫的请求 */
   async handleScrape(ctx: any, url: string) {
-    if (!this.renderer) {
-      throw new Error('No renderer initalized yet.');
-    }
     let finalUrl = url;
 
     // 如果是受限的地址，譬如 IP，则添加 HTTP 协议头
@@ -188,9 +204,6 @@ export class Cendertron {
 
   /** 处理爬虫的请求，POST 形式，会携带 Cookie、localStorage 等信息 */
   async handleScrapePost(ctx: any) {
-    if (!this.renderer) {
-      throw new Error('No renderer initalized yet.');
-    }
     const { url, cookie, ignoredRegex = '.*logout.*', localStorage } =
       ctx.request.body || ({} as any);
 
