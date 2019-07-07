@@ -47,7 +47,7 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 
 # Compile and rm source code
-RUN yarn install --registry=https://registry.npm.taobao.org --production[=false
+RUN yarn install --registry=https://registry.npm.taobao.org --production=false
 RUN yarn run build
 RUN yarn run prune
 RUN rm -rf ./**/*.ts
