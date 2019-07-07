@@ -50,93 +50,90 @@ export class Cendertron {
 
     this.crawlerScheduler = new CrawlerScheduler();
 
-    this.app.use(koaCompress());
+    this.app.use(koaCompress() as any);
 
-    this.app.use(bodyParser());
+    this.app.use(bodyParser() as any);
 
-    this.app.use(
-      route.get('/', async ctx => {
-        await koaSend(ctx, 'index.html', {
-          root: path.resolve(__dirname, '../src/public')
-        });
-      })
-    );
+    this.app.use(route.get('/', async ctx => {
+      await koaSend(ctx, 'index.html', {
+        root: path.resolve(__dirname, '../src/public')
+      });
+    }) as any);
 
-    this.app.use(
-      route.get('/_ah/health', async ctx => {
-        await pool.use(async (browser: puppeteer.Browser) => {
-          const targets = await browser!.targets();
+    this.app.use(route.get('/_ah/health', async ctx => {
+      await pool.use(async (browser: puppeteer.Browser) => {
+        const targets = await browser!.targets();
 
-          ctx.body = {
-            success: true,
-            browser: {
-              targetsCnt: targets.length,
-              targets: targets.map(t => ({
-                url: t.url(),
-                opener: t.opener()
-              }))
-            },
-            scheduler: this.crawlerScheduler
-              ? this.crawlerScheduler.status
-              : {},
-            cache: nodeCache.keys()
-          };
-        });
-      })
-    );
+        ctx.body = {
+          success: true,
+          browser: {
+            targetsCnt: targets.length,
+            targets: targets.map(t => ({
+              url: t.url(),
+              opener: t.opener()
+            }))
+          },
+          scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
+          cache: nodeCache.keys()
+        };
+      });
+    }) as any);
 
     // Optionally enable cache for rendering requests.
     if (this.config.useCache) {
       this.app.use(this.datastoreCache.middleware());
     }
 
-    this.app.use(
-      route.get('/render/:url(.*)', this.handleRenderRequest.bind(this))
-    );
+    this.app.use(route.get(
+      '/render/:url(.*)',
+      this.handleRenderRequest.bind(this)
+    ) as any);
 
-    this.app.use(
-      route.get('/screenshot/:url(.*)', this.handleScreenshotRequest.bind(this))
-    );
+    this.app.use(route.get(
+      '/screenshot/:url(.*)',
+      this.handleScreenshotRequest.bind(this)
+    ) as any);
 
-    this.app.use(
-      route.post(
-        '/screenshot/:url(.*)',
-        this.handleScreenshotRequest.bind(this)
-      )
-    );
+    this.app.use(route.post(
+      '/screenshot/:url(.*)',
+      this.handleScreenshotRequest.bind(this)
+    ) as any);
 
-    this.app.use(
-      route.get('/scrape/clear', ctx => {
-        this.datastoreCache.clearCache();
+    this.app.use(route.get('/scrape/clear', ctx => {
+      this.datastoreCache.clearCache();
 
-        ctx.body = {
-          success: true
-        };
-      })
-    );
+      ctx.body = {
+        success: true
+      };
+    }) as any);
 
     /** 清除某个特定链接的结果 */
-    this.app.use(
-      route.get('/scrape/clear/:url(.*)', (ctx: any, url: string) => {
+    this.app.use(route.get(
+      '/scrape/clear/:url(.*)',
+      (ctx: any, url: string) => {
         this.datastoreCache.clearCache('Crawler', url);
 
         ctx.body = {
           success: true
         };
-      })
-    );
+      }
+    ) as any);
 
-    this.app.use(route.post('/scrape', this.handleScrapePost.bind(this)));
+    this.app.use(route.post(
+      '/scrape',
+      this.handleScrapePost.bind(this)
+    ) as any);
 
-    this.app.use(route.get('/scrape/:url(.*)', this.handleScrape.bind(this)));
+    this.app.use(route.get(
+      '/scrape/:url(.*)',
+      this.handleScrape.bind(this)
+    ) as any);
 
-    this.app.use(
-      route.get('/_ah/reset', async ctx => {
-        ctx.body = {
-          success: true
-        };
-      })
-    );
+    this.app.use(route.get('/_ah/reset', async ctx => {
+      ctx.body = {
+        success: true
+      };
+    }) as any);
 
     return this.app.listen(this.port, () => {
       logger.info(`Listening on port ${this.port}`);

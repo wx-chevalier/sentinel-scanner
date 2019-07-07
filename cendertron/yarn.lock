@@ -92,9 +92,10 @@
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/@types/keygrip/download/@types/keygrip-1.0.1.tgz#ff540462d2fb4d0a88441ceaf27d287b01c3d878"
 
-"@types/koa-bodyparser@^5.0.1":
-  version "5.0.2"
-  resolved "http://registry.npm.taobao.org/@types/koa-bodyparser/download/@types/koa-bodyparser-5.0.2.tgz#bb9236a8f82576c2f9be7bed7914bcf95632fa18"
+"@types/koa-bodyparser@5.0.1":
+  version "5.0.1"
+  resolved "https://registry.npm.taobao.org/@types/koa-bodyparser/download/@types/koa-bodyparser-5.0.1.tgz#c40c0a0b7903df128a4e0677c51b5bdcc8bfa025"
+  integrity sha1-xAwKC3kD3xKKTgZ3xRtb3Mi/oCU=
   dependencies:
     "@types/koa" "*"
 
@@ -102,38 +103,33 @@
   version "3.2.2"
   resolved "http://registry.npm.taobao.org/@types/koa-compose/download/@types/koa-compose-3.2.2.tgz#dc106e000bbf92a3ac900f756df47344887ee847"
 
-"@types/koa-compress@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.npm.taobao.org/@types/koa-compress/download/@types/koa-compress-2.0.9.tgz#5d19f7d928f78b451a9afd148863e2b45f51e541"
-  integrity sha1-XRn32Sj3i0Uamv0UiGPitF9R5UE=
+"@types/koa-compress@2.0.8":
+  version "2.0.8"
+  resolved "https://registry.npm.taobao.org/@types/koa-compress/download/@types/koa-compress-2.0.8.tgz#426a2fac419aff7d1a7d87fd78203bf0d26a94fb"
+  integrity sha1-QmovrEGa/30afYf9eCA78NJqlPs=
   dependencies:
     "@types/koa" "*"
     "@types/node" "*"
 
-"@types/koa-route@^3.2.4":
+"@types/koa-route@3.2.4":
   version "3.2.4"
-  resolved "http://registry.npm.taobao.org/@types/koa-route/download/@types/koa-route-3.2.4.tgz#65fe3308f00bb33c5d0d95a79b441c30a6b1c989"
+  resolved "https://registry.npm.taobao.org/@types/koa-route/download/@types/koa-route-3.2.4.tgz#65fe3308f00bb33c5d0d95a79b441c30a6b1c989"
+  integrity sha1-Zf4zCPALszxdDZWnm0QcMKaxyYk=
   dependencies:
     "@types/koa" "*"
     path-to-regexp "^1.7.0"
 
-"@types/koa-send@*":
+"@types/koa-send@*", "@types/koa-send@4.1.1":
   version "4.1.1"
-  resolved "http://registry.npm.taobao.org/@types/koa-send/download/@types/koa-send-4.1.1.tgz#88f57cbe0343c8204903f9096d8ff6b98ec3296f"
+  resolved "https://registry.npm.taobao.org/@types/koa-send/download/@types/koa-send-4.1.1.tgz#88f57cbe0343c8204903f9096d8ff6b98ec3296f"
+  integrity sha1-iPV8vgNDyCBJA/kJbY/2uY7DKW8=
   dependencies:
     "@types/koa" "*"
 
-"@types/koa-send@^4.1.2":
-  version "4.1.2"
-  resolved "https://registry.npm.taobao.org/@types/koa-send/download/@types/koa-send-4.1.2.tgz#978f8267ad116d12ac6a18fecd8f34c5657e09ad"
-  integrity sha1-l4+CZ60RbRKsahj+zY80xWV+Ca0=
-  dependencies:
-    "@types/koa" "*"
-
-"@types/koa-static@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.npm.taobao.org/@types/koa-static/download/@types/koa-static-4.0.1.tgz#b740d80a549b0a0a7a3b38918daecde88a7a50ec"
-  integrity sha1-t0DYClSbCgp6OziRja7N6Ip6UOw=
+"@types/koa-static@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npm.taobao.org/@types/koa-static/download/@types/koa-static-4.0.0.tgz#4cddce6adf45221bacfb2842b3621dc92f4d642c"
+  integrity sha1-TN3Oat9FIhus+yhCs2IdyS9NZCw=
   dependencies:
     "@types/koa" "*"
     "@types/koa-send" "*"
@@ -149,13 +145,14 @@
     "@types/koa-compose" "*"
     "@types/node" "*"
 
-"@types/koa@^2.0.49":
-  version "2.0.49"
-  resolved "https://registry.npm.taobao.org/@types/koa/download/@types/koa-2.0.49.tgz#8ffc2ddbdd715a2c392a218c67e116cb07007234"
-  integrity sha1-j/wt291xWiw5KiGMZ+EWywcAcjQ=
+"@types/koa@2.0.46":
+  version "2.0.46"
+  resolved "https://registry.npm.taobao.org/@types/koa/download/@types/koa-2.0.46.tgz#24bc3cd405d10fcde81f876cd8285b44d4ddc3e9"
+  integrity sha1-JLw81AXRD83oH4ds2ChbRNTdw+k=
   dependencies:
     "@types/accepts" "*"
     "@types/cookies" "*"
+    "@types/events" "*"
     "@types/http-assert" "*"
     "@types/keygrip" "*"
     "@types/koa-compose" "*"
@@ -245,7 +242,7 @@ ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-any-promise@^1.0.0, any-promise@^1.1.0:
+any-promise@^1.1.0:
   version "1.3.0"
   resolved "http://registry.npm.taobao.org/any-promise/download/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
 
@@ -467,12 +464,6 @@ debug@^3.1.0:
   dependencies:
     ms "^2.1.1"
 
-debug@~3.1.0:
-  version "3.1.0"
-  resolved "http://registry.npm.taobao.org/debug/download/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
-  dependencies:
-    ms "2.0.0"
-
 deep-equal@~1.0.1:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/deep-equal/download/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
@@ -622,7 +613,7 @@ http-assert@^1.3.0:
     deep-equal "~1.0.1"
     http-errors "~1.7.1"
 
-http-errors@1.6.3, http-errors@~1.6.2:
+http-errors@1.6.3:
   version "1.6.3"
   resolved "http://registry.npm.taobao.org/http-errors/download/http-errors-1.6.3.tgz#8b55680bb4be283a0b5bf4ea2e38580be1d9320d"
   dependencies:
@@ -769,33 +760,17 @@ koa-route@^3.2.0:
     methods "~1.1.0"
     path-to-regexp "^1.2.0"
 
-koa-send@^5.0.0:
-  version "5.0.0"
-  resolved "http://registry.npm.taobao.org/koa-send/download/koa-send-5.0.0.tgz#5e8441e07ef55737734d7ced25b842e50646e7eb"
-  dependencies:
-    debug "^3.1.0"
-    http-errors "^1.6.3"
-    mz "^2.7.0"
-    resolve-path "^1.4.0"
-
-koa-static@^5.0.0:
-  version "5.0.0"
-  resolved "http://registry.npm.taobao.org/koa-static/download/koa-static-5.0.0.tgz#5e92fc96b537ad5219f425319c95b64772776943"
-  dependencies:
-    debug "^3.1.0"
-    koa-send "^5.0.0"
-
-koa@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.npm.taobao.org/koa/download/koa-2.7.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fkoa%2Fdownload%2Fkoa-2.7.0.tgz#7e00843506942b9d82c6cc33749f657c6e5e7adf"
-  integrity sha1-fgCENQaUK52CxswzdJ9lfG5eet8=
+koa@2.5.2:
+  version "2.5.2"
+  resolved "https://registry.npm.taobao.org/koa/download/koa-2.5.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fkoa%2Fdownload%2Fkoa-2.5.2.tgz#f2bda7f3e70be54924e7e5e9789a249f77256fe3"
+  integrity sha1-8r2n8+cL5Ukk5+XpeJokn3clb+M=
   dependencies:
     accepts "^1.3.5"
     cache-content-type "^1.0.0"
     content-disposition "~0.5.2"
     content-type "^1.0.4"
     cookies "~0.7.1"
-    debug "~3.1.0"
+    debug "^3.1.0"
     delegates "^1.0.0"
     depd "^1.1.2"
     destroy "^1.0.4"
@@ -908,14 +883,6 @@ ms@^2.1.1:
   version "2.1.1"
   resolved "http://registry.npm.taobao.org/ms/download/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
 
-mz@^2.7.0:
-  version "2.7.0"
-  resolved "http://registry.npm.taobao.org/mz/download/mz-2.7.0.tgz#95008057a56cafadc2bc63dde7f9ff6955948e32"
-  dependencies:
-    any-promise "^1.0.0"
-    object-assign "^4.0.1"
-    thenify-all "^1.0.0"
-
 negotiator@0.6.1:
   version "0.6.1"
   resolved "http://registry.npm.taobao.org/negotiator/download/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
@@ -930,10 +897,6 @@ node-cache@^4.2.0:
 node-prune@^1.0.2:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/node-prune/download/node-prune-1.0.2.tgz#003b3edf886ab1f67e3915102d6c4835f3087181"
-
-object-assign@^4.0.1:
-  version "4.1.1"
-  resolved "http://registry.npm.taobao.org/object-assign/download/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
 on-finished@^2.3.0:
   version "2.3.0"
@@ -959,7 +922,7 @@ parseurl@^1.3.2:
   version "1.3.2"
   resolved "http://registry.npm.taobao.org/parseurl/download/parseurl-1.3.2.tgz#fc289d4ed8993119460c156253262cdc8de65bf3"
 
-path-is-absolute@1.0.1, path-is-absolute@^1.0.0:
+path-is-absolute@^1.0.0:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/path-is-absolute/download/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
 
@@ -1074,13 +1037,6 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "http://registry.npm.taobao.org/requires-port/download/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
 
-resolve-path@^1.4.0:
-  version "1.4.0"
-  resolved "http://registry.npm.taobao.org/resolve-path/download/resolve-path-1.4.0.tgz#c4bda9f5efb2fce65247873ab36bb4d834fe16f7"
-  dependencies:
-    http-errors "~1.6.2"
-    path-is-absolute "1.0.1"
-
 resolve@^1.3.2:
   version "1.8.1"
   resolved "http://registry.npm.taobao.org/resolve/download/resolve-1.8.1.tgz#82f1ec19a423ac1fbd080b0bab06ba36e84a7a26"
@@ -1155,18 +1111,6 @@ supports-color@^5.3.0:
 text-hex@1.0.x:
   version "1.0.0"
   resolved "http://registry.npm.taobao.org/text-hex/download/text-hex-1.0.0.tgz#69dc9c1b17446ee79a92bf5b884bb4b9127506f5"
-
-thenify-all@^1.0.0:
-  version "1.6.0"
-  resolved "http://registry.npm.taobao.org/thenify-all/download/thenify-all-1.6.0.tgz#1a1918d402d8fc3f98fbf234db0bcc8cc10e9726"
-  dependencies:
-    thenify ">= 3.1.0 < 4"
-
-"thenify@>= 3.1.0 < 4":
-  version "3.3.0"
-  resolved "http://registry.npm.taobao.org/thenify/download/thenify-3.3.0.tgz#e69e38a1babe969b0108207978b9f62b88604839"
-  dependencies:
-    any-promise "^1.0.0"
 
 toidentifier@1.0.0:
   version "1.0.0"
