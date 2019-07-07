@@ -61,22 +61,11 @@ export class Cendertron {
     }) as any);
 
     this.app.use(route.get('/_ah/health', async ctx => {
-      await pool.use(async (browser: puppeteer.Browser) => {
-        const targets = await browser!.targets();
-
-        ctx.body = {
-          success: true,
-          browser: {
-            targetsCnt: targets.length,
-            targets: targets.map(t => ({
-              url: t.url(),
-              opener: t.opener()
-            }))
-          },
-          scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
-          cache: nodeCache.keys()
-        };
-      });
+      ctx.body = {
+        success: true,
+        scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
+        cache: nodeCache.keys()
+      };
     }) as any);
 
     // Optionally enable cache for rendering requests.
