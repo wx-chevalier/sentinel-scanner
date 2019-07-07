@@ -281,5 +281,4 @@ if (!module.parent) {
   cendertron.initialize();
 
   process.on('uncaughtException', logUncaughtError);
-  process.on('unhandledRejection', logUncaughtError);
 }
