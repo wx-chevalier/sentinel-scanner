@@ -1,3 +1,4 @@
+import { pool } from './render/puppeteer';
 import { ScreenshotError } from './crawler/types';
 import * as fse from 'fs-extra';
 import * as Koa from 'koa';
@@ -7,16 +8,16 @@ import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
 import * as path from 'path';
 import * as url from 'url';
-import * as puppeteer from 'puppeteer';
 import { DatastoreCache, nodeCache } from './server/datastore-cache';
 
 import { Renderer } from './render/renderer';
-import { defaultBrowserHolder, initDefaultBrowser } from './render/puppeteer';
 import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
 import { logger } from './crawler/supervisor/logger';
 import CrawlerScheduler from './crawler/supervisor/CrawlerScheduler';
 import { parseCookieStr } from './utils/model';
+import * as puppeteer from 'puppeteer';
+import { stripBackspaceInUrl } from './utils/transformer';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -32,7 +33,6 @@ export class Cendertron {
   app: Koa = new Koa();
   config: CrawlerOption = defaultCrawlerOption;
   private renderer: Renderer | undefined;
-  private browser: puppeteer.Browser | undefined;
   private crawlerScheduler: CrawlerScheduler | undefined;
   private datastoreCache = new DatastoreCache();
   private port = process.env.PORT || '3000';
@@ -43,10 +43,10 @@ export class Cendertron {
       this.config = Object.assign(this.config, await fse.readJson(CONFIG_PATH));
     }
 
-    // 初始化默认的浏览器
-    await initDefaultBrowser();
-    this.browser = defaultBrowserHolder.browser;
-    this.renderer = new Renderer(this.browser!);
+    pool.use((browser: puppeteer.Browser) => {
+      this.renderer = new Renderer(browser);
+    });
+
     this.crawlerScheduler = new CrawlerScheduler();
 
     this.app.use(koaCompress());
@@ -63,20 +63,24 @@ export class Cendertron {
 
     this.app.use(
       route.get('/_ah/health', async (ctx: Koa.Context) => {
-        const targets = await this.browser!.targets();
+        pool.use(async (browser: puppeteer.Browser) => {
+          const targets = await browser!.targets();
 
-        ctx.body = {
-          success: true,
-          browser: {
-            targetsCnt: targets.length,
-            targets: targets.map(t => ({
-              url: t.url(),
-              opener: t.opener()
-            }))
-          },
-          scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
-          cache: nodeCache.keys()
-        };
+          ctx.body = {
+            success: true,
+            browser: {
+              targetsCnt: targets.length,
+              targets: targets.map(t => ({
+                url: t.url(),
+                opener: t.opener()
+              }))
+            },
+            scheduler: this.crawlerScheduler
+              ? this.crawlerScheduler.status
+              : {},
+            cache: nodeCache.keys()
+          };
+        });
       })
     );
 
@@ -127,9 +131,6 @@ export class Cendertron {
 
     this.app.use(
       route.get('/_ah/reset', async ctx => {
-        // 重置浏览器
-        await initDefaultBrowser();
-
         ctx.body = {
           success: true
         };
@@ -187,6 +188,8 @@ export class Cendertron {
       finalUrl = `http://${url}`;
     }
 
+    finalUrl = stripBackspaceInUrl(finalUrl);
+
     try {
       ctx.set('x-renderer', 'cendertron');
       ctx.body = this.crawlerScheduler!.addTarget({ url: finalUrl });
@@ -210,6 +213,8 @@ export class Cendertron {
     if (this.restricted(url)) {
       finalUrl = `http://${url}`;
     }
+
+    finalUrl = stripBackspaceInUrl(finalUrl);
 
     try {
       ctx.set('x-renderer', 'cendertron');

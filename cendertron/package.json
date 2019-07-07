@@ -37,6 +37,7 @@
     "koa-static": "^5.0.0",
     "node-cache": "^4.2.0",
     "puppeteer": "^1.7.0",
+    "puppeteer-pool": "^1.0.3",
     "semver": "^5.5.1",
     "url-parse": "^1.4.4",
     "winston": "^3.1.0"

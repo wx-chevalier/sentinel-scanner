@@ -1,5 +1,7 @@
 # cendertron-fc
 
+cendertron-fc 是基于 Function Computing 构建与部署的 Cendertron 动态爬虫。
+
 # Development
 
 ```sh

@@ -35,11 +35,16 @@ export default class Spider implements ISpider {
     this.pageResult = transfromUrlToResult(spiderPage.url, 'GET');
   }
 
-  async init() {
+  /** 启动爬虫 */
+  public async start() {
     logger.error('Should Implement init');
+    Promise.resolve().then(() => {
+      this.run();
+    });
   }
 
-  async run() {
+  /** 执行爬取操作 */
+  protected async run() {
     logger.error('Should Implement run');
   }
 

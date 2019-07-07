@@ -4,7 +4,7 @@ import * as puppeteer from 'puppeteer';
 import { ISpider } from './ISpider';
 import Spider from './Spider';
 import { SpiderResult } from '../types';
-import { initPage } from '../../render/puppeteer';
+import { initPage, pool } from '../../render/puppeteer';
 import { interceptRequestsInSinglePage } from '../../render/page/interceptor';
 import { monkeyClick } from '../../render/monky/click-monkey';
 import { evaluateGremlins } from '../../render/monky/gremlins';
@@ -15,6 +15,9 @@ import { transfromUrlToResult } from '../../utils/transformer';
 
 export class PageSpider extends Spider implements ISpider {
   type: string = 'page';
+
+  // 浏览器对象
+  browser?: puppeteer.Browser;
 
   // 目标页面
   page?: puppeteer.Page;
@@ -32,19 +35,46 @@ export class PageSpider extends Spider implements ISpider {
   // 蜘蛛内页面去重
   existedUrlsHash = new Set<string>();
 
+  /** 启动蜘蛛 */
+  async start() {}
+
   /** 初始化蜘蛛 */
   async init() {
-    if (!this.crawler.browser) {
+    if (!this.crawler) {
       logger.error('>>>PageSpider>>init>>Crawler context is not readdy!');
       this.finish();
       return;
     }
 
-    this.page = await initPage(this.crawler.browser);
+    pool.use(async (browser: puppeteer.Browser) => {
+      this.browser = browser;
+
+      // 执行实际的抓取操作
+      await this.run();
+
+      // 执行结束操作
+      this.finish();
+
+      // 设置页面关闭的超时时间
+      const intl = setTimeout(() => {
+        this.finish();
+        clearTimeout(intl);
+      }, this.crawler.crawlerOption.pageTimeout);
+    });
+  }
+
+  /** 复写父类方法 */
+  protected async run() {
+    if (!this.browser) {
+      logger.error('>>>PageSpider>>run>>Spider context is not readdy!');
+      return;
+    }
+
+    this.page = await initPage(this.browser);
 
     // 如果创建失败，则直接返回
     if (!this.page) {
-      this.finish();
+      logger.error('>>>PageSpider>>run>>Create entry page error!');
       return;
     }
 
@@ -55,36 +85,19 @@ export class PageSpider extends Spider implements ISpider {
           ...(this.crawler.crawlerOption.cookies || [])
         );
       }
-    } catch (e) {
-      console.error(e);
-    }
 
-    // 设置请求监听
-    await interceptRequestsInSinglePage(
-      this.crawler.browser,
-      this.page,
-      (_r, _o, listeners) => {
-        this.requests = _r;
-        this.openedUrls = _o;
-        this.listeners = listeners;
-      }
-    );
+      // 设置请求监听
+      await interceptRequestsInSinglePage(
+        this.browser,
+        this.page,
+        (_r, _o, listeners) => {
+          this.requests = _r;
+          this.openedUrls = _o;
+          this.listeners = listeners;
+        }
+      );
 
-    this.existedUrlsHash.add(this.pageResult!.hash);
-  }
-
-  /** 复写父类方法 */
-  public async run() {
-    if (!this.page) {
-      throw new Error('Please init this spider!');
-    }
-
-    try {
-      // 设置页面关闭的超时时间
-      const intl = setTimeout(() => {
-        this.finish();
-        clearTimeout(intl);
-      }, this.crawler.crawlerOption.pageTimeout);
+      this.existedUrlsHash.add(this.pageResult!.hash);
 
       // 页面跳转
       const resp = await this.page!.goto(this.pageUrl, {
@@ -96,8 +109,6 @@ export class PageSpider extends Spider implements ISpider {
 
       // 如果是 404 界面，则直接返回
       if (resp && resp.status() === 404) {
-        this.finish();
-
         return;
       }
 
@@ -133,7 +144,7 @@ export class PageSpider extends Spider implements ISpider {
   }
 
   /** 执行 Monkey 操作 */
-  public async _monkeyDance() {
+  private async _monkeyDance() {
     if (!this.page) {
       throw new Error('Please init this spider!');
     }
@@ -145,7 +156,7 @@ export class PageSpider extends Spider implements ISpider {
   }
 
   /** 解析执行结果 */
-  public async _parse() {
+  private async _parse() {
     if (!this.page) {
       throw new Error('Please init this spider!');
     }
@@ -198,8 +209,8 @@ export class PageSpider extends Spider implements ISpider {
       // 清除本次注册的监听器
       if (this.listeners) {
         this.listeners.forEach(l => {
-          if (this.crawler.browser) {
-            this.crawler.browser.removeListener('targetcreated', l);
+          if (this.browser) {
+            this.browser.removeListener('targetcreated', l);
           }
         });
       }

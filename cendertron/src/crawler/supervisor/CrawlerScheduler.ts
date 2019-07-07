@@ -5,7 +5,6 @@ import { crawlerCache } from '../CrawlerCache';
 import { logger } from './logger';
 import { SpiderPage } from '../types';
 import defaultCrawlerOption from '../CrawlerOption';
-import { initDefaultBrowser } from '../../render/puppeteer';
 
 export interface ScheduleOption {
   // 并发爬虫数
@@ -83,7 +82,9 @@ export default class CrawlerScheduler {
 
     // 这里立刻加入到缓存中，避免异步加入缓存带来的冲突
     const resp = {
-      isFinished: false
+      isFinished: false,
+      progress: 0,
+      startedAt: new Date()
     };
 
     crawlerCache.cacheCrawler(finalUrl, resp);
@@ -148,7 +149,6 @@ export default class CrawlerScheduler {
       // 判断当前正在运行的爬虫数目
       if (this.runningCrawlerCount < 1) {
         // 重置默认的浏览器
-        await initDefaultBrowser();
         logger.info(
           `>>>scheduler>>>reset browser>>>(${this.runningCrawlerCount},${
             this.finishedCrawlerCount

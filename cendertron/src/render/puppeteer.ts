@@ -1,5 +1,6 @@
 /** Puppeteer 操作类 */
 import * as puppeteer from 'puppeteer';
+import * as createPuppeteerPool from 'puppeteer-pool';
 
 import { MOBILE_USERAGENT } from '../crawler/types';
 import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
@@ -60,6 +61,47 @@ export async function initPuppeteer() {
 
   return browser;
 }
+
+let puppeteerArgs = [];
+
+if (process.env.NODE_ENV === 'development') {
+  puppeteerArgs = [
+    {
+      headless: false,
+      args: ['--no-sandbox']
+    }
+  ];
+} else {
+  puppeteerArgs = [
+    {
+      executablePath: '/usr/bin/google-chrome',
+      args: [
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--headless',
+        '--no-sandbox',
+        '--remote-debugging-port=9222'
+      ]
+    }
+  ];
+}
+
+// Returns a generic-pool instance
+export const pool = createPuppeteerPool({
+  max: 10, // default
+  min: 2, // default
+  // how long a resource can stay idle in pool before being removed
+  idleTimeoutMillis: 30000, // default.
+  // maximum number of times an individual resource can be reused before being destroyed; set to 0 to disable
+  maxUses: 50, // default
+  // function to validate an instance prior to use; see https://github.com/coopernurse/node-pool#createpool
+  validator: () => Promise.resolve(true), // defaults to always resolving true
+  // validate resource before borrowing; required for `maxUses and `validator`
+  testOnBorrow: true, // default
+  // For all opts, see opts at https://github.com/coopernurse/node-pool#createpool
+  puppeteerArgs
+});
 
 /** 初始化页面 */
 export async function initPage(

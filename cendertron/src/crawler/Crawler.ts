@@ -1,5 +1,4 @@
 import { logger } from './supervisor/logger';
-import * as puppeteer from 'puppeteer';
 
 import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
 import Spider from './spider/Spider';
@@ -10,7 +9,6 @@ import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
-import { initDefaultBrowser, defaultBrowserHolder } from '../render/puppeteer';
 
 export interface CrawlerCallback {
   onStart?: (crawler: Crawler) => void;
@@ -21,7 +19,6 @@ export interface CrawlerCallback {
 export default class Crawler {
   entryPage: SpiderPage | null = null;
   parsedEntryUrl: ParsedUrl | null = null;
-  browser?: puppeteer.Browser = defaultBrowserHolder.browser;
 
   crawlerCache?: CrawlerCache = crawlerCache;
   crawlerOption: CrawlerOption;
@@ -68,7 +65,7 @@ export default class Crawler {
 
   // 启动爬虫
   async start(entryPage: SpiderPage): Promise<CrawlerResult> {
-    const entryUrl = stripBackspaceInUrl(entryPage.url);
+    const entryUrl = entryPage.url;
 
     this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
@@ -160,13 +157,8 @@ export default class Crawler {
     // 在蜘蛛执行层容错
     try {
       // 初始化并且执行蜘蛛
-      await spider.init();
-      await spider.run();
+      await spider.start();
     } catch (e) {
-      // 这里大概率是全局的 browser 挂了，重新启用新的 browser
-      await initDefaultBrowser();
-      this.browser = defaultBrowserHolder.browser;
-
       // 继续执行下一个蜘蛛
       this.next();
       logger.error('crawler-error>>>spider execution>>>', e.message);
