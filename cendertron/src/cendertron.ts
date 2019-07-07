@@ -43,8 +43,9 @@ export class Cendertron {
       this.config = Object.assign(this.config, await fse.readJson(CONFIG_PATH));
     }
 
-    pool.use((browser: puppeteer.Browser) => {
+    pool.use(async (browser: puppeteer.Browser) => {
       this.renderer = new Renderer(browser);
+      return;
     });
 
     this.crawlerScheduler = new CrawlerScheduler();
@@ -54,7 +55,7 @@ export class Cendertron {
     this.app.use(bodyParser());
 
     this.app.use(
-      route.get('/', async (ctx: Koa.Context) => {
+      route.get('/', async ctx => {
         await koaSend(ctx, 'index.html', {
           root: path.resolve(__dirname, '../src/public')
         });
@@ -62,8 +63,8 @@ export class Cendertron {
     );
 
     this.app.use(
-      route.get('/_ah/health', async (ctx: Koa.Context) => {
-        pool.use(async (browser: puppeteer.Browser) => {
+      route.get('/_ah/health', async ctx => {
+        await pool.use(async (browser: puppeteer.Browser) => {
           const targets = await browser!.targets();
 
           ctx.body = {
@@ -116,7 +117,7 @@ export class Cendertron {
 
     /** 清除某个特定链接的结果 */
     this.app.use(
-      route.get('/scrape/clear/:url(.*)', (ctx: Koa.Context, url: string) => {
+      route.get('/scrape/clear/:url(.*)', (ctx: any, url: string) => {
         this.datastoreCache.clearCache('Crawler', url);
 
         ctx.body = {
@@ -157,7 +158,7 @@ export class Cendertron {
     return false;
   }
 
-  async handleRenderRequest(ctx: Koa.Context, url: string) {
+  async handleRenderRequest(ctx: any, url: string) {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
@@ -177,7 +178,7 @@ export class Cendertron {
   }
 
   /** 处理爬虫的请求 */
-  async handleScrape(ctx: Koa.Context, url: string) {
+  async handleScrape(ctx: any, url: string) {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
@@ -200,7 +201,7 @@ export class Cendertron {
   }
 
   /** 处理爬虫的请求，POST 形式，会携带 Cookie、localStorage 等信息 */
-  async handleScrapePost(ctx: Koa.Context) {
+  async handleScrapePost(ctx: any) {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
@@ -234,7 +235,7 @@ export class Cendertron {
     }
   }
 
-  async handleScreenshotRequest(ctx: Koa.Context, url: string) {
+  async handleScreenshotRequest(ctx: any, url: string) {
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }

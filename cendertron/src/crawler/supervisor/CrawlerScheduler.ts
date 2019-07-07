@@ -64,11 +64,6 @@ export default class CrawlerScheduler {
     const finalUrl = url || request!.url;
     const cacheResult = crawlerCache.queryCrawler(finalUrl);
 
-    // 判断是否存在于缓存中，如果存在则直接返回
-    if (cacheResult) {
-      return cacheResult;
-    }
-
     // 判断是否正在爬取
     const c = this.runningCrawler[finalUrl];
 
@@ -76,18 +71,25 @@ export default class CrawlerScheduler {
     if (c) {
       return {
         isFinished: false,
-        status: c.status
+        updatedAt: new Date(),
+        status: c.status,
+        from: 'runningQueue'
       };
     }
 
-    // 这里立刻加入到缓存中，避免异步加入缓存带来的冲突
+    // 判断是否存在于缓存中，如果存在则直接返回
+    if (cacheResult) {
+      return { ...cacheResult, from: 'cache' };
+    }
+
     const resp = {
       isFinished: false,
-      progress: 0,
-      startedAt: new Date()
+      startedAt: new Date(),
+      status: {
+        progress: 0
+      },
+      from: 'scheduler'
     };
-
-    crawlerCache.cacheCrawler(finalUrl, resp);
 
     if (url) {
       // 不存在则直接创建，压入队列

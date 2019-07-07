@@ -35,11 +35,8 @@ export class PageSpider extends Spider implements ISpider {
   // 蜘蛛内页面去重
   existedUrlsHash = new Set<string>();
 
-  /** 启动蜘蛛 */
-  async start() {}
-
   /** 初始化蜘蛛 */
-  async init() {
+  async start() {
     if (!this.crawler) {
       logger.error('>>>PageSpider>>init>>Crawler context is not readdy!');
       this.finish();
@@ -200,7 +197,7 @@ export class PageSpider extends Spider implements ISpider {
   }
 
   /** 执行结束时候操作 */
-  private async finish() {
+  protected async finish() {
     if (!this.page) {
       return;
     }

@@ -1,6 +1,6 @@
 /** Puppeteer 操作类 */
 import * as puppeteer from 'puppeteer';
-import * as createPuppeteerPool from 'puppeteer-pool';
+import { createPuppeteerPool } from './puppeteer-pool';
 
 import { MOBILE_USERAGENT } from '../crawler/types';
 import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
@@ -89,10 +89,10 @@ if (process.env.NODE_ENV === 'development') {
 
 // Returns a generic-pool instance
 export const pool = createPuppeteerPool({
-  max: 10, // default
+  max: 5, // default
   min: 2, // default
   // how long a resource can stay idle in pool before being removed
-  idleTimeoutMillis: 30000, // default.
+  idleTimeoutMillis: 30 * 1000, // default.
   // maximum number of times an individual resource can be reused before being destroyed; set to 0 to disable
   maxUses: 50, // default
   // function to validate an instance prior to use; see https://github.com/coopernurse/node-pool#createpool
@@ -101,7 +101,7 @@ export const pool = createPuppeteerPool({
   testOnBorrow: true, // default
   // For all opts, see opts at https://github.com/coopernurse/node-pool#createpool
   puppeteerArgs
-});
+} as any);
 
 /** 初始化页面 */
 export async function initPage(
@@ -121,9 +121,9 @@ export async function initPage(
     behavior: 'deny'
   });
 
-  page.evaluateOnNewDocument('customElements.forcePolyfill = true');
-  page.evaluateOnNewDocument('ShadyDOM = {force: true}');
-  page.evaluateOnNewDocument('ShadyCSS = {shimcssproperties: true}');
+  await page.evaluateOnNewDocument('customElements.forcePolyfill = true');
+  await page.evaluateOnNewDocument('ShadyDOM = {force: true}');
+  await page.evaluateOnNewDocument('ShadyCSS = {shimcssproperties: true}');
 
   if (options.isMobile) {
     page.setUserAgent(MOBILE_USERAGENT);

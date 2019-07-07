@@ -5,7 +5,7 @@ import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
 import { isMedia } from '../utils/validator';
-import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
+import { parseUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
@@ -77,8 +77,7 @@ export default class Crawler {
       this.crawlerOption.useCache &&
       this.crawlerCache.queryCrawler(entryUrl)
     ) {
-      logger.info(`${new Date()} -- Use cache ${entryUrl}`);
-
+      logger.info(`>>>Crawler>>>start>>>Use cache ${entryUrl}`);
       return this.crawlerCache.queryCrawler(entryUrl);
     }
 
@@ -100,18 +99,22 @@ export default class Crawler {
 
     this.next();
 
+    const resp = {
+      isFinished: false,
+      startedAt: new Date(),
+      status: {
+        progress: 0
+      }
+    };
+
     if (this.crawlerCache) {
       // 这里会立刻返回结果，Koa 会自动缓存，等待爬虫执行完毕之后，其会自动地去复写缓存
-      this.crawlerCache.cacheCrawler(entryUrl, {
-        isFinished: false
-      });
+      this.crawlerCache.cacheCrawler(entryUrl, resp);
     }
 
-    logger.info(`${new Date()} -- Start crawling ${entryUrl}`);
+    logger.info(`>>>Crawler>>>start>>>Start crawling ${entryUrl}`);
 
-    return {
-      isFinished: false
-    };
+    return resp;
   }
 
   /** 初始化超时监听函数 */
@@ -148,7 +151,6 @@ export default class Crawler {
     }
 
     // Todo 从全局缓存中获取到蜘蛛的缓存结果，直接解析该结果
-
     // 将该结果添加到蜘蛛的执行结果
     if (!this.spidersResultMap[spider.pageUrl]) {
       this.spidersResultMap[spider.pageUrl] = [];
@@ -163,14 +165,6 @@ export default class Crawler {
       this.next();
       logger.error('crawler-error>>>spider execution>>>', e.message);
     }
-  }
-
-  // 获取爬虫当前的状态
-  async stats() {}
-
-  // 聚合爬虫中的所有蜘蛛的结果
-  async report() {
-    return this.spidersResultMap;
   }
 
   // 将单个请求添加到结果集中

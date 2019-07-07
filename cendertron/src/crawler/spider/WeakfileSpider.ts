@@ -1,48 +1,16 @@
 /** 默认页面爬虫 */
-import * as puppeteer from 'puppeteer';
 
 import { ISpider } from './ISpider';
-import Spider from './Spider';
 import { logger } from '../supervisor/logger';
-import { initPage } from '../../render/puppeteer';
 import { transfromUrlToResult } from '../../utils/transformer';
 import { evaluateWeakfileScan } from '../../render/monky/weak-file';
+import { PageSpider } from './PageSpider';
 
-export class WeakfileSpider extends Spider implements ISpider {
+export class WeakfileSpider extends PageSpider implements ISpider {
   type: string = 'weak';
 
-  // 目标页面
-  page?: puppeteer.Page;
-
-  /** 初始化蜘蛛 */
-  async init() {
-    if (!this.crawler.browser) {
-      logger.error('Crawler context is not readdy!');
-      return;
-    }
-
-    this.page = await initPage(this.crawler.browser);
-
-    // 如果创建失败，则直接返回
-    if (!this.page) {
-      this.finish();
-      return;
-    }
-
-    try {
-      // 判断是否存在 cookie
-      if (this.crawler.crawlerOption.cookies) {
-        await this.page.setCookie(
-          ...(this.crawler.crawlerOption.cookies || [])
-        );
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   /** 复写父类方法 */
-  public async run() {
+  protected async run() {
     if (!this.page) {
       throw new Error('Please init this spider!');
     }
@@ -81,7 +49,7 @@ export class WeakfileSpider extends Spider implements ISpider {
   }
 
   /** 执行结束时候操作 */
-  private async finish() {
+  protected async finish() {
     if (!this.page) {
       return;
     }
