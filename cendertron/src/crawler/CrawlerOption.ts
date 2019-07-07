@@ -13,6 +13,7 @@ export interface CrawlerOption {
   maxPageCount: number;
   // 总站点的总延时
   timeout: number;
+  navigationTimeout: number;
   // 单页面的延时
   pageTimeout: number;
 
@@ -44,6 +45,7 @@ export const defaultCrawlerOption: CrawlerOption = {
   maxPageCount: 100,
   // 默认超时为 5 分钟
   timeout: 8 * 60 * 1000,
+  navigationTimeout: 5 * 1000,
   // 单页超时为 45s
   pageTimeout: 45 * 1000,
 

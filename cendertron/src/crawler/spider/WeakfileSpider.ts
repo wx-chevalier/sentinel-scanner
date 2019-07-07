@@ -42,7 +42,7 @@ export class WeakfileSpider extends PageSpider implements ISpider {
         this.crawler._SPIDER_addRequest(this, r);
       });
     } catch (e) {
-      logger.error(`spider-error>>>${e.message}>>>${this.pageUrl}`);
+      logger.error(`weakfile-spider-error>>>${e.message}>>>${this.pageUrl}`);
     } finally {
       this.finish();
     }

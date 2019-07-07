@@ -98,7 +98,7 @@ export class PageSpider extends Spider implements ISpider {
 
       // 页面跳转
       const resp = await this.page!.goto(this.pageUrl, {
-        timeout: this.crawler.crawlerOption.pageTimeout,
+        timeout: this.crawler.crawlerOption.navigationTimeout,
 
         // 等待到页面加载完毕
         waitUntil: 'domcontentloaded'
@@ -130,7 +130,9 @@ export class PageSpider extends Spider implements ISpider {
         // 如果是因为重新导航导致的，则将导航后界面加入到下一次处理中
         this.openedUrls.push(this.page.url());
       } else {
-        logger.error(`spider-error>>>${e.message}>>>${this.pageUrl}`);
+        logger.error(
+          `page-spider-error>>>run>>>${e.message}>>>${this.pageUrl}`
+        );
       }
     } finally {
       // 在外部执行解析

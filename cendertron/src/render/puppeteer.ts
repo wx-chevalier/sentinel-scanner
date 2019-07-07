@@ -89,7 +89,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Returns a generic-pool instance
 export const pool = createPuppeteerPool({
-  max: 5, // default
+  max: 8, // default
   min: 2, // default
   // how long a resource can stay idle in pool before being removed
   idleTimeoutMillis: 30 * 1000, // default.
