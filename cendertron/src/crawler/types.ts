@@ -81,4 +81,8 @@ export interface CrawlerResult {
 
   // 结果映射
   spiderMap?: { [key: string]: SpiderResult[] };
+
+  startedAt?: Date;
+  updatedAt?: Date;
+  progress?: string;
 }

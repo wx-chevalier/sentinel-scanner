@@ -141,6 +141,22 @@ export default class Crawler {
     ) {
       this.finish();
       return;
+    } else {
+      // 将数据临时写入
+      if (this.crawlerCache) {
+        // 缓存爬虫结果
+        this.crawlerCache.cacheCrawler(this.entryPage!.url, {
+          isFinished: false,
+          metrics: {
+            executionDuration: Date.now() - this.startTime,
+            spiderCount: this.spiders.length,
+            depth: this.crawlerOption.depth
+          },
+          spiderMap: this.spidersResultMap,
+          updatedAt: new Date(),
+          progress: (this.spiderQueue.length / this.spiders.length).toFixed(2)
+        });
+      }
     }
 
     // 否则获取下一个 Spider

@@ -64,19 +64,6 @@ export default class CrawlerScheduler {
     const finalUrl = url || request!.url;
     const cacheResult = crawlerCache.queryCrawler(finalUrl);
 
-    // 判断是否正在爬取
-    const c = this.runningCrawler[finalUrl];
-
-    // 判断是否正在爬取，如果正在爬取，则返回进度
-    if (c) {
-      return {
-        isFinished: false,
-        updatedAt: new Date(),
-        status: c.status,
-        from: 'runningQueue'
-      };
-    }
-
     // 判断是否存在于缓存中，如果存在则直接返回
     if (cacheResult) {
       return { ...cacheResult, from: 'cache' };

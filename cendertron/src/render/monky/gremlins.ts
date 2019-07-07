@@ -30,7 +30,5 @@ export async function evaluateGremlins(page: puppeteer.Page) {
     });
 
     await page.evaluate(initGermlins);
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (_) {}
 }
