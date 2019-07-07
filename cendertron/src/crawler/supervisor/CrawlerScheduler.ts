@@ -2,21 +2,16 @@ import { CrawlerOption } from './../CrawlerOption';
 
 import Crawler from '../Crawler';
 import { crawlerCache } from '../CrawlerCache';
-import { logger } from './logger';
 import { SpiderPage } from '../types';
 import defaultCrawlerOption from '../CrawlerOption';
 
 export interface ScheduleOption {
   // 并发爬虫数
   maxConcurrentCrawler: number;
-
-  // 重置浏览器的阈值
-  resetThreshold: number;
 }
 
 export const defaultScheduleOption: ScheduleOption = {
-  maxConcurrentCrawler: 2,
-  resetThreshold: 50
+  maxConcurrentCrawler: 2
 };
 
 /** 默认的爬虫调度器 */
@@ -28,8 +23,6 @@ export default class CrawlerScheduler {
   /** 正在执行的爬虫 */
   runningCrawler: Record<string, Crawler | null> = {};
 
-  /** 当前是否正在等待重启 */
-  waitingForReset = false;
   /** 当前正在执行的爬虫数目 */
   runningCrawlerCount = 0;
   /** 已经执行完毕的爬虫数目 */
@@ -41,7 +34,6 @@ export default class CrawlerScheduler {
       runingCrawlers: Object.keys(this.runningCrawler).map(u =>
         this.runningCrawler[u] ? this.runningCrawler[u]!.status : null
       ),
-      waitingForReset: this.waitingForReset,
       runningCrawlerCount: this.runningCrawlerCount,
       finishedCrawlerCount: this.finishedCrawlerCount
     };
@@ -96,10 +88,7 @@ export default class CrawlerScheduler {
   /** 选取下一个爬虫并且执行 */
   runNext() {
     // 判断当前正在执行的爬虫数目，是否超过阈值
-    if (
-      this.runningCrawlerCount > defaultScheduleOption.maxConcurrentCrawler ||
-      this.waitingForReset
-    ) {
+    if (this.runningCrawlerCount > defaultScheduleOption.maxConcurrentCrawler) {
       return;
     }
 
@@ -131,26 +120,7 @@ export default class CrawlerScheduler {
     // 清除正在的缓存
     this.runningCrawler[crawler.entryPage!.url] = null;
 
-    // 如果已经超过阈值，则准备重启浏览器
-    if (this.finishedCrawlerCount > defaultScheduleOption.resetThreshold) {
-      this.waitingForReset = true;
-
-      // 判断当前正在运行的爬虫数目
-      if (this.runningCrawlerCount < 1) {
-        // 重置默认的浏览器
-        logger.info(
-          `>>>scheduler>>>reset browser>>>(${this.runningCrawlerCount},${
-            this.finishedCrawlerCount
-          })`
-        );
-
-        // 将计数器归零
-        this.finishedCrawlerCount = 0;
-        this.waitingForReset = false;
-      }
-    } else {
-      // 否则执行下一个爬虫
-      this.runNext();
-    }
+    // 否则执行下一个爬虫
+    this.runNext();
   };
 }
