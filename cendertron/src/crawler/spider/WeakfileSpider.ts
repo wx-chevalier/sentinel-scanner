@@ -5,14 +5,24 @@ import { logger } from '../supervisor/logger';
 import { transfromUrlToResult } from '../../utils/transformer';
 import { evaluateWeakfileScan } from '../../render/monky/weak-file';
 import { PageSpider } from './PageSpider';
+import { initPage } from '../../render/puppeteer';
 
 export class WeakfileSpider extends PageSpider implements ISpider {
   type: string = 'weak';
 
   /** 复写父类方法 */
   protected async run() {
+    if (!this.browser) {
+      logger.error('>>>WeakfileSpider>>run>>Spider context is not readdy!');
+      return;
+    }
+
+    this.page = await initPage(this.browser);
+
+    // 如果创建失败，则直接返回
     if (!this.page) {
-      throw new Error('Please init this spider!');
+      logger.error('>>>WeakfileSpider>>run>>Create entry page error!');
+      return;
     }
 
     try {

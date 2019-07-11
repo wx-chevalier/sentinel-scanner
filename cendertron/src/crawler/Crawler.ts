@@ -5,7 +5,7 @@ import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
 import { isMedia } from '../utils/validator';
-import { parseUrl } from '../utils/transformer';
+import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
@@ -29,7 +29,7 @@ export default class Crawler {
   private spiderQueue: Spider[] = [];
   // 当前正在运行的蜘蛛
   // 蜘蛛去重，仅爬取不重复的蜘蛛
-  private existedSpidersHash = new Set<string>();
+  private existedHash = new Set<string>();
 
   private startTime = Date.now();
   private isClosed: boolean = false;
@@ -69,7 +69,7 @@ export default class Crawler {
 
     this.entryPage = entryPage;
     this.parsedEntryUrl = parseUrl(entryUrl);
-    this.existedSpidersHash.add(hashUrl(entryUrl, 'GET'));
+    this.existedHash.add(hashUrl(entryUrl, 'GET'));
 
     // 判断是否存在缓存
     if (
@@ -120,6 +120,10 @@ export default class Crawler {
   /** 初始化超时监听函数 */
   async initMonitor() {
     const intl = setTimeout(() => {
+      logger.info(
+        `${new Date()} -- Stop crawling ${this.entryPage!.url} -- with Timeout`
+      );
+
       // 执行回调函数
       this.finish();
 
@@ -166,12 +170,6 @@ export default class Crawler {
       return;
     }
 
-    // Todo 从全局缓存中获取到蜘蛛的缓存结果，直接解析该结果
-    // 将该结果添加到蜘蛛的执行结果
-    if (!this.spidersResultMap[spider.pageUrl]) {
-      this.spidersResultMap[spider.pageUrl] = [];
-    }
-
     // 在蜘蛛执行层容错
     try {
       // 初始化并且执行蜘蛛
@@ -187,6 +185,12 @@ export default class Crawler {
   public _SPIDER_addRequest(spider: Spider, result: SpiderResult) {
     if (this.isClosed) {
       return;
+    }
+
+    if (this.existedHash.has(result.hash)) {
+      return;
+    } else {
+      this.existedHash.add(result.hash);
     }
 
     // 判断是否为内置脚本
@@ -219,7 +223,6 @@ export default class Crawler {
     this.spidersResultMap[spider.pageUrl]!.push(result);
 
     // 判断是否需要创建新的蜘蛛
-
     // 判断是否需要过滤图片，JS/CSS 等代码资源
     if (this.crawlerOption.isIgnoreAssets) {
       if (
@@ -234,17 +237,17 @@ export default class Crawler {
     if (
       this.spiders.length < this.crawlerOption.maxPageCount &&
       spider.spiderOption.depth < this.crawlerOption.depth &&
-      !this.existedSpidersHash.has(result.hash) &&
       // 非 Ajax 类型的页面才进行二次抓取
       result.resourceType !== 'xhr' &&
       result.resourceType !== 'form' &&
       result.resourceType !== 'script'
     ) {
       const nextPage = {
-        url: result.url,
+        url: stripBackspaceInUrl(result.url),
         cookies: this.crawlerOption.cookies,
         localStorage: this.crawlerOption.localStorage
       };
+
       const nextSpider = new PageSpider(nextPage, this, {
         depth: spider.spiderOption.depth + 1
       });
@@ -261,7 +264,7 @@ export default class Crawler {
       }
 
       // 将该请求添加到历史记录中
-      this.existedSpidersHash.add(result.hash);
+      this.existedHash.add(result.hash);
     }
   }
 

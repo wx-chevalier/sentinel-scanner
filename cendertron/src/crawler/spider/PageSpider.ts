@@ -11,7 +11,10 @@ import { evaluateGremlins } from '../../render/monky/gremlins';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
 
 import { logger } from '../supervisor/logger';
-import { transfromUrlToResult } from '../../utils/transformer';
+import {
+  transfromUrlToResult,
+  stripBackspaceInUrl
+} from '../../utils/transformer';
 
 export class PageSpider extends Spider implements ISpider {
   type: string = 'page';
@@ -35,6 +38,9 @@ export class PageSpider extends Spider implements ISpider {
   // 蜘蛛内页面去重
   existedUrlsHash = new Set<string>();
 
+  // 是否关闭
+  isClosed: boolean = false;
+
   /** 初始化蜘蛛 */
   async start() {
     if (!this.crawler) {
@@ -50,11 +56,18 @@ export class PageSpider extends Spider implements ISpider {
       await this.run();
 
       // 执行结束操作
-      this.finish();
+      await this.finish();
 
       // 设置页面关闭的超时时间
-      const intl = setTimeout(() => {
-        this.finish();
+      const intl = setTimeout(async () => {
+        if (!this.isClosed) {
+          logger.error(
+            '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
+              this.pageUrl
+          );
+          await this.finish();
+        }
+
         clearTimeout(intl);
       }, this.crawler.crawlerOption.pageTimeout);
     });
@@ -71,7 +84,9 @@ export class PageSpider extends Spider implements ISpider {
 
     // 如果创建失败，则直接返回
     if (!this.page) {
-      logger.error('>>>PageSpider>>run>>Create entry page error!');
+      logger.error(
+        '>>>PageSpider>>run>>Create entry page error!>>' + this.pageUrl
+      );
       return;
     }
 
@@ -130,15 +145,11 @@ export class PageSpider extends Spider implements ISpider {
         // 如果是因为重新导航导致的，则将导航后界面加入到下一次处理中
         this.openedUrls.push(this.page.url());
       } else {
-        logger.error(
-          `page-spider-error>>>run>>>${e.message}>>>${this.pageUrl}`
-        );
+        logger.error(`PageSpider>>>run>>>${e.message}>>>${this.pageUrl}`);
       }
     } finally {
       // 在外部执行解析
       await this._parse();
-
-      this.finish();
     }
   }
 
@@ -151,7 +162,7 @@ export class PageSpider extends Spider implements ISpider {
     // 页面加载完毕后插入 Monkey 脚本
     await Promise.all([monkeyClick(this.page), evaluateGremlins(this.page)]);
 
-    await this.page.waitFor(5 * 1000);
+    await this.page.waitFor(20 * 1000);
   }
 
   /** 解析执行结果 */
@@ -164,7 +175,7 @@ export class PageSpider extends Spider implements ISpider {
     const currentUrl = this.page.url();
 
     if (currentUrl !== this.pageUrl) {
-      this.pageUrl = currentUrl;
+      this.pageUrl = stripBackspaceInUrl(currentUrl);
     }
 
     // 将所有打开的页面加入
@@ -200,7 +211,7 @@ export class PageSpider extends Spider implements ISpider {
 
   /** 执行结束时候操作 */
   protected async finish() {
-    if (!this.page) {
+    if (!this.page || this.isClosed) {
       return;
     }
 
@@ -221,6 +232,8 @@ export class PageSpider extends Spider implements ISpider {
     } catch (_) {
       // 这里忽略异常
     } finally {
+      this.isClosed = true;
+
       this.crawler.next();
     }
   }

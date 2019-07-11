@@ -2,7 +2,10 @@ import { ISpider, SpiderOption, defaultSpiderOption } from './ISpider';
 import Crawler from '../Crawler';
 
 import { SpiderResult } from './../types';
-import { transfromUrlToResult } from '../../utils/transformer';
+import {
+  transfromUrlToResult,
+  stripBackspaceInUrl
+} from '../../utils/transformer';
 import { logger } from '../supervisor/logger';
 import { SpiderPage } from '../types';
 
@@ -28,7 +31,8 @@ export default class Spider implements ISpider {
     spiderOption: Partial<SpiderOption>
   ) {
     this.spiderPage = spiderPage;
-    this.pageUrl = spiderPage.url;
+
+    this.pageUrl = stripBackspaceInUrl(spiderPage.url);
     this.crawler = crawler;
     this.spiderOption = { ...defaultSpiderOption, ...spiderOption };
 
