@@ -58,7 +58,8 @@ export async function extractRequestsFromHTMLInSinglePage(
 
         [
           ...Array.from($form.querySelectorAll('input')),
-          ...Array.from($form.querySelectorAll('textarea'))
+          ...Array.from($form.querySelectorAll('textarea')),
+          ...Array.from($form.querySelectorAll('select'))
         ]
           .filter($input => $input.name)
           .forEach($input => {

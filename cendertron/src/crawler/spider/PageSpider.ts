@@ -172,10 +172,10 @@ export class PageSpider extends Spider implements ISpider {
     }
 
     // 判断 URL 路径是否发生变化
-    const currentUrl = this.page.url();
+    const currentUrl = stripBackspaceInUrl(this.page.url());
 
     if (currentUrl !== this.pageUrl) {
-      this.pageUrl = stripBackspaceInUrl(currentUrl);
+      this.pageUrl = currentUrl;
     }
 
     // 将所有打开的页面加入

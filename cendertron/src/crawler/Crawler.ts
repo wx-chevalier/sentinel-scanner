@@ -274,10 +274,11 @@ export default class Crawler {
       return;
     }
 
-    logger.info(`${new Date()} -- Stop crawling ${this.entryPage.url}`);
+    if (this.isClosed) {
+      return;
+    }
 
-    // 标记为已关闭，不再执行其他程序
-    this.isClosed = true;
+    logger.info(`${new Date()} -- Stop crawling ${this.entryPage.url}`);
 
     if (this.crawlerCache) {
       // 缓存爬虫结果
@@ -300,5 +301,8 @@ export default class Crawler {
     if (this.crawlerCallback.onFinish) {
       this.crawlerCallback.onFinish(this);
     }
+
+    // 标记为已关闭，不再执行其他程序
+    this.isClosed = true;
   }
 }

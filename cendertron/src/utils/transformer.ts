@@ -70,5 +70,11 @@ export function stripBackspaceInUrl(url: string): string {
     strippedFrags.push(f);
   });
 
-  return strippedFrags.join('/');
+  const finalUrl = strippedFrags.join('/');
+
+  if (url[url.length - 1] === '/') {
+    return `${finalUrl}/`;
+  } else {
+    return finalUrl;
+  }
 }

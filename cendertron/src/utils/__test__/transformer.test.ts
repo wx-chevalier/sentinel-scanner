@@ -20,7 +20,7 @@ console.log(
 
 console.log(
   stripBackspaceInUrl(
-    'http://localhost:8082/vulnerabilities/brute/vulnerabilities/sqli/'
+    'http://localhost:8082/vulnerabilities/brute/vulnerabilities/sqli'
   )
 );
 
