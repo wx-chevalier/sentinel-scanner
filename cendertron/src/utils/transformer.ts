@@ -78,3 +78,13 @@ export function stripBackspaceInUrl(url: string): string {
     return finalUrl;
   }
 }
+
+export function getDirOfUrl(url: string) {
+  const frags = url.split('/');
+
+  if (frags.length > 3 && frags[frags.length - 1].indexOf('.') > -1) {
+    frags.pop();
+  }
+
+  return frags.join('/');
+}

@@ -2,7 +2,7 @@
 import * as puppeteer from 'puppeteer';
 
 import { possibleWeakfiles } from '../../pocs/dicts/weak-files';
-import { stripBackspaceInUrl } from '../../utils/transformer';
+import { stripBackspaceInUrl, getDirOfUrl } from '../../utils/transformer';
 
 /** 扫描弱口令文件 */
 async function scanWeakfile(filesPath: string[], baseUrl: string) {
@@ -37,7 +37,7 @@ export async function evaluateWeakfileScan(
     const urls: string[] = await page.evaluate(
       scanWeakfile,
       possibleWeakfiles,
-      baseUrl
+      getDirOfUrl(baseUrl)
     );
 
     return urls.map(url => stripBackspaceInUrl(url));
