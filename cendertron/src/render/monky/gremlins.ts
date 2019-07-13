@@ -9,7 +9,7 @@ declare var window: { $: any };
 function initGermlins() {
   gremlins
     .createHorde()
-    .gremlin(gremlins.species.formFiller())
+    // .gremlin(gremlins.species.formFiller())
     .gremlin(gremlins.species.clicker().clickTypes(['click']))
     .gremlin(gremlins.species.toucher())
     .gremlin(gremlins.species.scroller())

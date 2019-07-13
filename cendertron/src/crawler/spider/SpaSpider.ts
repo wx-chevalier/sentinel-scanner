@@ -7,7 +7,7 @@ import { evaluateWeakfileScan } from '../../render/monky/weak-file';
 import { PageSpider } from './PageSpider';
 import { initPage } from '../../render/puppeteer';
 
-export class WeakfileSpider extends PageSpider implements ISpider {
+export class SpaSpider extends PageSpider implements ISpider {
   type: string = 'weak';
 
   /** 复写父类方法 */

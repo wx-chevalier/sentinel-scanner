@@ -112,13 +112,6 @@ crawler.start(pageUrl);
 
 If you want to use it in Alibaba Function Computing Service, [cendertron-fc](./deploy/fc) provides simple template.
 
-## Test Urls
-
-- http://testphp.vulnweb.com/AJAX/#
-- http://demo.aisec.cn/demo/
-- https://jsonplaceholder.typicode.com/
-- [DVWA](http://www.dvwa.co.uk/)
-
 # Strategy | 策略
 
 Cendertron 的内部架构如下所示：
@@ -342,6 +335,13 @@ await page.evaluate(() => {
 ```
 
 # About
+
+## Test Target
+
+- http://testphp.vulnweb.com/AJAX/#
+- http://demo.aisec.cn/demo/
+- https://jsonplaceholder.typicode.com/
+- [DVWA](http://www.dvwa.co.uk/)
 
 ## Roadmap
 
