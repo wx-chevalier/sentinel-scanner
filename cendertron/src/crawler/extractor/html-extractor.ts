@@ -17,9 +17,10 @@ export async function extractRequestsFromHTMLInSinglePage(
     }
     // 提取所有的 a 元素
     const aHrefs: string[] = await page.evaluate(async () => {
-      const maybeUrls: string[] = Array.from(
-        document.querySelectorAll('a')
-      ).map($ele => {
+      const maybeUrls: string[] = [
+        ...Array.from(document.querySelectorAll('a')),
+        ...Array.from(document.querySelectorAll('area'))
+      ].map($ele => {
         const href = $ele.href;
 
         if (!href) {
