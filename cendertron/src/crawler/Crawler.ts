@@ -1,3 +1,5 @@
+import * as uuid from 'uuid/v1';
+
 import { logger } from './supervisor/logger';
 
 import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
@@ -17,6 +19,7 @@ export interface CrawlerCallback {
 
 /** 爬虫定义 */
 export default class Crawler {
+  id = uuid();
   entryPage: SpiderPage | null = null;
   parsedEntryUrl: ParsedUrl | null = null;
 
@@ -40,11 +43,13 @@ export default class Crawler {
   public get status() {
     if (this.spiders.length === 0 || !this.entryPage) {
       return {
+        id: this.id,
         progress: 0
       };
     }
 
     return {
+      id: this.id,
       entryPage: this.entryPage.url,
       progress: (this.spiderQueue.length / this.spiders.length).toFixed(2),
       spiders: this.spiders.map(s => ({
@@ -100,6 +105,7 @@ export default class Crawler {
     this.next();
 
     const resp = {
+      id: this.id,
       isFinished: false,
       startedAt: new Date(),
       status: {
@@ -150,6 +156,7 @@ export default class Crawler {
       if (this.crawlerCache) {
         // 缓存爬虫结果
         this.crawlerCache.cacheCrawler(this.entryPage!.url, {
+          id: this.id,
           isFinished: false,
           metrics: {
             executionDuration: Date.now() - this.startTime,
@@ -283,6 +290,7 @@ export default class Crawler {
     if (this.crawlerCache) {
       // 缓存爬虫结果
       this.crawlerCache.cacheCrawler(this.entryPage.url, {
+        id: this.id,
         isFinished: true,
         metrics: {
           executionDuration: Date.now() - this.startTime,

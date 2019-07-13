@@ -61,6 +61,8 @@ export interface SpiderResult {
 /** 爬虫的响应结果 */
 /** 爬虫的响应结果 */
 export interface CrawlerResult {
+  id: string;
+
   // 是否结束
   isFinished: boolean;
 

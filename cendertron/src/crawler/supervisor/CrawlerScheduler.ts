@@ -118,7 +118,7 @@ export default class CrawlerScheduler {
     this.finishedCrawlerCount++;
 
     // 清除正在的缓存
-    this.runningCrawler[crawler.entryPage!.url] = null;
+    delete this.runningCrawler[crawler.entryPage!.url];
 
     // 否则执行下一个爬虫
     this.runNext();

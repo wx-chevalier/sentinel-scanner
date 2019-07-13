@@ -235,6 +235,13 @@
   resolved "https://registry.npm.taobao.org/@types/url-parse/download/@types/url-parse-1.4.3.tgz#fba49d90f834951cb000a674efee3d6f20968329"
   integrity sha1-+6SdkPg0lRywAKZ07+49byCWgyk=
 
+"@types/uuid@^3.4.5":
+  version "3.4.5"
+  resolved "https://registry.npm.taobao.org/@types/uuid/download/@types/uuid-3.4.5.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fuuid%2Fdownload%2F%40types%2Fuuid-3.4.5.tgz#d4dc10785b497a1474eae0ba7f0cb09c0ddfd6eb"
+  integrity sha1-1NwQeFtJehR06uC6fwywnA3f1us=
+  dependencies:
+    "@types/node" "*"
+
 "@types/winston@^2.4.4":
   version "2.4.4"
   resolved "https://registry.npm.taobao.org/@types/winston/download/@types/winston-2.4.4.tgz#48cc744b7b42fad74b9a2e8490e0112bd9a3d08d"
@@ -1373,6 +1380,11 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/util-deprecate/download/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
+
+uuid@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.npm.taobao.org/uuid/download/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
+  integrity sha1-G0r0lV6zB3xQHCOHL8ZROBFYcTE=
 
 vary@^1.1.2:
   version "1.1.2"

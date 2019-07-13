@@ -41,6 +41,7 @@
     "puppeteer-pool": "^1.0.3",
     "semver": "^6.2.0",
     "url-parse": "^1.4.7",
+    "uuid": "^3.3.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -56,6 +57,7 @@
     "@types/puppeteer": "^1.12.4",
     "@types/supertest": "^2.0.8",
     "@types/url-parse": "^1.4.3",
+    "@types/uuid": "^3.4.5",
     "@types/winston": "^2.4.4",
     "node-prune": "^1.0.2",
     "tslint": "^5.18.0",
