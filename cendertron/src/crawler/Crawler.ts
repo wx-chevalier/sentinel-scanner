@@ -238,6 +238,8 @@ export default class Crawler {
         result.url.indexOf('.css') > -1
       ) {
         return;
+      } else {
+        console.log(isMedia(result.url));
       }
     }
 
