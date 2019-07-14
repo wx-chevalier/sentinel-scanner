@@ -152,7 +152,7 @@ export class Cendertron {
    * Checks whether or not the URL is valid. For example, we don't want to allow
    * the requester to read the file system via Chrome.
    */
-  restricted(href: string): boolean {
+  restricted(href: string = ''): boolean {
     const parsedUrl = url.parse(href);
     const protocol = parsedUrl.protocol || '';
 
