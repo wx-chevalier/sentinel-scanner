@@ -20,6 +20,7 @@ export default class CrawlerScheduler {
 
   /** 待执行的爬虫队列 */
   pageQueue: SpiderPage[] = [];
+
   /** 正在执行的爬虫 */
   runningCrawler: Record<string, Crawler | null> = {};
 
@@ -39,21 +40,23 @@ export default class CrawlerScheduler {
     };
   }
 
+  get pageQueueUrls() {
+    return this.pageQueue.map(s => s.url);
+  }
+
   /** 添加某个目标 */
   addTarget({
-    url,
     request,
     crawlerOption
   }: {
-    url?: string;
-    request?: SpiderPage;
+    request: SpiderPage;
     crawlerOption?: Partial<CrawlerOption>;
   }) {
-    if (!url && !request) {
+    if (!request) {
       throw new Error('Invalid request');
     }
 
-    const finalUrl = url || request!.url;
+    const finalUrl = request!.url;
     const cacheResult = crawlerCache.queryCrawler(finalUrl);
 
     // 判断是否存在于缓存中，如果存在则直接返回
@@ -70,10 +73,7 @@ export default class CrawlerScheduler {
       from: 'scheduler'
     };
 
-    if (url) {
-      // 不存在则直接创建，压入队列
-      this.pageQueue.push({ url });
-    } else {
+    if (this.pageQueueUrls.indexOf(finalUrl) < 0) {
       this.pageQueue.push(request!);
     }
 
@@ -105,6 +105,10 @@ export default class CrawlerScheduler {
 
       this.runningCrawlerCount++;
     }
+  }
+
+  reset() {
+    this.pageQueue = [];
   }
 
   /** 爬虫执行完毕的回调 */

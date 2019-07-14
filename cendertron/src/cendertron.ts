@@ -138,6 +138,11 @@ export class Cendertron {
     ) as any);
 
     this.app.use(route.get('/_ah/reset', async ctx => {
+      // 重置爬虫
+      if (this.crawlerScheduler) {
+        this.crawlerScheduler.reset();
+      }
+
       ctx.body = {
         success: true
       };
@@ -195,7 +200,9 @@ export class Cendertron {
 
     try {
       ctx.set('x-renderer', 'cendertron');
-      ctx.body = this.crawlerScheduler!.addTarget({ url: finalUrl });
+      ctx.body = this.crawlerScheduler!.addTarget({
+        request: { url: finalUrl }
+      });
     } catch (e) {
       logger.error(`>>>scrape>>>${e.message}`);
       ctx.body = e.message;
