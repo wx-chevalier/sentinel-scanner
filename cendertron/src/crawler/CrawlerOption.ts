@@ -43,11 +43,12 @@ export const defaultCrawlerOption: CrawlerOption = {
 
   // 单爬虫最多爬取页面数
   maxPageCount: 500,
-  // 默认超时为 30 分钟
-  timeout: 30 * 60 * 1000,
+  // 默认超时为 20 分钟
+  timeout: 20 * 60 * 1000,
+  // 跳转超时为 5s
   navigationTimeout: 5 * 1000,
-  // 单页超时为 60s
-  pageTimeout: 60 * 1000,
+  // 单页超时为 45s
+  pageTimeout: 45 * 1000,
 
   isSameOrigin: true,
   isIgnoreAssets: false,

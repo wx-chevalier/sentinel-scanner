@@ -65,6 +65,10 @@ export class PageSpider extends Spider implements ISpider {
             '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
               this.pageUrl
           );
+
+          // 对于结果执行解析
+          await this._parse();
+
           await this.finish();
         }
 

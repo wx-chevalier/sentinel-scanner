@@ -89,8 +89,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // Returns a generic-pool instance
 export const pool = createPuppeteerPool({
-  max: 10, // default
-  min: 2, // default
+  max: 15, // default
+  min: 5, // default
   // how long a resource can stay idle in pool before being removed
   idleTimeoutMillis: 30 * 1000, // default.
   // maximum number of times an individual resource can be reused before being destroyed; set to 0 to disable
