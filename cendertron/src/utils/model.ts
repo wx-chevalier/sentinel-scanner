@@ -73,7 +73,8 @@ export function parseCookieStr(cookieStr: string = '', url: string) {
         const name = splitCookie[0];
         let value;
 
-        value = splitCookie[1];
+        // 这里将 value 转化为字符串
+        value = `${splitCookie[1]}`;
         cookieArray.push({ name, value, domain: parsedUrl.host });
         return cookieArray;
       },

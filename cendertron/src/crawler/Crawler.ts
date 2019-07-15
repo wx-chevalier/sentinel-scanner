@@ -41,9 +41,17 @@ export default class Crawler {
   private spidersResultMap: { [key: string]: SpiderResult[] } = {};
 
   public get status() {
-    if (this.spiders.length === 0 || !this.entryPage) {
+    if (!this.entryPage) {
       return {
         id: this.id,
+        progress: 0
+      };
+    }
+
+    if (this.spiders.length === 0) {
+      return {
+        id: this.id,
+        entryPage: this.entryPage.url,
         progress: 0
       };
     }

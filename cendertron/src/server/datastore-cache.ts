@@ -63,7 +63,8 @@ export class DatastoreCache {
         // 如果请求存在并且尚未过期，则直接返回结果
         if (
           content.expires.getTime() >= new Date().getTime() &&
-          ctx.url.indexOf('/scrape') < 0
+          ctx.url.indexOf('/scrape') < 0 &&
+          ctx.url.indexOf('_ah') < 0
         ) {
           const headers = JSON.parse(content.headers);
           ctx.set(headers);
