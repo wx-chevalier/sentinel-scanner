@@ -166,6 +166,7 @@ export class PageSpider extends Spider implements ISpider {
     // 页面加载完毕后插入 Monkey 脚本
     await Promise.all([monkeyClick(this.page), evaluateGremlins(this.page)]);
 
+    // 至少等待 20s
     await this.page.waitFor(20 * 1000);
   }
 
