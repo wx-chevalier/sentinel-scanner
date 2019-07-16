@@ -42,7 +42,6 @@ export async function evaluateWeakfileScan(
 
     return urls.map(url => stripBackspaceInUrl(url));
   } catch (e) {
-    console.error(e);
     return [];
   }
 }
