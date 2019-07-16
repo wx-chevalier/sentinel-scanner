@@ -7,7 +7,6 @@ import { SpiderResult } from '../types';
 import { initPage, pool } from '../../render/puppeteer';
 import { interceptRequestsInSinglePage } from '../../render/page/interceptor';
 import { monkeyClick } from '../../render/monky/click-monkey';
-import { evaluateGremlins } from '../../render/monky/gremlins';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
 
 import { logger } from '../supervisor/logger';
@@ -164,10 +163,10 @@ export class PageSpider extends Spider implements ISpider {
     }
 
     // 页面加载完毕后插入 Monkey 脚本
-    await Promise.all([monkeyClick(this.page), evaluateGremlins(this.page)]);
+    await Promise.all([monkeyClick(this.page)]);
 
-    // 至少等待 20s
-    await this.page.waitFor(20 * 1000);
+    // 至少等待 10s
+    await this.page.waitFor(10 * 1000);
   }
 
   /** 解析执行结果 */
