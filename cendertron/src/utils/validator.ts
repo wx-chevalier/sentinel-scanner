@@ -45,3 +45,16 @@ export const maybeUUID = (pathFragment: string | null) => {
     .split('')
     .reduce((prev, char) => prev || !isNaN(parseInt(char)), false);
 };
+
+export function shouldIgnore(ignoredRegex: string, url: string) {
+  // 只要满足一项，返回 true，否则 false
+  const regexList = ignoredRegex.split('\n');
+
+  for (const reg of regexList) {
+    if (new RegExp(reg).test(url)) {
+      return true;
+    }
+  }
+
+  return false;
+}

@@ -6,7 +6,7 @@ import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
 import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
-import { isMedia } from '../utils/validator';
+import { isMedia, shouldIgnore } from '../utils/validator';
 import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
@@ -224,10 +224,11 @@ export default class Crawler {
     }
 
     // 判断是否是要忽略的 url
-    if (this.crawlerOption.ignoredRegex) {
-      if (new RegExp(this.crawlerOption.ignoredRegex).test(result.url)) {
-        return;
-      }
+    if (
+      this.crawlerOption.ignoredRegex &&
+      shouldIgnore(this.crawlerOption.ignoredRegex, result.url)
+    ) {
+      return;
     }
 
     if (!this.spidersResultMap[spider.pageUrl]) {
@@ -246,8 +247,6 @@ export default class Crawler {
         result.url.indexOf('.css') > -1
       ) {
         return;
-      } else {
-        console.log(isMedia(result.url));
       }
     }
 
