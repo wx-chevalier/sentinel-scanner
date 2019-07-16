@@ -28,17 +28,17 @@ export default class Crawler {
   crawlerCallback: CrawlerCallback;
 
   // 内部所有的蜘蛛列表
-  private spiders: Spider[] = [];
-  private spiderQueue: Spider[] = [];
+  spiders: Spider[] = [];
+  spiderQueue: Spider[] = [];
   // 当前正在运行的蜘蛛
   // 蜘蛛去重，仅爬取不重复的蜘蛛
-  private existedHash = new Set<string>();
+  existedHash = new Set<string>();
 
-  private startTime = Date.now();
-  private isClosed: boolean = false;
+  startTime = Date.now();
+  isClosed: boolean = false;
 
   // 爬虫的执行结果
-  private spidersResultMap: { [key: string]: SpiderResult[] } = {};
+  spidersResultMap: { [key: string]: SpiderResult[] } = {};
 
   public get status() {
     if (!this.entryPage) {

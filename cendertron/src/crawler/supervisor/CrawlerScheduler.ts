@@ -22,12 +22,25 @@ export default class CrawlerScheduler {
   pageQueue: SpiderPage[] = [];
 
   /** 正在执行的爬虫 */
-  runningCrawler: Record<string, Crawler | null> = {};
+  runningCrawler: Record<string, Crawler> = {};
 
   /** 当前正在执行的爬虫数目 */
   runningCrawlerCount = 0;
   /** 已经执行完毕的爬虫数目 */
   finishedCrawlerCount = 0;
+
+  constructor() {
+    // 定时器，每 15s 判断下是否有已经完成的爬虫，但是未清除出队列的
+    setInterval(() => {
+      Object.keys(this.runningCrawler).forEach(url => {
+        const c = this.runningCrawler[url];
+
+        if (c.isClosed) {
+          this.onFinish(c);
+        }
+      });
+    }, 15 * 1000);
+  }
 
   get status() {
     return {
