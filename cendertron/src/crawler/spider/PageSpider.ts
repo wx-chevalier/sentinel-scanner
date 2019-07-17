@@ -14,6 +14,7 @@ import {
   transfromUrlToResult,
   stripBackspaceInUrl
 } from '../../utils/transformer';
+import { evaluateGremlins } from '../../render/monky/gremlins';
 
 export class PageSpider extends Spider implements ISpider {
   type: string = 'page';
@@ -163,7 +164,7 @@ export class PageSpider extends Spider implements ISpider {
     }
 
     // 页面加载完毕后插入 Monkey 脚本
-    await Promise.all([monkeyClick(this.page)]);
+    await Promise.all([monkeyClick(this.page), evaluateGremlins(this.page)]);
 
     // 至少等待 10s
     await this.page.waitFor(10 * 1000);
