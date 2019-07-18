@@ -20,7 +20,10 @@ const mediaSuffix = [
   // 音视频
   'mp3',
   'mp4',
-  'wov'
+  'wov',
+
+  // 其他文件
+  'pdf'
 ];
 
 // 判断是否为图片链接
