@@ -107,11 +107,9 @@ export default class Crawler {
     this.spiderQueue = [spider, spiderWithRedirect];
     this.spiders = [spider, spiderWithRedirect];
 
-    if (this.crawlerOption.useWeakfile) {
-      const weakfileSpider = new WeakfileSpider(entryPage, this, {});
-      this.spiderQueue.push(weakfileSpider);
-      this.spiders.push(weakfileSpider);
-    }
+    const weakfileSpider = new WeakfileSpider(entryPage, this, {});
+    this.spiderQueue.push(weakfileSpider);
+    this.spiders.push(weakfileSpider);
 
     this.startTime = Date.now();
 
