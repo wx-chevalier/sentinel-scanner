@@ -45,7 +45,7 @@ export const defaultCrawlerOption: CrawlerOption = {
   maxPageCount: 500,
   // 默认超时为 20 分钟
   timeout: 20 * 60 * 1000,
-  // 跳转超时为 5s
+  // 跳转超时为 20s
   navigationTimeout: 20 * 1000,
   // 单页超时为 60s
   pageTimeout: 60 * 1000,
