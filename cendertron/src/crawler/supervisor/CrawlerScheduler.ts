@@ -35,7 +35,7 @@ export default class CrawlerScheduler {
       Object.keys(this.runningCrawler).forEach(url => {
         const c = this.runningCrawler[url];
 
-        if (c.isClosed) {
+        if (c.isClosed || Date.now() - c.startTime > c.crawlerOption.timeout) {
           this.onFinish(c);
         }
       });
