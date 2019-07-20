@@ -1,13 +1,7 @@
-import { CrawlerCache } from './CrawlerCache';
-
 /** 爬虫参数 */
 export interface CrawlerOption {
   // 爬取深度，如果设置为 1 就是单页面爬虫
   depth: number;
-  // 爬虫的唯一编号
-  uuid?: string;
-  // 爬虫缓存
-  crawlerCache?: CrawlerCache;
 
   // 单页面爬取出的最多的子节点数
   maxPageCount: number;
