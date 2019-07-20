@@ -4,7 +4,7 @@ import * as puppeteer from 'puppeteer';
 import { ISpider } from './ISpider';
 import Spider from './Spider';
 import { SpiderResult } from '../types';
-import { initPage, pool } from '../../render/puppeteer';
+import { initPage } from '../../render/puppeteer';
 import { interceptRequestsInSinglePage } from '../../render/page/interceptor';
 import { monkeyClick } from '../../render/monky/click-monkey';
 import { extractRequestsFromHTMLInSinglePage } from '../extractor/html-extractor';
@@ -43,38 +43,34 @@ export class PageSpider extends Spider implements ISpider {
 
   /** 初始化蜘蛛 */
   async start() {
-    if (!this.crawler) {
+    if (!this.crawler || !this.browser) {
       logger.error('>>>PageSpider>>init>>Crawler context is not readdy!');
       this.finish();
       return;
     }
 
-    pool.use(async (browser: puppeteer.Browser) => {
-      this.browser = browser;
+    // 执行实际的抓取操作
+    await this.run();
 
-      // 执行实际的抓取操作
-      await this.run();
+    // 执行结束操作
+    await this.finish();
 
-      // 执行结束操作
-      await this.finish();
+    // 设置页面关闭的超时时间
+    const intl = setTimeout(async () => {
+      if (!this.isClosed) {
+        logger.error(
+          '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
+            this.pageUrl
+        );
 
-      // 设置页面关闭的超时时间
-      const intl = setTimeout(async () => {
-        if (!this.isClosed) {
-          logger.error(
-            '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
-              this.pageUrl
-          );
+        // 对于结果执行解析
+        await this._parse();
 
-          // 对于结果执行解析
-          await this._parse();
+        await this.finish();
+      }
 
-          await this.finish();
-        }
-
-        clearTimeout(intl);
-      }, this.crawler.crawlerOption.pageTimeout);
-    });
+      clearTimeout(intl);
+    }, this.crawler.crawlerOption.pageTimeout);
   }
 
   /** 复写父类方法 */
@@ -238,7 +234,6 @@ export class PageSpider extends Spider implements ISpider {
       // 这里忽略异常
     } finally {
       this.isClosed = true;
-
       this.crawler.next();
     }
   }

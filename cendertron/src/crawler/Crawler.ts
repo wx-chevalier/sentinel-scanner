@@ -1,3 +1,4 @@
+import { pool } from './../render/puppeteer';
 import * as uuid from 'uuid/v1';
 
 import { logger } from './supervisor/logger';
@@ -11,6 +12,7 @@ import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
+import * as puppeteer from 'puppeteer';
 
 export interface CrawlerCallback {
   onStart?: (crawler: Crawler) => void;
@@ -23,6 +25,7 @@ export default class Crawler {
   entryPage: SpiderPage | null = null;
   parsedEntryUrl: ParsedUrl | null = null;
 
+  browser?: puppeteer.Browser;
   crawlerCache?: CrawlerCache = crawlerCache;
   crawlerOption: CrawlerOption;
   crawlerCallback: CrawlerCallback;
@@ -111,9 +114,11 @@ export default class Crawler {
     this.spiderQueue.push(weakfileSpider);
     this.spiders.push(weakfileSpider);
 
-    this.startTime = Date.now();
-
-    this.next();
+    pool.use(async (browser: puppeteer.Browser) => {
+      this.startTime = Date.now();
+      this.browser = browser;
+      this.next();
+    });
 
     const resp = {
       id: this.id,
@@ -190,7 +195,7 @@ export default class Crawler {
 
     // 在蜘蛛执行层容错
     try {
-      // 初始化并且执行蜘蛛
+      (spider as PageSpider).browser = this.browser;
       await spider.start();
     } catch (e) {
       // 继续执行下一个蜘蛛
