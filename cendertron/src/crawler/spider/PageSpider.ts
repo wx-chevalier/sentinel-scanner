@@ -139,7 +139,9 @@ export class PageSpider extends Spider implements ISpider {
       `);
       }
 
-      await this._monkeyDance();
+      if (this.crawler.crawlerOption.useMonkey) {
+        await this._monkeyDance();
+      }
     } catch (e) {
       if (e.message.indexOf('navigation') > -1) {
         // 如果是因为重新导航导致的，则将导航后界面加入到下一次处理中

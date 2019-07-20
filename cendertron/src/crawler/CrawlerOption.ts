@@ -25,6 +25,8 @@ export interface CrawlerOption {
   isMobile: boolean;
   // 是否开启缓存
   useCache: boolean;
+  // 是否使用模拟操作
+  useMonkey: boolean;
   // 是否使用弱口令扫描
   useWeakfile: boolean;
 
@@ -45,16 +47,17 @@ export const defaultCrawlerOption: CrawlerOption = {
   maxPageCount: 500,
   // 默认超时为 20 分钟
   timeout: 20 * 60 * 1000,
-  // 跳转超时为 20s
-  navigationTimeout: 10 * 1000,
-  // 单页超时为 45s
-  pageTimeout: 45 * 1000,
+  // 跳转超时为 30s
+  navigationTimeout: 30 * 1000,
+  // 单页超时为 60s
+  pageTimeout: 60 * 1000,
 
   isSameOrigin: true,
   isIgnoreAssets: true,
   isMobile: false,
   useCache: true,
   useWeakfile: false,
+  useMonkey: false,
   ignoredRegex: '.*logout.*'
 };
 
