@@ -2,9 +2,9 @@ import * as puppeteer from 'puppeteer';
 import * as genericPool from 'generic-pool';
 
 export const createPuppeteerPool = ({
-  max = 5,
+  max = 10,
   // optional. if you set this, make sure to drain() (see step 3)
-  min = 5,
+  min = 2,
   // specifies how long a resource can stay idle in pool before being removed
   idleTimeoutMillis = 30000,
   // specifies the maximum number of times a resource can be reused before being destroyed
