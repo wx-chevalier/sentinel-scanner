@@ -79,7 +79,7 @@ export default class CrawlerScheduler {
 
     const resp = {
       isFinished: false,
-      startedAt: new Date(),
+      isStarted: false,
       status: {
         progress: 0
       },
