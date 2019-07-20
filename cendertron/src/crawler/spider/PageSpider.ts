@@ -142,10 +142,7 @@ export class PageSpider extends Spider implements ISpider {
           }
       `);
       }
-
-      if (this.crawler.crawlerOption.useMonkey) {
-        await this._monkeyDance();
-      }
+      await this._monkeyDance();
     } catch (e) {
       if (e.message.indexOf('navigation') > -1) {
         // 如果是因为重新导航导致的，则将导航后界面加入到下一次处理中
@@ -165,8 +162,11 @@ export class PageSpider extends Spider implements ISpider {
       throw new Error('Please init this spider!');
     }
 
-    // 页面加载完毕后插入 Monkey 脚本
-    await Promise.all([monkeyClick(this.page), evaluateGremlins(this.page)]);
+    await evaluateGremlins(this.page);
+
+    if (this.crawler.crawlerOption.useClickMonkey) {
+      await monkeyClick(this.page);
+    }
 
     // 至少等待 10s
     await this.page.waitFor(10 * 1000);

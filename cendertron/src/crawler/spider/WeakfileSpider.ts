@@ -49,7 +49,7 @@ export class WeakfileSpider extends PageSpider implements ISpider {
         const r = transfromUrlToResult(url, 'GET');
         r.resourceType = 'document';
 
-        this.crawler._SPIDER_addRequest(this, r);
+        this.crawler._SPIDER_addRequest(this, r, true);
       });
     } catch (e) {
       logger.error(`weakfile-spider-error>>>${e.message}>>>${this.pageUrl}`);

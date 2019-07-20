@@ -20,7 +20,7 @@ export interface CrawlerOption {
   // 是否开启缓存
   useCache: boolean;
   // 是否使用模拟操作
-  useMonkey: boolean;
+  useClickMonkey: boolean;
   // 是否使用弱口令扫描
   useWeakfile: boolean;
 
@@ -49,10 +49,11 @@ export const defaultCrawlerOption: CrawlerOption = {
   isSameOrigin: true,
   isIgnoreAssets: true,
   isMobile: false,
+  ignoredRegex: '.*logout.*',
+
   useCache: true,
   useWeakfile: false,
-  useMonkey: false,
-  ignoredRegex: '.*logout.*'
+  useClickMonkey: false
 };
 
 export default defaultCrawlerOption;

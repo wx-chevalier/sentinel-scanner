@@ -200,7 +200,11 @@ export default class Crawler {
   }
 
   // 将单个请求添加到结果集中
-  public _SPIDER_addRequest(spider: Spider, result: SpiderResult) {
+  public _SPIDER_addRequest(
+    spider: Spider,
+    result: SpiderResult,
+    ignoreAsSpider = false
+  ) {
     if (this.isClosed) {
       return;
     }
@@ -251,6 +255,10 @@ export default class Crawler {
       ) {
         return;
       }
+    }
+
+    if (ignoreAsSpider) {
+      return;
     }
 
     if (
