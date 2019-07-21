@@ -60,6 +60,7 @@ export default class Crawler {
       id: this.id,
       entryPage: this.entryPage.url,
       progress: (this.spiderQueue.length / this.spiders.length).toFixed(2),
+      startedAt: this.startTime,
       spiders: this.spiders.map(s => ({
         url: s.pageUrl,
         type: s.type,
