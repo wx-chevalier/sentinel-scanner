@@ -29,7 +29,8 @@ const mediaSuffix = [
 // 判断是否为图片链接
 export const isMedia = (url: string) =>
   mediaSuffix.reduce(
-    (prev, suffix) => prev || url.indexOf(`.${suffix}`) > -1,
+    (prev, suffix) =>
+      prev || url.indexOf(`.${suffix}`) > -1 || url === 'about:blank',
     false
   );
 
