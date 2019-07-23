@@ -37,11 +37,14 @@ export const createPuppeteerPool = ({
     testOnBorrow,
     ...otherConfig
   };
+
   const pool = genericPool.createPool<puppeteer.Browser>(
     factory as any,
     config
   );
+
   const genericAcquire = pool.acquire.bind(pool);
+
   pool.acquire = () =>
     genericAcquire().then((instance: any) => {
       instance.useCount += 1;
