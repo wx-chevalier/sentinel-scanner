@@ -21,10 +21,6 @@ import { stripBackspaceInUrl } from './utils/transformer';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
-export type CendertronConfig = {
-  parallelNum: 1;
-};
-
 /**
  * Cendertron rendering service. This runs the server which routes rendering
  * requests through to the renderer.
