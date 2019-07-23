@@ -3,13 +3,13 @@ import * as genericPool from 'generic-pool';
 import { logger } from '../crawler/supervisor/logger';
 
 export const createPuppeteerPool = ({
-  max = 10,
+  max = 1,
   // optional. if you set this, make sure to drain() (see step 3)
-  min = 2,
+  min = 1,
   // specifies how long a resource can stay idle in pool before being removed
   idleTimeoutMillis = 30000,
   // specifies the maximum number of times a resource can be reused before being destroyed
-  maxUses = 50,
+  maxUses = 1,
   testOnBorrow = true,
   puppeteerArgs = [],
   validator = (_instance: any) => Promise.resolve(true),

@@ -11,7 +11,7 @@ export interface ScheduleOption {
 }
 
 export const defaultScheduleOption: ScheduleOption = {
-  maxConcurrentCrawler: 3
+  maxConcurrentCrawler: 1
 };
 
 /** 默认的爬虫调度器 */
