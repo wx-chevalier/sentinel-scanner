@@ -27,6 +27,15 @@ export default class Spider implements ISpider {
   // 某个爬虫的结果集合
   result = [];
 
+  get status() {
+    return {
+      url: this.pageUrl,
+      type: this.type,
+      option: this.spiderOption,
+      isClosed: this.isClosed
+    };
+  }
+
   constructor(
     spiderPage: SpiderPage,
     crawler: Crawler,

@@ -41,6 +41,25 @@ export class PageSpider extends Spider implements ISpider {
   // 内部错误
   navigationError?: Error;
 
+  // 所处的当前步骤
+  currentStep: string = 'Init';
+
+  get status() {
+    const baseStatus = super.status;
+
+    let browserStatus = {};
+
+    if (this.browser) {
+      browserStatus = {};
+    }
+
+    return {
+      ...baseStatus,
+      currentStep: this.currentStep,
+      browserStatus
+    };
+  }
+
   /** 初始化蜘蛛 */
   async start() {
     if (!this.crawler) {
@@ -51,6 +70,7 @@ export class PageSpider extends Spider implements ISpider {
 
     pool.use(async (browser: puppeteer.Browser) => {
       this.browser = browser;
+      this.currentStep = 'initBrowser';
 
       await this.run();
 
@@ -122,6 +142,8 @@ export class PageSpider extends Spider implements ISpider {
         waitUntil: 'domcontentloaded'
       });
 
+      this.currentStep = 'gotoPage';
+
       // 如果是 404 界面，则直接返回
       if (resp && resp.status() === 404) {
         return;
@@ -162,6 +184,8 @@ export class PageSpider extends Spider implements ISpider {
       throw new Error('Please init this spider!');
     }
 
+    this.currentStep = 'startMonkey';
+
     await evaluateGremlins(this.page);
 
     if (this.crawler.crawlerOption.useClickMonkey) {
@@ -170,6 +194,8 @@ export class PageSpider extends Spider implements ISpider {
 
     // 至少等待 10s
     await this.page.waitFor(10 * 1000);
+
+    this.currentStep = 'stopMonkey';
   }
 
   /** 解析执行结果 */
@@ -177,6 +203,8 @@ export class PageSpider extends Spider implements ISpider {
     if (!this.page) {
       throw new Error('Please init this spider!');
     }
+
+    this.currentStep = 'startParse';
 
     // 判断 URL 路径是否发生变化
     const currentUrl = stripBackspaceInUrl(this.page.url());
@@ -207,6 +235,8 @@ export class PageSpider extends Spider implements ISpider {
       this.crawler._SPIDER_addRequest(this, r);
     }
 
+    this.currentStep = 'extractRequestsFromHTMLInSinglePage';
+
     const requests = await extractRequestsFromHTMLInSinglePage(this.page, this);
 
     // 解析页面中生成的元素，最后解析
@@ -216,6 +246,8 @@ export class PageSpider extends Spider implements ISpider {
         this.existedUrlsHash.add(r.hash);
       }
     });
+
+    this.currentStep = 'stopParse';
   }
 
   /** 执行结束时候操作 */
@@ -223,6 +255,8 @@ export class PageSpider extends Spider implements ISpider {
     if (!this.page || this.isClosed) {
       return;
     }
+
+    this.currentStep = 'prepareFinish';
 
     try {
       // 清除本次注册的监听器

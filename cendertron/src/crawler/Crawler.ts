@@ -61,12 +61,7 @@ export default class Crawler {
       entryPage: this.entryPage.url,
       progress: (this.spiderQueue.length / this.spiders.length).toFixed(2),
       startedAt: this.startTime,
-      spiders: this.spiders.map(s => ({
-        url: s.pageUrl,
-        type: s.type,
-        option: s.spiderOption,
-        isClosed: s.isClosed
-      }))
+      spiders: this.spiders.map(s => s.status)
     };
   }
 
