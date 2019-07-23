@@ -6,6 +6,7 @@ import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
 import * as path from 'path';
 import * as url from 'url';
+import * as uuid from 'uuid/v1';
 
 import { DatastoreCache } from './server/datastore-cache';
 import { pool } from './render/puppeteer';
@@ -27,6 +28,7 @@ const CONFIG_PATH = path.resolve(__dirname, '../config.json');
  * requests through to the renderer.
  */
 export class Cendertron {
+  id = uuid();
   app: Koa = new Koa();
   config: CrawlerOption = defaultCrawlerOption;
   private renderer: Renderer | undefined;
@@ -77,6 +79,7 @@ export class Cendertron {
 
       ctx.body = {
         success: true,
+        id: this.id,
         browserStatus,
         scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
         cache: cachedUrls
