@@ -28,7 +28,7 @@ export class WeakfileSpider extends PageSpider implements ISpider {
     try {
       // 页面跳转
       const resp = await this.page!.goto(this.pageUrl, {
-        timeout: this.crawler.crawlerOption.pageTimeout,
+        timeout: this.crawler.crawlerOption.navigationTimeout,
 
         // 等待到页面加载完毕
         waitUntil: 'domcontentloaded'

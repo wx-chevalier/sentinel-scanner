@@ -4,17 +4,20 @@ import { SpiderResult } from '../types';
 import { isValidLink } from '../../utils/validator';
 import { logger } from '../supervisor/logger';
 import { transfromUrlToResult } from '../../utils/transformer';
+import { PageSpider } from '../spider/PageSpider';
 
 /** 从 HTML 中提取出有效信息 */
 export async function extractRequestsFromHTMLInSinglePage(
-  page: puppeteer.Page
+  page: puppeteer.Page,
+  spider: PageSpider
 ): Promise<SpiderResult[]> {
   const requests: SpiderResult[] = [];
 
   try {
-    if (page.isClosed()) {
+    if (page.isClosed() || spider.navigationError) {
       return [];
     }
+
     // 提取所有的 a 元素
     const aHrefs: string[] = await page.evaluate(async () => {
       const maybeUrls: string[] = [

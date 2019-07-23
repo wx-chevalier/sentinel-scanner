@@ -21,6 +21,8 @@ export default class Spider implements ISpider {
 
   // 蜘蛛配置
   spiderOption: SpiderOption = defaultSpiderOption;
+  // 是否关闭
+  isClosed: boolean = false;
 
   // 某个爬虫的结果集合
   result = [];

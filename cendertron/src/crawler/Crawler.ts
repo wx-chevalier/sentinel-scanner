@@ -64,7 +64,8 @@ export default class Crawler {
       spiders: this.spiders.map(s => ({
         url: s.pageUrl,
         type: s.type,
-        option: s.spiderOption
+        option: s.spiderOption,
+        isClosed: s.isClosed
       }))
     };
   }
@@ -151,9 +152,15 @@ export default class Crawler {
   }
 
   // 某个 Spider 执行完毕，触发 Crawler 执行下一个请求
-  async next() {
+  async next(
+    { clearTaskQueue }: { clearTaskQueue: boolean } = { clearTaskQueue: false }
+  ) {
     if (this.isClosed) {
       return;
+    }
+
+    if (clearTaskQueue) {
+      this.spiderQueue = [];
     }
 
     // 如果全部执行完毕，则将结果回写到缓存中

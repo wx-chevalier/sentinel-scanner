@@ -38,8 +38,8 @@ export class PageSpider extends Spider implements ISpider {
   // 蜘蛛内页面去重
   existedUrlsHash = new Set<string>();
 
-  // 是否关闭
-  isClosed: boolean = false;
+  // 内部错误
+  navigationError?: Error;
 
   /** 初始化蜘蛛 */
   async start() {
@@ -52,7 +52,6 @@ export class PageSpider extends Spider implements ISpider {
     pool.use(async (browser: puppeteer.Browser) => {
       this.browser = browser;
 
-      // 执行实际的抓取操作
       await this.run();
 
       // 执行结束操作
@@ -149,6 +148,7 @@ export class PageSpider extends Spider implements ISpider {
         this.openedUrls.push(this.page.url());
       } else {
         logger.error(`PageSpider>>>run>>>${e.message}>>>${this.pageUrl}`);
+        this.navigationError = e;
       }
     } finally {
       // 在外部执行解析
@@ -207,8 +207,10 @@ export class PageSpider extends Spider implements ISpider {
       this.crawler._SPIDER_addRequest(this, r);
     }
 
+    const requests = await extractRequestsFromHTMLInSinglePage(this.page, this);
+
     // 解析页面中生成的元素，最后解析
-    (await extractRequestsFromHTMLInSinglePage(this.page)).forEach(r => {
+    requests.forEach(r => {
       if (!this.existedUrlsHash.has(r.hash)) {
         this.crawler._SPIDER_addRequest(this, r);
         this.existedUrlsHash.add(r.hash);
@@ -241,7 +243,10 @@ export class PageSpider extends Spider implements ISpider {
     } finally {
       this.isClosed = true;
 
-      this.crawler.next();
+      this.crawler.next({
+        // 当为一层蜘蛛，且是因为跳转失败，则快速结束
+        clearTaskQueue: this.spiderOption.depth === 1 && !!this.navigationError
+      });
     }
   }
 }
