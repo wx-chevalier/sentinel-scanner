@@ -10,10 +10,11 @@ async function scanWeakfile(filesPath: string[], baseUrl: string) {
 
   for (const filePath of filesPath) {
     const url = filePath[0] === '/' ? filePath : `/${filePath}`;
+
     try {
       const resp = await fetch(url);
       if (resp.status === 200) {
-        existedFilesPath.push(`${baseUrl}/${filePath}`);
+        existedFilesPath.push(`${baseUrl}/${filePath}/`);
       }
     } catch (e) {
       console.error(e);
