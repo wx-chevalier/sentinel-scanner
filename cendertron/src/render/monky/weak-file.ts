@@ -40,7 +40,11 @@ export async function evaluateWeakfileScan(
       getDirOfUrl(baseUrl)
     );
 
-    return urls.map(url => stripBackspaceInUrl(url));
+    if (urls.length > 10) {
+      return [];
+    } else {
+      return urls.map(url => stripBackspaceInUrl(url));
+    }
   } catch (e) {
     return [];
   }

@@ -25,7 +25,10 @@ export default class CrawlerScheduler {
   runningCrawler: Record<string, Crawler> = {};
 
   /** 当前正在执行的爬虫数目 */
-  runningCrawlerCount = 0;
+  get runningCrawlerCount() {
+    return Object.keys(this.runningCrawler).length;
+  }
+
   /** 已经执行完毕的爬虫数目 */
   finishedCrawlerCount = 0;
 
@@ -101,7 +104,9 @@ export default class CrawlerScheduler {
   /** 选取下一个爬虫并且执行 */
   runNext() {
     // 判断当前正在执行的爬虫数目，是否超过阈值
-    if (this.runningCrawlerCount > defaultScheduleOption.maxConcurrentCrawler) {
+    if (
+      this.runningCrawlerCount >= defaultScheduleOption.maxConcurrentCrawler
+    ) {
       return;
     }
 
@@ -115,8 +120,6 @@ export default class CrawlerScheduler {
       crawler.start(request);
 
       this.runningCrawler[request.url] = crawler;
-
-      this.runningCrawlerCount++;
     }
   }
 
@@ -131,7 +134,6 @@ export default class CrawlerScheduler {
       return;
     }
 
-    this.runningCrawlerCount--;
     this.finishedCrawlerCount++;
 
     // 清除正在的缓存
