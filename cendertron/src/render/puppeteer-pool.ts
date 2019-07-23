@@ -1,5 +1,6 @@
 import * as puppeteer from 'puppeteer';
 import * as genericPool from 'generic-pool';
+import { logger } from '../crawler/supervisor/logger';
 
 export const createPuppeteerPool = ({
   max = 10,
@@ -44,6 +45,16 @@ export const createPuppeteerPool = ({
     factory as any,
     config
   );
+
+  pool.on('factoryCreateError', function(err) {
+    console.error(err);
+    logger.error('>>>puppeteer-pool>>factoryCreateError' + err);
+  });
+
+  pool.on('factoryDestroyError', function(err) {
+    console.error(err);
+    logger.error('>>>puppeteer-pool>>factoryDestroyError' + err);
+  });
 
   const genericAcquire = pool.acquire.bind(pool);
 
