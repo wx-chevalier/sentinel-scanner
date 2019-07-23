@@ -9,7 +9,7 @@ export const createPuppeteerPool = ({
   // specifies how long a resource can stay idle in pool before being removed
   idleTimeoutMillis = 30000,
   // specifies the maximum number of times a resource can be reused before being destroyed
-  maxUses = 1,
+  maxUses = -1,
   testOnBorrow = true,
   puppeteerArgs = [],
   validator = (_instance: any) => Promise.resolve(true),
