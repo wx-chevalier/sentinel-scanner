@@ -63,6 +63,7 @@ export class Cendertron {
     this.app.use(route.get('/_ah/health', async ctx => {
       ctx.body = {
         success: true,
+        pool: (pool as any)._allObjects,
         scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
         cache: nodeCache.keys()
       };

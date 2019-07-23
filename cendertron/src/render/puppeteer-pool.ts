@@ -21,9 +21,11 @@ export const createPuppeteerPool = ({
         instance.useCount = 0;
         return instance;
       }),
+
     destroy: (instance: any) => {
       instance.close();
     },
+
     validate: (instance: any) => {
       return validator(instance).then(valid =>
         Promise.resolve(valid && (maxUses <= 0 || instance.useCount < maxUses))
