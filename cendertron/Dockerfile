@@ -11,9 +11,6 @@ ENV NODE_ENV=production
 
 USER root
 
-# Install deps
-RUN apt-get install libpangocairo-1.0-0 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 libnss3 libcups2 libxss1 libxrandr2 libasound2 libatk1.0-0 libgtk-3-0
-
 # Install Google Chrome
 RUN cd /tmp &&\
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
@@ -24,6 +21,9 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update &&  apt-get install yarn
 
+# Install deps
+RUN apt-get install -y libpangocairo-1.0-0 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 libnss3 libcups2 libxss1 libxrandr2 libgconf2-4 libasound2 libatk1.0-0 libgtk-3-0
+
 # Set DNS
 COPY ./resolv.conf /etc/
 
@@ -32,7 +32,7 @@ COPY ./resolv.conf /etc/
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
-## preesed tzdata, update package index, upgrade packages and install needed software
+## Preesed tzdata, update package index, upgrade packages and install needed software
 RUN echo "tzdata tzdata/Areas select Asia" > /tmp/preseed.txt; \
     echo "tzdata tzdata/Zones/Asia select Shanghai" >> /tmp/preseed.txt; \
     debconf-set-selections /tmp/preseed.txt && \

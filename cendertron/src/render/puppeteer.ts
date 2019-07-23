@@ -75,6 +75,7 @@ if (process.env.NODE_ENV === 'development') {
   puppeteerArgs = [
     {
       executablePath: '/usr/bin/google-chrome',
+      headless: true,
       args: [
         '--disable-dev-shm-usage',
         '--disable-gpu',
