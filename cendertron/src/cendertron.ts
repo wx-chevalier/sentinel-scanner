@@ -1,5 +1,3 @@
-import { pool } from './render/puppeteer';
-import { ScreenshotError } from './crawler/types';
 import * as fse from 'fs-extra';
 import * as Koa from 'koa';
 import * as bodyParser from 'koa-bodyparser';
@@ -8,16 +6,19 @@ import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
 import * as path from 'path';
 import * as url from 'url';
-import { DatastoreCache, nodeCache } from './server/datastore-cache';
 
+import { DatastoreCache } from './server/datastore-cache';
+import { pool } from './render/puppeteer';
+import { ScreenshotError } from './crawler/types';
 import { Renderer } from './render/renderer';
-import defaultCrawlerOption from './crawler/CrawlerOption';
 import { CrawlerOption } from './crawler/CrawlerOption';
 import { logger } from './crawler/supervisor/logger';
 import CrawlerScheduler from './crawler/supervisor/CrawlerScheduler';
 import { parseCookieStr } from './utils/model';
 import * as puppeteer from 'puppeteer';
 import { stripBackspaceInUrl } from './utils/transformer';
+import { defaultCrawlerOption } from './config';
+import { crawlerCache } from './crawler/CrawlerCache';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -72,12 +73,13 @@ export class Cendertron {
           }))
         });
       }
+      const cachedUrls = await crawlerCache.queryAllCrawler();
 
       ctx.body = {
         success: true,
         browserStatus,
         scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
-        cache: nodeCache.keys()
+        cache: cachedUrls
       };
     }) as any);
 
@@ -102,7 +104,7 @@ export class Cendertron {
     ) as any);
 
     this.app.use(route.get('/scrape/clear', ctx => {
-      this.datastoreCache.clearCache();
+      crawlerCache.clearCache();
 
       ctx.body = {
         success: true
@@ -121,7 +123,7 @@ export class Cendertron {
 
       finalUrl = stripBackspaceInUrl(finalUrl);
 
-      this.datastoreCache.clearCache('Crawler', finalUrl);
+      crawlerCache.clearCache('Crawler', finalUrl);
 
       ctx.body = {
         success: true
@@ -132,7 +134,7 @@ export class Cendertron {
     this.app.use(route.get(
       '/scrape/clear/:url(.*)',
       (ctx: any, url: string) => {
-        this.datastoreCache.clearCache('Crawler', stripBackspaceInUrl(url));
+        crawlerCache.clearCache('Crawler', stripBackspaceInUrl(url));
 
         ctx.body = {
           success: true
@@ -213,7 +215,7 @@ export class Cendertron {
 
     try {
       ctx.set('x-renderer', 'cendertron');
-      ctx.body = this.crawlerScheduler!.addTarget({
+      ctx.body = await this.crawlerScheduler!.addTarget({
         request: { url: finalUrl }
       });
     } catch (e) {

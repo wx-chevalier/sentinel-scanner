@@ -1,8 +1,9 @@
+import { defaultCrawlerOption } from './../config';
 import * as uuid from 'uuid/v1';
 
 import { logger } from './supervisor/logger';
 
-import { defaultCrawlerOption, CrawlerOption } from './CrawlerOption';
+import { CrawlerOption } from './CrawlerOption';
 import Spider from './spider/Spider';
 import { PageSpider } from './spider/PageSpider';
 import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
@@ -82,13 +83,13 @@ export default class Crawler {
     this.existedHash.add(hashUrl(entryUrl, 'GET'));
 
     // 判断是否存在缓存
-    if (
-      this.crawlerCache &&
-      this.crawlerOption.useCache &&
-      this.crawlerCache.queryCrawler(entryUrl)
-    ) {
-      logger.info(`>>>Crawler>>>start>>>Use cache ${entryUrl}`);
-      return this.crawlerCache.queryCrawler(entryUrl);
+    if (this.crawlerCache && this.crawlerOption.useCache) {
+      const cache = await this.crawlerCache.queryCrawler(entryUrl);
+
+      if (cache) {
+        logger.info(`>>>Crawler>>>return>>>Use cache ${entryUrl}`);
+        return cache;
+      }
     }
 
     this.initMonitor();

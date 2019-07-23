@@ -28,22 +28,6 @@ export class DatastoreCache {
     await nodeCache.set(key, entity, cacheDurationMinutes * 60);
   }
 
-  /** 清空全部的响应缓存 */
-  async clearCache(
-    type: 'Page' | 'Spider' | 'Crawler' = 'Crawler',
-    urlOrHash?: string
-  ) {
-    const mykeys = nodeCache.keys();
-
-    nodeCache.del(
-      mykeys.filter(key =>
-        urlOrHash
-          ? key.indexOf(type) > -1 && key.indexOf(urlOrHash) > -1
-          : key.indexOf(type) > -1
-      )
-    );
-  }
-
   /**
    * Returns middleware function.
    */

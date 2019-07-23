@@ -32,28 +32,3 @@ export interface CrawlerOption {
   // 忽略的页面
   ignoredRegex?: string;
 }
-
-export const defaultCrawlerOption: CrawlerOption = {
-  // 爬取深度
-  depth: 4,
-
-  // 单爬虫最多爬取页面数
-  maxPageCount: 500,
-  // 默认超时为 20 分钟
-  timeout: 20 * 60 * 1000,
-  // 跳转超时为 30s
-  navigationTimeout: 30 * 1000,
-  // 单页超时为 60s
-  pageTimeout: 60 * 1000,
-
-  isSameOrigin: true,
-  isIgnoreAssets: true,
-  isMobile: false,
-  ignoredRegex: '.*logout.*',
-
-  useCache: true,
-  useWeakfile: false,
-  useClickMonkey: false
-};
-
-export default defaultCrawlerOption;

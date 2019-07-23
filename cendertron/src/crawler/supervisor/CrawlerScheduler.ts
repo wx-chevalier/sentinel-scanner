@@ -1,18 +1,9 @@
+import { defaultCrawlerOption, defaultScheduleOption } from './../../config';
 import { CrawlerOption } from './../CrawlerOption';
 
 import Crawler from '../Crawler';
 import { crawlerCache } from '../CrawlerCache';
 import { SpiderPage } from '../types';
-import defaultCrawlerOption from '../CrawlerOption';
-
-export interface ScheduleOption {
-  // 并发爬虫数
-  maxConcurrentCrawler: number;
-}
-
-export const defaultScheduleOption: ScheduleOption = {
-  maxConcurrentCrawler: 1
-};
 
 /** 默认的爬虫调度器 */
 export default class CrawlerScheduler {
@@ -61,7 +52,7 @@ export default class CrawlerScheduler {
   }
 
   /** 添加某个目标 */
-  addTarget({
+  async addTarget({
     request,
     crawlerOption
   }: {
@@ -73,7 +64,7 @@ export default class CrawlerScheduler {
     }
 
     const finalUrl = request!.url;
-    const cacheResult = crawlerCache.queryCrawler(finalUrl);
+    const cacheResult = await crawlerCache.queryCrawler(finalUrl);
 
     // 判断是否存在于缓存中，如果存在则直接返回
     if (cacheResult) {

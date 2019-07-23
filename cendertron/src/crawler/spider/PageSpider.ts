@@ -274,6 +274,8 @@ export class PageSpider extends Spider implements ISpider {
         // 当为一层蜘蛛，且是因为跳转失败，则快速结束
         clearTaskQueue: this.spiderOption.depth === 1 && !!this.navigationError
       });
+
+      this.currentStep = 'Finished';
     }
   }
 }

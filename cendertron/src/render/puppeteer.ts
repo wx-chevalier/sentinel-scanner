@@ -1,10 +1,12 @@
+import { defaultCrawlerOption } from './../config';
 /** Puppeteer 操作类 */
 import * as puppeteer from 'puppeteer';
 import { createPuppeteerPool } from './puppeteer-pool';
 
 import { MOBILE_USERAGENT } from '../crawler/types';
-import defaultCrawlerOption, { CrawlerOption } from '../crawler/CrawlerOption';
+import { CrawlerOption } from '../crawler/CrawlerOption';
 import { logger } from '../crawler/supervisor/logger';
+import { defaultPuppeteerPoolConfig } from '../config';
 
 // 全局唯一的 Browser 对象
 export let defaultBrowserHolder: {
@@ -90,17 +92,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Returns a generic-pool instance
 export const pool = createPuppeteerPool({
-  max: 1, // default
-  min: 1, // default
-  // how long a resource can stay idle in pool before being removed
-  idleTimeoutMillis: 30 * 30 * 1000, // default.
-  // maximum number of times an individual resource can be reused before being destroyed; set to 0 to disable
-  maxUses: 0, // default
-  // function to validate an instance prior to use; see https://github.com/coopernurse/node-pool#createpool
-  validator: () => Promise.resolve(true), // defaults to always resolving true
-  // validate resource before borrowing; required for `maxUses and `validator`
-  testOnBorrow: true, // default
-  // For all opts, see opts at https://github.com/coopernurse/node-pool#createpool
+  ...defaultPuppeteerPoolConfig,
   puppeteerArgs
 } as any);
 
