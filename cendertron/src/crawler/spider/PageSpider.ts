@@ -47,16 +47,9 @@ export class PageSpider extends Spider implements ISpider {
   get status() {
     const baseStatus = super.status;
 
-    let browserStatus = {};
-
-    if (this.browser) {
-      browserStatus = {};
-    }
-
     return {
       ...baseStatus,
-      currentStep: this.currentStep,
-      browserStatus
+      currentStep: this.currentStep
     };
   }
 

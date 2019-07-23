@@ -61,9 +61,25 @@ export class Cendertron {
     }) as any);
 
     this.app.use(route.get('/_ah/health', async ctx => {
+      const browserStatus: any[] = [];
+
+      for (const res of (pool as any)._allObjects.keys()) {
+        const browser = res.obj as puppeteer.Browser;
+
+        const targets = await browser.targets();
+
+        browserStatus.push({
+          targetsCnt: targets.length,
+          useCount: (browser as any).useCount,
+          urls: targets.map(t => ({
+            url: t.url()
+          }))
+        });
+      }
+
       ctx.body = {
         success: true,
-        pool: (pool as any)._allObjects,
+        browserStatus,
         scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
         cache: nodeCache.keys()
       };
