@@ -62,6 +62,7 @@ export default class Crawler {
       entryPage: this.entryPage.url,
       progress: (this.spiderQueue.length / this.spiders.length).toFixed(2),
       startedAt: this.startTime,
+      option: this.crawlerOption,
       spiders: this.spiders.map(s => s.status)
     };
   }
@@ -274,10 +275,9 @@ export default class Crawler {
       result.resourceType !== 'form' &&
       result.resourceType !== 'script'
     ) {
-      const nextPage = {
+      const nextPage: SpiderPage = {
         url: stripBackspaceInUrl(result.url),
-        cookies: this.crawlerOption.cookies,
-        localStorage: this.crawlerOption.localStorage
+        crawlerOption: this.crawlerOption
       };
 
       const nextSpider = new PageSpider(nextPage, this, {

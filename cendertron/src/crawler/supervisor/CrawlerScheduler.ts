@@ -1,7 +1,6 @@
 import * as uuid from 'uuid/v1';
 
-import { defaultCrawlerOption, defaultScheduleOption } from './../../config';
-import { CrawlerOption } from './../CrawlerOption';
+import { defaultScheduleOption } from './../../config';
 
 import Crawler from '../Crawler';
 import { crawlerCache } from '../storage/CrawlerCache';
@@ -14,7 +13,6 @@ import * as puppeteer from 'puppeteer';
 /** 默认的爬虫调度器 */
 export default class CrawlerScheduler {
   id = uuid();
-  crawlerOption?: Partial<CrawlerOption>;
 
   /** 正在执行的爬虫 */
   runningCrawler: Record<string, Crawler> = {};
@@ -77,13 +75,7 @@ export default class CrawlerScheduler {
   }
 
   /** 添加某个目标 */
-  async addTarget({
-    request,
-    crawlerOption
-  }: {
-    request: SpiderPage;
-    crawlerOption?: Partial<CrawlerOption>;
-  }) {
+  async addTarget({ request }: { request: SpiderPage }) {
     if (!request) {
       throw new Error('Invalid request');
     }
@@ -107,8 +99,6 @@ export default class CrawlerScheduler {
 
     pageQueue.add(request);
 
-    this.crawlerOption = crawlerOption || defaultCrawlerOption;
-
     this.next();
 
     // 返回正在执行
@@ -128,7 +118,7 @@ export default class CrawlerScheduler {
     const request = await pageQueue.next();
 
     if (request && request.url) {
-      const crawler = new Crawler(this.crawlerOption, {
+      const crawler = new Crawler(request.crawlerOption, {
         onFinish: this.onFinish
       });
 
@@ -149,7 +139,7 @@ export default class CrawlerScheduler {
       const status = await this.getStatus();
 
       redisClient.set(
-        `cendertron:status:crawler:${this.id}`,
+        `cendertron:status:crawler-scheduler:${this.id}`,
         JSON.stringify(status),
         // 设置过期时间为 30s
         'EX',

@@ -31,6 +31,7 @@ export class ScreenshotError extends Error {
 /** 包含策略配置的请求信息 */
 export interface SpiderPage {
   url: string;
+  crawlerOption: Partial<CrawlerOption>;
 }
 
 export interface ParsedUrl {

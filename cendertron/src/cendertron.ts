@@ -17,10 +17,10 @@ import CrawlerScheduler from './crawler/supervisor/CrawlerScheduler';
 import { parseCookieStr } from './utils/model';
 import * as puppeteer from 'puppeteer';
 import { stripBackspaceInUrl } from './utils/transformer';
-import { defaultCrawlerOption } from './config';
 import { crawlerCache } from './crawler/storage/CrawlerCache';
 import { pageQueue } from './crawler/storage/PageQueue';
 import { redisClient } from './crawler/storage/db';
+import { defaultCrawlerOption } from './config';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -233,7 +233,7 @@ export class Cendertron {
     try {
       ctx.set('x-renderer', 'cendertron');
       ctx.body = await this.crawlerScheduler!.addTarget({
-        request: { url: finalUrl }
+        request: { url: finalUrl, crawlerOption: {} }
       });
     } catch (e) {
       logger.error(`>>>scrape>>>${e.message}`);
@@ -297,12 +297,12 @@ export class Cendertron {
     try {
       return this.crawlerScheduler!.addTarget({
         request: {
-          url: finalUrl
-        },
-        crawlerOption: {
-          cookies: parseCookieStr(cookie, finalUrl),
-          localStorage,
-          ignoredRegex
+          url: finalUrl,
+          crawlerOption: {
+            cookies: parseCookieStr(cookie, finalUrl),
+            localStorage,
+            ignoredRegex
+          }
         }
       });
     } catch (e) {
