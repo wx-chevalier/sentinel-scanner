@@ -10,7 +10,7 @@ import { CrawlerResult, SpiderResult, ParsedUrl, SpiderPage } from './types';
 import { isMedia, shouldIgnore } from '../utils/validator';
 import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
-import { CrawlerCache, crawlerCache } from './CrawlerCache';
+import { CrawlerCache, crawlerCache } from './storage/CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
 
 export interface CrawlerCallback {

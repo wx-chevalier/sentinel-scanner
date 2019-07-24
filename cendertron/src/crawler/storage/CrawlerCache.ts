@@ -1,9 +1,6 @@
-import * as IORedis from 'ioredis';
-const Redis = require('ioredis');
-import { nodeCache } from '../server/datastore-cache';
-import { CrawlerResult, SpiderResult } from './types';
-import { getLocalConfig } from '../config';
-import { logger } from './supervisor/logger';
+import { nodeCache } from '../../server/datastore-cache';
+import { CrawlerResult, SpiderResult } from '../types';
+import { redisClient } from './db';
 
 type SpiderCache = {
   saved: Date;
@@ -13,32 +10,7 @@ type SpiderCache = {
 
 const spiderKey = (urlHash: string) => ['Spider', urlHash].join('#');
 const crawlerKey = (url: string) => ['Crawler', url].join('#');
-const redisCendertronKey = 'cendertron';
-
-// 设置 Redis 实例，如果存在 Redis 实例，则使用 Redis 作为中心化的缓存
-let redisClient: IORedis.Redis | undefined = undefined;
-const localConfig = getLocalConfig();
-
-if (localConfig && localConfig.db && localConfig.db.redis) {
-  redisClient = new Redis({ ...localConfig.db.redis, maxRetriesPerRequest: 1 });
-
-  redisClient!.time().then(serverTimes => {
-    const dateTime = new Date(
-      Number(String(serverTimes[0]) + String(serverTimes[1]).substring(0, 3))
-    );
-    logger.info(
-      `>>>CrawlerCache>>>[redis] instance status OK, redis server currentTime: ${dateTime}`
-    );
-  });
-
-  redisClient!.on('error', err => {
-    // 断开当前连接
-    redisClient!.quit();
-    redisClient = undefined;
-
-    logger.error('>>>CrawlerCache>>>Init>>>' + err);
-  });
-}
+const redisCendertronKey = 'cendertron:cache:crawler';
 
 export class CrawlerCache {
   /** 缓存蜘蛛的执行结果 */
@@ -95,10 +67,7 @@ export class CrawlerCache {
     }
   }
 
-  /**
-   * 查询爬虫结果
-   * @param url
-   */
+  /** 查询爬虫结果 */
   async queryCrawler(url: string) {
     const key = crawlerKey(url);
 
@@ -116,7 +85,7 @@ export class CrawlerCache {
   }
 
   /** 清空全部的响应缓存 */
-  async clearCache(
+  async clear(
     type: 'Page' | 'Spider' | 'Crawler' = 'Crawler',
     urlOrHash?: string
   ) {

@@ -1,31 +1,36 @@
+import * as uuid from 'uuid/v1';
+
 import { defaultCrawlerOption, defaultScheduleOption } from './../../config';
 import { CrawlerOption } from './../CrawlerOption';
 
 import Crawler from '../Crawler';
-import { crawlerCache } from '../CrawlerCache';
+import { crawlerCache } from '../storage/CrawlerCache';
 import { SpiderPage } from '../types';
+import { pageQueue } from '../storage/PageQueue';
+import { redisClient } from '../storage/db';
+import { pool } from '../../render/puppeteer';
+import * as puppeteer from 'puppeteer';
 
 /** 默认的爬虫调度器 */
 export default class CrawlerScheduler {
+  id = uuid();
   crawlerOption?: Partial<CrawlerOption>;
-
-  /** 待执行的爬虫队列 */
-  pageQueue: SpiderPage[] = [];
 
   /** 正在执行的爬虫 */
   runningCrawler: Record<string, Crawler> = {};
 
   /** 当前正在执行的爬虫数目 */
-  get runningCrawlerCount() {
+  get localRunningCrawlerCount() {
     return Object.keys(this.runningCrawler).length;
   }
 
   /** 已经执行完毕的爬虫数目 */
-  finishedCrawlerCount = 0;
+  localFinishedCrawlerCount = 0;
 
   constructor() {
     // 定时器，每 15s 判断下是否有已经完成的爬虫，但是未清除出队列的
     setInterval(() => {
+      // 执行爬虫监控
       Object.keys(this.runningCrawler).forEach(url => {
         const c = this.runningCrawler[url];
 
@@ -33,22 +38,41 @@ export default class CrawlerScheduler {
           this.onFinish(c);
         }
       });
+
+      // 定期执行下一个目标
+      this.next();
     }, 15 * 1000);
+
+    this.report();
   }
 
-  get status() {
+  async status() {
+    const browserStatus: any[] = [];
+
+    for (const res of (pool as any)._allObjects.keys()) {
+      const browser = res.obj as puppeteer.Browser;
+
+      const targets = await browser.targets();
+
+      browserStatus.push({
+        targetsCnt: targets.length,
+        useCount: (browser as any).useCount,
+        urls: targets.map(t => ({
+          url: t.url()
+        }))
+      });
+    }
+
     return {
-      pageQueue: this.pageQueue,
+      id: this.id,
+      browserStatus,
       runingCrawlers: Object.keys(this.runningCrawler).map(u =>
         this.runningCrawler[u] ? this.runningCrawler[u]!.status : null
       ),
-      runningCrawlerCount: this.runningCrawlerCount,
-      finishedCrawlerCount: this.finishedCrawlerCount
+      localRunningCrawlerCount: this.localRunningCrawlerCount,
+      localFinishedCrawlerCount: this.localFinishedCrawlerCount,
+      reportTime: new Date().toLocaleString()
     };
-  }
-
-  get pageQueueUrls() {
-    return this.pageQueue.map(s => s.url);
   }
 
   /** 添加某个目标 */
@@ -80,28 +104,27 @@ export default class CrawlerScheduler {
       from: 'scheduler'
     };
 
-    if (this.pageQueueUrls.indexOf(finalUrl) < 0) {
-      this.pageQueue.push(request!);
-    }
+    pageQueue.add(request);
 
     this.crawlerOption = crawlerOption || defaultCrawlerOption;
 
-    this.runNext();
+    this.next();
 
     // 返回正在执行
     return resp;
   }
 
   /** 选取下一个爬虫并且执行 */
-  runNext() {
+  async next() {
     // 判断当前正在执行的爬虫数目，是否超过阈值
     if (
-      this.runningCrawlerCount >= defaultScheduleOption.maxConcurrentCrawler
+      this.localFinishedCrawlerCount >=
+      defaultScheduleOption.maxConcurrentCrawler
     ) {
       return;
     }
 
-    const request = this.pageQueue.shift();
+    const request = await pageQueue.next();
 
     if (request && request.url) {
       const crawler = new Crawler(this.crawlerOption, {
@@ -114,8 +137,24 @@ export default class CrawlerScheduler {
     }
   }
 
-  reset() {
-    this.pageQueue = [];
+  async reset() {
+    await pageQueue.clear();
+    await crawlerCache.clear('Crawler');
+  }
+
+  /** 定期上报爬虫状态 */
+  async report() {
+    if (redisClient) {
+      const status = await this.status();
+
+      redisClient.set(
+        `cendertron:status:crawler:${this.id}`,
+        JSON.stringify(status),
+        // 设置过期时间为 30s
+        'EX',
+        60
+      );
+    }
   }
 
   /** 爬虫执行完毕的回调 */
@@ -125,12 +164,12 @@ export default class CrawlerScheduler {
       return;
     }
 
-    this.finishedCrawlerCount++;
+    this.localFinishedCrawlerCount++;
 
     // 清除正在的缓存
     delete this.runningCrawler[crawler.entryPage!.url];
 
     // 否则执行下一个爬虫
-    this.runNext();
+    this.next();
   };
 }

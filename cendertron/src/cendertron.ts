@@ -6,7 +6,6 @@ import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
 import * as path from 'path';
 import * as url from 'url';
-import * as uuid from 'uuid/v1';
 
 import { DatastoreCache } from './server/datastore-cache';
 import { pool } from './render/puppeteer';
@@ -19,7 +18,9 @@ import { parseCookieStr } from './utils/model';
 import * as puppeteer from 'puppeteer';
 import { stripBackspaceInUrl } from './utils/transformer';
 import { defaultCrawlerOption } from './config';
-import { crawlerCache } from './crawler/CrawlerCache';
+import { crawlerCache } from './crawler/storage/CrawlerCache';
+import { pageQueue } from './crawler/storage/PageQueue';
+import { redisClient } from './crawler/storage/db';
 
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
@@ -28,7 +29,6 @@ const CONFIG_PATH = path.resolve(__dirname, '../config.json');
  * requests through to the renderer.
  */
 export class Cendertron {
-  id = uuid();
   app: Koa = new Koa();
   config: CrawlerOption = defaultCrawlerOption;
   private renderer: Renderer | undefined;
@@ -60,30 +60,39 @@ export class Cendertron {
     }) as any);
 
     this.app.use(route.get('/_ah/health', async ctx => {
-      const browserStatus: any[] = [];
-
-      for (const res of (pool as any)._allObjects.keys()) {
-        const browser = res.obj as puppeteer.Browser;
-
-        const targets = await browser.targets();
-
-        browserStatus.push({
-          targetsCnt: targets.length,
-          useCount: (browser as any).useCount,
-          urls: targets.map(t => ({
-            url: t.url()
-          }))
-        });
-      }
       const cachedUrls = await crawlerCache.queryAllCrawler();
 
-      ctx.body = {
-        success: true,
-        id: this.id,
-        browserStatus,
-        scheduler: this.crawlerScheduler ? this.crawlerScheduler.status : {},
-        cache: cachedUrls
-      };
+      if (redisClient) {
+        // 否则获取到全部的 schedulers 信息
+        const keys = await redisClient.keys('cendertron:status:crawler*');
+
+        const schedulers = [];
+
+        for (const key of keys) {
+          schedulers.push(JSON.parse((await redisClient.get(key)) || ''));
+        }
+
+        ctx.body = {
+          success: true,
+          mode: 'cluster',
+          schedulers,
+          cache: cachedUrls
+        };
+      } else {
+        // 如果非 Redis 接入，则使用的是本地环境
+        let status;
+
+        if (this.crawlerScheduler) {
+          status = await this.crawlerScheduler.status();
+        }
+
+        ctx.body = {
+          success: true,
+          mode: 'single',
+          localScheduler: status,
+          cache: cachedUrls
+        };
+      }
     }) as any);
 
     // Optionally enable cache for rendering requests.
@@ -107,7 +116,8 @@ export class Cendertron {
     ) as any);
 
     this.app.use(route.get('/scrape/clear', ctx => {
-      crawlerCache.clearCache();
+      crawlerCache.clear();
+      pageQueue.clear();
 
       ctx.body = {
         success: true
@@ -126,7 +136,7 @@ export class Cendertron {
 
       finalUrl = stripBackspaceInUrl(finalUrl);
 
-      crawlerCache.clearCache('Crawler', finalUrl);
+      crawlerCache.clear('Crawler', finalUrl);
 
       ctx.body = {
         success: true
@@ -137,7 +147,7 @@ export class Cendertron {
     this.app.use(route.get(
       '/scrape/clear/:url(.*)',
       (ctx: any, url: string) => {
-        crawlerCache.clearCache('Crawler', stripBackspaceInUrl(url));
+        crawlerCache.clear('Crawler', stripBackspaceInUrl(url));
 
         ctx.body = {
           success: true
