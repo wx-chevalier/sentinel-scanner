@@ -1,3 +1,4 @@
+import { CrawlerOption } from '../../build/crawler/CrawlerOption';
 /** 类型定义 */
 
 export type SerializedResponse = {
@@ -72,7 +73,11 @@ export interface CrawlerResult {
   // 性能度量
   metrics?: {
     // 执行时间
-    executionDuration: number;
+    startTime: number;
+    endTime?: number;
+
+    // 爬虫配置
+    option: CrawlerOption;
 
     // 爬虫总数目
     spiderCount: number;

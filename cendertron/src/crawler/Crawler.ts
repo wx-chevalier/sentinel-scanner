@@ -174,7 +174,8 @@ export default class Crawler {
           id: this.id,
           isFinished: false,
           metrics: {
-            executionDuration: Date.now() - this.startTime,
+            startTime: this.startTime,
+            option: this.crawlerOption,
             spiderCount: this.spiders.length,
             depth: this.crawlerOption.depth
           },
@@ -317,7 +318,9 @@ export default class Crawler {
         id: this.id,
         isFinished: true,
         metrics: {
-          executionDuration: Date.now() - this.startTime,
+          startTime: this.startTime,
+          endTime: Date.now(),
+          option: this.crawlerOption,
           spiderCount: this.spiders.length,
           depth: this.crawlerOption.depth
         },
