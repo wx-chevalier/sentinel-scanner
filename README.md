@@ -8,6 +8,8 @@ ChaosScanner 是模块化、分布式、多维度安全扫描解决方案，包�
 
 **WIP**: 项目正处在闭源开发测试中，我们即将发布社区预览版（Community Preview），如有其它需要请提 Issue。
 
+Chaos Scanner 由 []()，[@lotuc](https://github.com/lotuc) 等小伙伴共同完成，对于 Chaos Scanner 的部署、测试与使用手册，请参考 [使用手册](./使用手册.md) 一文。
+
 # Modules | 模块
 
 - [cendertron](./cendertron): Cendertron 是基于 Puppeteer 的 Web 2.0 动态爬虫与敏感信息泄露检测工具。其依托于 [xe-crawler](https://github.com/wx-chevalier/xe-crawler) 的通用爬虫、调度与缓存模型，新增了 Monkey Test 以及 Request Intercept 等特性，以期尽可能多地挖掘页面与请求。同时针对渗透测试的场景，Cendertron 内置了目录扫描、敏感文件扫描的能力，能够模拟用户实际在浏览器登录状态下的自定义字典爆破。Cendertron 在大量实践的基础上设置了自身的去重策略，能够尽可能地避免重复爬取，加快扫描速度。
@@ -26,10 +28,6 @@ ChaosScanner 是模块化、分布式、多维度安全扫描解决方案，包�
   - sql-injection: SQL 注入检测
 
 - [scheduler | 调度]()
-
-# Preface | 前言
-
-![](https://i.postimg.cc/Y2TqgSZj/image.png)
 
 # About | 关于
 
