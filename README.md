@@ -8,7 +8,7 @@ ChaosScanner 是模块化、分布式、多维度安全扫描解决方案，包�
 
 **WIP**: 项目正处在闭源开发测试中，我们即将发布社区预览版（Community Preview），如有其它需要请提 Issue。
 
-Chaos Scanner 由 []()，[@lotuc](https://github.com/lotuc) 等小伙伴共同完成，对于 Chaos Scanner 的部署、测试与使用手册，请参考 [USAGE](./USAGE.md) 一文。
+Chaos Scanner 由 []()，[@lotuc](https://github.com/lotuc) 等小伙伴共同完成，对于 Chaos Scanner 的部署、测试与使用手册，请参考 [使用手册](./使用手册.md) 一文。
 
 # Modules | 模块
 
