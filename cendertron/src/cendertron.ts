@@ -61,7 +61,9 @@ export class Cendertron {
 
     this.app.use(route.get('/_ah/health', async ctx => {
       const cachedUrls = await crawlerCache.queryAllCrawler();
+      const pageQueueLen = await pageQueue.length();
 
+      // 如果 redisClient 存在，则为分布式版本
       if (redisClient) {
         // 否则获取到全部的 schedulers 信息
         const keys = await redisClient.keys('cendertron:status:crawler*');
@@ -76,7 +78,8 @@ export class Cendertron {
           success: true,
           mode: 'cluster',
           schedulers,
-          cache: cachedUrls
+          cache: cachedUrls,
+          pageQueueLen
         };
       } else {
         // 如果非 Redis 接入，则使用的是本地环境
@@ -90,7 +93,8 @@ export class Cendertron {
           success: true,
           mode: 'single',
           localScheduler: status,
-          cache: cachedUrls
+          cache: cachedUrls,
+          pageQueueLen
         };
       }
     }) as any);
