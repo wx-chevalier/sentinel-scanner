@@ -1,5 +1,5 @@
-import { CrawlerOption } from '../../build/crawler/CrawlerOption';
 /** 类型定义 */
+import { CrawlerOption } from './CrawlerOption';
 
 export type SerializedResponse = {
   status: number;
