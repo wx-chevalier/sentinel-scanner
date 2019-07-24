@@ -48,12 +48,9 @@ export const logger = createLogger({
   ]
 });
 
-// 开发环境下打印全部 Log
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
-    new winston.transports.Console({
-      handleExceptions: true,
-      format: format.combine(errorStackFormat(), ...formats, format.colorize())
-    })
-  );
-}
+logger.add(
+  new winston.transports.Console({
+    handleExceptions: true,
+    format: format.combine(errorStackFormat(), ...formats, format.colorize())
+  })
+);
