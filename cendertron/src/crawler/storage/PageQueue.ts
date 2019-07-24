@@ -60,9 +60,13 @@ export class PageQueue {
         if (nextPage) {
           const pageObj = JSON.parse(nextPage) as SpiderPage;
 
-          await redisClient.zrem(queueSetKey, pageObj.url);
-
-          return pageObj;
+          // 这里会再次判断下是否存在
+          if (this.has(pageObj)) {
+            await redisClient.zrem(queueSetKey, pageObj.url);
+            return pageObj;
+          } else {
+            return undefined;
+          }
         }
       } else {
         return _localQueue.shift();

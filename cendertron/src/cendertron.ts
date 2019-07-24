@@ -83,7 +83,7 @@ export class Cendertron {
         let status;
 
         if (this.crawlerScheduler) {
-          status = await this.crawlerScheduler.status();
+          status = await this.crawlerScheduler.getStatus();
         }
 
         ctx.body = {

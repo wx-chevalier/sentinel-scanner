@@ -41,12 +41,13 @@ export default class CrawlerScheduler {
 
       // 定期执行下一个目标
       this.next();
+      this.report();
     }, 15 * 1000);
 
     this.report();
   }
 
-  async status() {
+  async getStatus() {
     const browserStatus: any[] = [];
 
     for (const res of (pool as any)._allObjects.keys()) {
@@ -145,7 +146,7 @@ export default class CrawlerScheduler {
   /** 定期上报爬虫状态 */
   async report() {
     if (redisClient) {
-      const status = await this.status();
+      const status = await this.getStatus();
 
       redisClient.set(
         `cendertron:status:crawler:${this.id}`,
