@@ -1,3 +1,4 @@
+import { pool } from './../../render/puppeteer';
 import * as uuid from 'uuid/v1';
 
 import { defaultScheduleOption } from './../../config';
@@ -7,7 +8,7 @@ import { crawlerCache } from '../storage/CrawlerCache';
 import { SpiderPage } from '../types';
 import { pageQueue } from '../storage/PageQueue';
 import { redisClient } from '../storage/db';
-import { pool } from '../../render/puppeteer';
+
 import * as puppeteer from 'puppeteer';
 
 /** 默认的爬虫调度器 */

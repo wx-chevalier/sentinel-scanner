@@ -61,7 +61,7 @@ export class PageSpider extends Spider implements ISpider {
       return;
     }
 
-    pool
+    (pool
       .use(async (browser: puppeteer.Browser) => {
         this.browser = browser;
         this.currentStep = 'initBrowser';
@@ -90,13 +90,16 @@ export class PageSpider extends Spider implements ISpider {
       })
       .then(
         () => {},
-        async err => {
+        err => {
           logger.error('>>>error>>>PageSpider>>>puppeteer-pool>>>', err);
 
-          await this._parse();
-          await this.finish();
+          this._parse().then(() => {
+            this.finish();
+          });
         }
-      );
+      ) as any).catch((e: any) => {
+      console.log(e);
+    });
   }
 
   /** 复写父类方法 */
@@ -255,7 +258,7 @@ export class PageSpider extends Spider implements ISpider {
 
   /** 执行结束时候操作 */
   protected async finish() {
-    if (!this.page || this.isClosed) {
+    if (this.isClosed) {
       return;
     }
 
@@ -272,7 +275,7 @@ export class PageSpider extends Spider implements ISpider {
       }
 
       // 确保页面关闭
-      if (!this.page.isClosed()) {
+      if (this.page && !this.page.isClosed()) {
         this.page.close().catch(_ => {});
       }
     } catch (_) {
