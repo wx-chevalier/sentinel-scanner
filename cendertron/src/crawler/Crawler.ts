@@ -89,6 +89,8 @@ export default class Crawler {
 
       if (cache) {
         logger.info(`>>>Crawler>>>return>>>Use cache ${entryUrl}`);
+        this.finish();
+
         return cache;
       }
     }
