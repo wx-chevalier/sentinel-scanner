@@ -47,7 +47,7 @@ export const defaultPuppeteerPoolConfig = {
   max: 1, // default
   min: 1, // default
   // how long a resource can stay idle in pool before being removed
-  idleTimeoutMillis: 30 * 30 * 1000, // default.
+  idleTimeoutMillis: Number.MAX_VALUE, // default.
   // maximum number of times an individual resource can be reused before being destroyed; set to 0 to disable
   acquireTimeoutMillis: defaultCrawlerOption.pageTimeout,
   maxUses: 0, // default

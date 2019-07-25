@@ -203,18 +203,7 @@ export class PageSpider extends Spider implements ISpider {
 
   /** 解析执行结果 */
   private async _parse() {
-    if (!this.page) {
-      throw new Error('Please init this spider!');
-    }
-
     this.currentStep = 'startParse';
-
-    // 判断 URL 路径是否发生变化
-    const currentUrl = stripBackspaceInUrl(this.page.url());
-
-    if (currentUrl !== this.pageUrl) {
-      this.pageUrl = currentUrl;
-    }
 
     // 将所有打开的页面加入
     this.openedUrls.forEach(url => {
@@ -239,6 +228,17 @@ export class PageSpider extends Spider implements ISpider {
     }
 
     this.currentStep = 'extractRequestsFromHTMLInSinglePage';
+
+    if (!this.page) {
+      return;
+    }
+
+    // 判断 URL 路径是否发生变化
+    const currentUrl = stripBackspaceInUrl(this.page.url());
+
+    if (currentUrl !== this.pageUrl) {
+      this.pageUrl = currentUrl;
+    }
 
     const requests = await extractRequestsFromHTMLInSinglePage(this.page, this);
 
