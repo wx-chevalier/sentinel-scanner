@@ -109,7 +109,7 @@ export default class CrawlerScheduler {
   async next() {
     // 判断当前正在执行的爬虫数目，是否超过阈值
     if (
-      this.localFinishedCrawlerCount >=
+      this.localRunningCrawlerCount >=
       defaultScheduleOption.maxConcurrentCrawler
     ) {
       return;
