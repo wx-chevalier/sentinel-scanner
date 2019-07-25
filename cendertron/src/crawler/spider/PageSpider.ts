@@ -61,32 +61,42 @@ export class PageSpider extends Spider implements ISpider {
       return;
     }
 
-    pool.use(async (browser: puppeteer.Browser) => {
-      this.browser = browser;
-      this.currentStep = 'initBrowser';
+    pool
+      .use(async (browser: puppeteer.Browser) => {
+        this.browser = browser;
+        this.currentStep = 'initBrowser';
 
-      await this.run();
+        await this.run();
 
-      // 执行结束操作
-      await this.finish();
+        // 执行结束操作
+        await this.finish();
 
-      // 设置页面关闭的超时时间
-      const intl = setTimeout(async () => {
-        if (!this.isClosed) {
-          logger.error(
-            '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
-              this.pageUrl
-          );
+        // 设置页面关闭的超时时间
+        const intl = setTimeout(async () => {
+          if (!this.isClosed) {
+            logger.error(
+              '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
+                this.pageUrl
+            );
 
-          // 对于结果执行解析
+            // 对于结果执行解析
+            await this._parse();
+
+            await this.finish();
+          }
+
+          clearTimeout(intl);
+        }, this.crawler.crawlerOption.pageTimeout);
+      })
+      .then(
+        () => {},
+        async err => {
+          logger.error('>>>error>>>PageSpider>>>puppeteer-pool>>>', err);
+
           await this._parse();
-
           await this.finish();
         }
-
-        clearTimeout(intl);
-      }, this.crawler.crawlerOption.pageTimeout);
-    });
+      );
   }
 
   /** 复写父类方法 */
