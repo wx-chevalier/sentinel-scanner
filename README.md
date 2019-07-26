@@ -1,14 +1,12 @@
 ![](https://i.postimg.cc/vHMJtwd4/image.png)
 
-# Chaos Scanner
+# ChaosScanner
 
 > 混沌守望者，凛冬在侧，长夜将至，我为你持剑而立，守望四方！
 
-ChaosScanner 是模块化、分布式、多维度安全扫描解决方案，包含了漏洞分析、碎片化安全扫描工具、定向验证(POCs)、资产管理与调度器等多个部分。
+ChaosScanner 是模块化、分布式、多维度安全扫描解决方案，包含了漏洞分析、碎片化安全扫描工具、定向验证(POCs)、资产管理与调度器等多个部分。对于 ChaosScanner 的部署、测试与使用手册，请参考 [使用手册](./使用手册.md) 一文。
 
 **WIP**: 项目正处在闭源开发测试中，我们即将发布社区预览版（Community Preview），如有其它需要请提 Issue。
-
-Chaos Scanner 由 []()，[@lotuc](https://github.com/lotuc) 等小伙伴共同完成，对于 Chaos Scanner 的部署、测试与使用手册，请参考 [使用手册](./使用手册.md) 一文。
 
 # Modules | 模块
 
@@ -30,6 +28,8 @@ Chaos Scanner 由 []()，[@lotuc](https://github.com/lotuc) 等小伙伴共同�
 - [scheduler | 调度]()
 
 # About | 关于
+
+在 [Awesome InfoSecurity List](https://ngte-al.gitbook.io/i/infosecurity) 中就列举了很多开源的扫描器以及安全工具。但是，即使像 w3af 这样著名的开源扫描器，其也存在扫描不稳定、无法进行大规模分布式扫描、无法进行人机协作的半自动化扫描等问题，也无法完美地解决笔者的问题。因此我们打算自己从零开始开发一款尽可能贴近商业级扫描器要求的、模块化、弹性可伸缩的扫描器，我们最初只是从简单的分布式 POC 执行框架开始，逐步完善漏洞库与 POC 库；再逐步用自己实现的 SQL 注入、命令执行、XSS、CSRF 等经典的基础扫描模块替换 SQLMap 等。
 
 ## Motivation & Credits
 
