@@ -49,7 +49,7 @@ export const defaultPuppeteerPoolConfig = {
   // how long a resource can stay idle in pool before being removed
   idleTimeoutMillis: Number.MAX_VALUE, // default.
   // maximum number of times an individual resource can be reused before being destroyed; set to 0 to disable
-  acquireTimeoutMillis: defaultCrawlerOption.pageTimeout,
+  acquireTimeoutMillis: defaultCrawlerOption.pageTimeout * 2,
   maxUses: 0, // default
   // function to validate an instance prior to use; see https://github.com/coopernurse/node-pool#createpool
   validator: () => Promise.resolve(true), // defaults to always resolving true

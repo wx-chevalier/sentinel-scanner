@@ -74,11 +74,20 @@ export const createPuppeteerPool = ({
       .then(fn)
       .then(
         result => {
-          pool.release(resource);
+          if (resource) {
+            (pool.release(resource) as any).catch((e: Error) => {
+              console.error(e);
+            });
+          }
+
           return result;
         },
         err => {
-          pool.release(resource);
+          if (resource) {
+            (pool.release(resource) as any).catch((e: Error) => {
+              console.error(e);
+            });
+          }
           throw err;
         }
       );

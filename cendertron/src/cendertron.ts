@@ -44,10 +44,9 @@ export class Cendertron {
 
     pool.use(async (browser: puppeteer.Browser) => {
       this.renderer = new Renderer(browser);
+      this.crawlerScheduler = new CrawlerScheduler();
       return;
     });
-
-    this.crawlerScheduler = new CrawlerScheduler();
 
     this.app.use(koaCompress() as any);
 

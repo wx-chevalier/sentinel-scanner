@@ -61,45 +61,43 @@ export class PageSpider extends Spider implements ISpider {
       return;
     }
 
-    (pool
+    // 设置页面关闭的超时时间
+    const intl = setTimeout(async () => {
+      if (!this.isClosed) {
+        logger.error(
+          '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
+            this.pageUrl
+        );
+
+        // 对于结果执行解析
+        await this._parse();
+
+        await this.finish();
+      }
+
+      clearTimeout(intl);
+    }, this.crawler.crawlerOption.pageTimeout);
+
+    pool
       .use(async (browser: puppeteer.Browser) => {
         this.browser = browser;
         this.currentStep = 'initBrowser';
 
-        await this.run();
-
-        // 执行结束操作
-        await this.finish();
-
-        // 设置页面关闭的超时时间
-        const intl = setTimeout(async () => {
-          if (!this.isClosed) {
-            logger.error(
-              '>>>PageSpider>>>finish>>>Spider is canceled via timeout>>> ' +
-                this.pageUrl
-            );
-
-            // 对于结果执行解析
-            await this._parse();
-
-            await this.finish();
-          }
-
-          clearTimeout(intl);
-        }, this.crawler.crawlerOption.pageTimeout);
+        // 这里资源的释放不需要等待执行完毕，蜘蛛的顺序执行依赖于爬虫自身的调度
+        this.run().then(() => {
+          this.finish();
+        });
       })
       .then(
         () => {},
         err => {
-          logger.error('>>>error>>>PageSpider>>>puppeteer-pool>>>', err);
+          logger.error('>>>PageSpider>>>puppeteer-pool>>>', err);
 
           this._parse().then(() => {
             this.finish();
           });
         }
-      ) as any).catch((e: any) => {
-      console.log(e);
-    });
+      );
   }
 
   /** 复写父类方法 */

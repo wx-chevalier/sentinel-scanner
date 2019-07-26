@@ -74,8 +74,8 @@ export interface CrawlerResult {
   // 性能度量
   metrics?: {
     // 执行时间
-    startTime: number;
-    endTime?: number;
+    startTime: string;
+    endTime?: string;
 
     // 爬虫配置
     option: CrawlerOption;

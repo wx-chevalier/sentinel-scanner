@@ -12,6 +12,7 @@ import { parseUrl, stripBackspaceInUrl } from '../utils/transformer';
 import { hashUrl, isDir } from '../utils/model';
 import { CrawlerCache, crawlerCache } from './storage/CrawlerCache';
 import { WeakfileSpider } from './spider/WeakfileSpider';
+import { now } from '../utils/datetime';
 
 export interface CrawlerCallback {
   onStart?: (crawler: Crawler) => void;
@@ -177,7 +178,7 @@ export default class Crawler {
           id: this.id,
           isFinished: false,
           metrics: {
-            startTime: this.startTime,
+            startTime: new Date(this.startTime).toLocaleString(),
             option: this.crawlerOption,
             spiderCount: this.spiders.length,
             depth: this.crawlerOption.depth
@@ -320,8 +321,8 @@ export default class Crawler {
         id: this.id,
         isFinished: true,
         metrics: {
-          startTime: this.startTime,
-          endTime: Date.now(),
+          startTime: new Date(this.startTime).toLocaleString(),
+          endTime: now(),
           option: this.crawlerOption,
           spiderCount: this.spiders.length,
           depth: this.crawlerOption.depth
