@@ -15,6 +15,7 @@ if (localConfig && localConfig.db && localConfig.db.redis) {
     const dateTime = new Date(
       Number(String(serverTimes[0]) + String(serverTimes[1]).substring(0, 3))
     );
+
     logger.info(
       `>>>CrawlerCache>>>[redis] instance status OK, redis server currentTime: ${dateTime}`
     );

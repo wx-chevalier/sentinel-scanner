@@ -6,7 +6,7 @@
 
 Crawl AJAX-heavy client-side Single Page Applications (SPAs), deploying with docker, focusing on scraping requests(page urls, apis, etc.), followed by pentest tools(Sqlmap, etc.). Cendertron can be used for extracting requests(page urls, apis, etc.) from your Web 2.0 page.
 
-[Cendertron https://url.wx-coder.cn/HinPM](https://url.wx-coder.cn/HinPM) 是基于 Puppeteer 的 Web 2.0 动态爬虫与敏感信息泄露检测工具。其依托于 [xe-crawler](https://github.com/wx-chevalier/xe-crawler) 的通用爬虫、调度与缓存模型，新增了 Monkey Test 以及 Request Intercept 等特性，以期尽可能多地挖掘页面与请求。同时针对渗透测试的场景，Cendertron 内置了目录扫描、敏感文件扫描的能力，能够模拟用户实际在浏览器登录状态下的自定义字典爆破。Cendertron 在大量实践的基础上设置了自身的去重策略，能够尽可能地避免重复爬取，加快扫描速度。Cendertron 同时也是正在闭源开发的 [Chaos-Scanner](https://github.com/wx-chevalier/Chaos-Scanner) 模块化安全扫描解决方案的一部分，为基础扫描与智能扫描提供前置输入。
+[Cendertron](https://url.wx-coder.cn/HinPM) 是基于 Puppeteer 的 Web 2.0 动态爬虫与敏感信息泄露检测工具。其依托于 [xe-crawler](https://github.com/wx-chevalier/xe-crawler) 的通用爬虫、调度与缓存模型，新增了 Monkey Test 以及 Request Intercept 等特性，以期尽可能多地挖掘页面与请求。同时针对渗透测试的场景，Cendertron 内置了目录扫描、敏感文件扫描的能力，能够模拟用户实际在浏览器登录状态下的自定义字典爆破。Cendertron 在大量实践的基础上设置了自身的去重策略，能够尽可能地避免重复爬取，加快扫描速度。Cendertron 同时也是正在闭源开发的 [Chaos-Scanner](https://github.com/wx-chevalier/Chaos-Scanner) 模块化安全扫描解决方案的一部分，为基础扫描与智能扫描提供前置输入。
 
 ![](https://i.postimg.cc/8PcCmt6t/image.png)
 
@@ -111,6 +111,48 @@ crawler.start(pageUrl);
 ```
 
 If you want to use it in Alibaba Function Computing Service, [cendertron-fc](./deploy/fc) provides simple template.
+
+## Deploy as Cluster | 分布式集群模式部署
+
+```yml
+version: '3'
+services:
+  crawlers:
+    image: cendertron
+    ports:
+      - '${CENDERTRON_PORT}:3000'
+    deploy:
+      replicas: 2
+    volumes:
+      - wsat_etc:/etc/wsat
+
+volumes:
+  wsat_etc:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /etc/wsat/
+```
+
+```json
+{
+    "redis": {
+      "host": "x.x.x.x",
+      "port": 6379,
+      "password": "xx-xx-xx-xx"
+    }
+  }
+}
+```
+
+```sh
+# 创建服务
+> docker stack deploy wsat --compose-file docker-compose.yml --resolve-image=changed
+
+# 指定实例
+> docker service scale wsat_crawlers=5
+```
 
 # Strategy | 策略
 
