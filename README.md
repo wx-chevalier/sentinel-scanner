@@ -1,10 +1,10 @@
 ![](https://i.postimg.cc/vHMJtwd4/image.png)
 
-# ChaosScanner
+# Chaos Scanner
 
 > 混沌守望者，凛冬在侧，长夜将至，我为你持剑而立，守望四方！
 
-ChaosScanner 是模块化、分布式、多维度安全扫描解决方案，包含了漏洞分析、碎片化安全扫描工具、定向验证(POCs)、资产管理与调度器等多个部分。对于 ChaosScanner 的部署、测试与使用手册，请参考 [使用手册](./使用手册.md) 一文。
+Chaos Scanner 是模块化、分布式、多维度安全扫描解决方案，包含了漏洞分析、碎片化安全扫描工具、定向验证(POCs)、资产管理与调度器等多个部分。对于 Chaos Scanner 的部署、测试与使用手册，请参考 [使用手册](./使用手册.md) 一文。Chaos Scanner 也是笔者[信息安全与渗透测试](https://ngte-be.gitbook.io/i/xin-xi-an-quan-yu-shen-tou-ce-shi/xin-xi-an-quan-yu-shen-tou-ce-shi)系列文章的理论实践。
 
 **WIP**: 项目正处在闭源开发测试中，我们即将发布社区预览版（Community Preview），如有其它需要请提 Issue。
 
