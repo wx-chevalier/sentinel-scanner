@@ -42,6 +42,8 @@ export default class Crawler {
   // 爬虫的执行结果
   spidersResultMap: { [key: string]: SpiderResult[] } = {};
 
+  private intl?: NodeJS.Timeout;
+
   public get status() {
     if (!this.entryPage) {
       return {
@@ -138,7 +140,7 @@ export default class Crawler {
 
   /** 初始化超时监听函数 */
   async initMonitor() {
-    const intl = setTimeout(() => {
+    this.intl = setTimeout(() => {
       logger.info(
         `${new Date()} -- Stop crawling ${this.entryPage!.url} -- with Timeout`
       );
@@ -146,8 +148,10 @@ export default class Crawler {
       // 执行回调函数
       this.finish();
 
-      // 完成对于自身的清理，避免出现内存泄露
-      clearTimeout(intl);
+      if (this.intl) {
+        // 完成对于自身的清理，避免出现内存泄露
+        clearTimeout(this.intl);
+      }
     }, this.crawlerOption.timeout);
   }
 
@@ -314,6 +318,11 @@ export default class Crawler {
     }
 
     logger.info(`${new Date()} -- Stop crawling ${this.entryPage.url}`);
+
+    if (this.intl) {
+      // 完成对于自身的清理，避免出现内存泄露
+      clearTimeout(this.intl);
+    }
 
     if (this.crawlerCache) {
       // 缓存爬虫结果
