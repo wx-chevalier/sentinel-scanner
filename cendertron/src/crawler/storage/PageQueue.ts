@@ -7,6 +7,7 @@ let _localQueue: SpiderPage[] = [];
 
 const queueListKey = 'cendertron:page-queue:list';
 const queueSetKey = 'cendertron:page-queue:set';
+export const runningQueuePrefix = 'cendertron:running-queue';
 
 export class PageQueue {
   async length() {
@@ -20,6 +21,19 @@ export class PageQueue {
   /** 判断是否存在某个请求 */
   async has(page: SpiderPage) {
     if (redisClient) {
+      // 判断是否在运行队列中
+      const isExist = await redisClient.exists(
+        `${runningQueuePrefix}:${page.url}`
+      );
+
+      console.log(isExist);
+
+      // 如果存在，则返回存在
+      if (isExist) {
+        return true;
+      }
+
+      // 判断是否在等待队列中
       const resp = await redisClient.zrank(queueSetKey, page.url);
 
       if (resp) {
@@ -51,7 +65,7 @@ export class PageQueue {
     }
   }
 
-  /** 获取某个请求详情 */
+  /** 获取下一个待处理的请求详情 */
   async next(): Promise<SpiderPage | undefined> {
     try {
       if (redisClient) {
@@ -62,7 +76,18 @@ export class PageQueue {
 
           // 这里会再次判断下是否存在
           if (this.has(pageObj)) {
+            // 从等待集合中移除
             await redisClient.zrem(queueSetKey, pageObj.url);
+
+            // 加入到正在运行的集合
+            await redisClient.set(
+              `${runningQueuePrefix}:${pageObj.url}`,
+              true,
+              // 设置过期时间为 20s
+              'EX',
+              20
+            );
+
             return pageObj;
           } else {
             return undefined;
@@ -76,6 +101,7 @@ export class PageQueue {
     }
   }
 
+  /** 清空全部的队列 */
   async clear() {
     if (redisClient) {
       await redisClient.del(queueListKey);

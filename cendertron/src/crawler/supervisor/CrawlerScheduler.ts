@@ -1,3 +1,4 @@
+import { runningQueuePrefix } from './../storage/PageQueue';
 import { pool } from './../../render/puppeteer';
 import * as uuid from 'uuid/v1';
 
@@ -139,13 +140,26 @@ export default class CrawlerScheduler {
     if (redisClient) {
       const status = await this.getStatus();
 
+      // 设置当前状态
       redisClient.set(
         `cendertron:status:crawler-scheduler:${this.id}`,
         JSON.stringify(status),
-        // 设置过期时间为 30s
+        // 设置过期时间为 60s
         'EX',
         60
       );
+
+      // 更新所有正在跑的地址
+      for (const url of Object.keys(this.runningCrawler)) {
+        // 加入到正在运行的集合
+        redisClient.set(
+          `${runningQueuePrefix}:${url}`,
+          true,
+          // 设置过期时间为 20s
+          'EX',
+          20
+        );
+      }
     }
   }
 

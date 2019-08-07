@@ -93,7 +93,7 @@ export default class Crawler {
       if (cache) {
         logger.info(`>>>Crawler>>>return>>>Use cache ${entryUrl}`);
 
-        this.finish();
+        this.finish(false);
 
         return cache;
       }
@@ -309,7 +309,7 @@ export default class Crawler {
   }
 
   /** 执行关闭函数 */
-  private finish() {
+  private finish(useCache = !!this.crawlerCache) {
     if (!this.entryPage) {
       return;
     }
@@ -325,7 +325,7 @@ export default class Crawler {
       clearTimeout(this.intl);
     }
 
-    if (this.crawlerCache) {
+    if (useCache && this.crawlerCache) {
       // 缓存爬虫结果
       this.crawlerCache.cacheCrawler(this.entryPage.url, {
         id: this.id,
