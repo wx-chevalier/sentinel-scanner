@@ -26,8 +26,6 @@ export class PageQueue {
         `${runningQueuePrefix}:${page.url}`
       );
 
-      console.log(isExist);
-
       // 如果存在，则返回存在
       if (isExist) {
         return true;
