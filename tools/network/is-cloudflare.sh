@@ -1,0 +1,32 @@
+#!/bin/bash
+
+function usage() {
+    echo "Usage: "$0" <ip>"
+    if [ -n "$1" ] ; then
+	echo "Error: "$1"!"
+    fi
+    exit
+}
+
+rp=$(realpath $0)
+cflist=$(dirname $rp)"/cloudflare-ip.txt"
+
+if [ ! $# -eq 1 ] ; then
+    usage
+fi
+
+if [ -f $1 ] ; then
+    ips=$(cat $1)
+else
+    ips=$(echo $1)
+fi
+
+for ip in $ips ; do
+    n=$(egrep "^$ip$" $cflist)
+
+    if [ -n "$n" ] ; then
+        echo -e "$ip \e[0;31mis Cloudflare!\033[0m"
+    else
+        echo -e "$ip \e[0;32mis NOT Cloudflare!\033[0m"
+    fi
+done
